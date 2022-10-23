@@ -1,0 +1,55 @@
+{
+  "private": true,
+  "version": "1.0.0",
+  "description": "提取项目里的中文，并替换为i18n函数",
+  "scripts": {
+    "preinstall": "only-allow pnpm",
+    "prepare": "husky install",
+    "commit": "cz",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r",
+    "dev": "rollup -w -c ./build/rollup.config.mjs",
+    "build": "rollup -c ./build/rollup.config.js"
+  },
+  "author": "IFreeOvO",
+  "license": "MIT",
+  "packageManager": "pnpm@7.11.0",
+  "engines": {
+    "node": ">=16",
+    "pnpm": ">=7"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-typescript": "^9.0.2",
+    "@types/node": "^18.11.6",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
+    "commitizen": "^4.2.5",
+    "conventional-changelog-cli": "^2.2.2",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.26.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "only-allow": "^1.1.1",
+    "prettier": "^2.7.1",
+    "rollup": "^3.2.3",
+    "typescript": "^4.8.4"
+  },
+  "lint-staged": {
+    "*.{jsx,md,json,js}": [
+      "prettier --cache --write"
+    ],
+    "*.ts?(x)": [
+      "eslint --fix",
+      "prettier --cache --parser=typescript --write"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
+}
