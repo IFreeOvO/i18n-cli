@@ -1,0 +1,29 @@
+{
+  "name": "@ovointl/i18n-extract",
+  "version": "1.0.0",
+  "description": "提取项目里的中文，并替换为i18n函数",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "it": "bin/index.js"
+  },
+  "types": "types/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "i18n",
+    "intl",
+    "extract",
+    "messages"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "author": "IFreeOvO",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^9.4.1"
+  }
+}
