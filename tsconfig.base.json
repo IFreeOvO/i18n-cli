@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "es2016",
-    "module": "esnext",
+    "target": "es2019",
+    "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "declaration": true,
     "lib": ["esnext", "dom"]
   },
   "exclude": ["**/node_modules", "**/examples", "**/dist", "**/*.test.ts"]
