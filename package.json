@@ -7,7 +7,7 @@
     "prepare": "husky install",
     "commit": "cz",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r",
-    "dev": "rollup -w -c ./build/rollup.config.mjs",
+    "dev": "rollup -w -c ./build/rollup.config.js",
     "build": "rollup -c ./build/rollup.config.js"
   },
   "author": "IFreeOvO",
@@ -20,8 +20,6 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-typescript": "^9.0.2",
     "@types/node": "^18.11.6",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
@@ -35,7 +33,6 @@
     "lint-staged": "^13.0.3",
     "only-allow": "^1.1.1",
     "prettier": "^2.7.1",
-    "rollup": "^3.2.3",
     "typescript": "^4.8.4"
   },
   "lint-staged": {
