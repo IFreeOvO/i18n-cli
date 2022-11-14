@@ -10,6 +10,7 @@ import type {
   JSXAttribute,
   Program,
   ImportDeclaration,
+  CallExpression,
 } from '@babel/types'
 import type { FileExtension, transformOptions } from '../types'
 import traverse from '@babel/traverse'
@@ -136,6 +137,36 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
           const jsxContainer = t.jSXExpressionContainer(getReplaceValue(node.value.value))
           path.replaceWith(t.jsxAttribute(jsxIdentifier, jsxContainer))
           path.skip()
+        }
+      },
+
+      CallExpression(path: NodePath<CallExpression>) {
+        const { node } = path
+        const { caller, functionName } = rule
+        const callee = node.callee
+
+        // 无调用对象的情况，例如$t('xx')
+        if (callee.type === 'Identifier' && callee.name === functionName) {
+          path.skip()
+          return
+        }
+
+        // 有调用对象的情况，例如this.$t('xx')、i18n.$t('xx)
+        if (callee.type === 'MemberExpression') {
+          if (callee.property && callee.property.type === 'Identifier') {
+            if (callee.property.name === functionName) {
+              // 处理形如i18n.$t('xx)的情况
+              if (callee.object.type === 'Identifier' && callee.object.name === caller) {
+                path.skip()
+                return
+              }
+              // 处理形如this.$t('xx')的情况
+              if (callee.object.type === 'ThisExpression' && caller === 'this') {
+                path.skip()
+                return
+              }
+            }
+          }
         }
       },
 
