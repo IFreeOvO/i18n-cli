@@ -149,9 +149,11 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
         }
 
         if (!hasImportI18n) {
-          const importAst = template.statement(importDeclaration)()
+          const importAst = template.statements(importDeclaration)()
           const program = path.parent as Program
-          program.body.unshift(importAst)
+          importAst.forEach((statement) => {
+            program.body.unshift(statement)
+          })
           hasImportI18n = true
         }
       },
