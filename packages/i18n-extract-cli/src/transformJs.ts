@@ -56,11 +56,11 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
     // 表达式结构 obj.fn('xx',{xx:xx})
     let expression
     if (params) {
-      expression = `${caller}.${functionName}('${customizeKey(key)})', ${getObjectExpression(
-        params
-      )})`
+      expression = `${caller ? caller + '.' : ''}${functionName}('${customizeKey(
+        key
+      )})', ${getObjectExpression(params)})`
     } else {
-      expression = `${caller}.${functionName}('${customizeKey(key)}')`
+      expression = `${caller ? caller + '.' : ''}${functionName}('${customizeKey(key)}')`
     }
     return template.expression(expression)()
   }
