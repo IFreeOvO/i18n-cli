@@ -5,7 +5,6 @@ import defaultConfig from './default.config'
 import transform from './transform'
 import glob from 'glob'
 import merge from 'lodash/merge'
-import isEmpty from 'lodash/isEmpty'
 import log from './utils/log'
 import { getAbsolutePath } from './utils/getAbsolutePath'
 
@@ -50,10 +49,7 @@ function getUserConfig(configFile?: string) {
 
 function getI18nConfig(options: CommandOptions) {
   const userConfig = getUserConfig(options.configFile)
-  let config = merge(defaultConfig, options)
-  if (!isEmpty(userConfig)) {
-    config = merge(config, userConfig)
-  }
+  const config = merge(defaultConfig, options, userConfig)
   return config
 }
 
@@ -64,18 +60,22 @@ export default function (options: CommandOptions) {
   const sourceFiles = getSourceFiles(input, exclude)
 
   sourceFiles.forEach((sourceFile) => {
+    log.verbose(`正在提取文件:`, sourceFile)
     const sourceCode = fs.readFileSync(sourceFile, 'utf8')
     const ext = path.extname(sourceFile).replace('.', '') as FileExtension
     const { code } = transform(sourceCode, ext, rules)
+    log.verbose(`完成语法转换:`, sourceFile)
 
     if (output) {
       const filePath = sourceFile.replace(input + '/', '')
       const outputPath = getAbsolutePath(process.cwd(), output, filePath)
       fs.ensureFileSync(outputPath)
       fs.writeFileSync(outputPath, code, 'utf8')
+      log.verbose(`生成文件:`, outputPath)
     } else {
       const outputPath = getAbsolutePath(process.cwd(), sourceFile)
       fs.writeFileSync(outputPath, code, 'utf8')
+      log.verbose(`覆盖文件:`, outputPath)
     }
   })
 }

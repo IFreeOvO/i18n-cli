@@ -6,10 +6,10 @@ function getCustomizeKey(key: string) {
 
 function getCommonRule(): Rule {
   return {
-    caller: 'i18n',
-    functionName: '$t',
+    caller: '',
+    functionName: 't',
     customizeKey: getCustomizeKey,
-    importDeclaration: 'import i18n from "i18n"',
+    importDeclaration: 'import { t } from "i18n"',
   }
 }
 
