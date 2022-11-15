@@ -12,6 +12,7 @@ program
   .option('-o, --output <path>', '输出文件路径')
   .option('-c, --config-file <path>', '配置文件所在路径')
   .option('-v --verbose', '控制台打印更多调试信息')
+  .option('--localePath <path>', '指定提取的中文字典所存放的路径')
   .action((options) => {
     execCommand(options)
   })

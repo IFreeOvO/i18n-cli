@@ -7,6 +7,7 @@ import glob from 'glob'
 import merge from 'lodash/merge'
 import log from './utils/log'
 import { getAbsolutePath } from './utils/getAbsolutePath'
+import Collector from './collector'
 
 function isValidInput(input: string) {
   const inputPath = getAbsolutePath(process.cwd(), input)
@@ -53,18 +54,34 @@ function getI18nConfig(options: CommandOptions) {
   return config
 }
 
+function saveLocale(localePath: string) {
+  const keyMap = Collector.keyMap
+  const localeAbsolutePath = getAbsolutePath(process.cwd(), localePath)
+
+  if (!fs.existsSync(localeAbsolutePath)) {
+    fs.ensureFileSync(localeAbsolutePath)
+  }
+
+  if (!fs.statSync(localeAbsolutePath).isFile()) {
+    log.error('localePath指向的路径不是一个文件,请重新设置localePath参数')
+    process.exit(1)
+  }
+  log.verbose(`输出字典文件到指定位置:`, localeAbsolutePath)
+  fs.writeFileSync(localeAbsolutePath, JSON.stringify(keyMap, null, 2), 'utf8')
+}
+
 export default function (options: CommandOptions) {
   const i18nConfig = getI18nConfig(options)
-  const { input, exclude, output, rules } = i18nConfig
+  const { input, exclude, output, rules, localePath } = i18nConfig
   log.verbose(`脚手架配置信息:`, i18nConfig)
   const sourceFiles = getSourceFiles(input, exclude)
 
   sourceFiles.forEach((sourceFile) => {
-    log.verbose(`正在提取文件:`, sourceFile)
+    log.verbose(`正在提取文件中的汉字:`, sourceFile)
     const sourceCode = fs.readFileSync(sourceFile, 'utf8')
     const ext = path.extname(sourceFile).replace('.', '') as FileExtension
     const { code } = transform(sourceCode, ext, rules)
-    log.verbose(`完成语法转换:`, sourceFile)
+    log.verbose(`完成汉字提取和语法转换:`, sourceFile)
 
     if (output) {
       const filePath = sourceFile.replace(input + '/', '')
@@ -78,4 +95,6 @@ export default function (options: CommandOptions) {
       log.verbose(`覆盖文件:`, outputPath)
     }
   })
+
+  saveLocale(localePath)
 }
