@@ -26,6 +26,7 @@ export type FileExtension = 'js' | 'ts' | 'cjs' | 'mjs' | 'jsx' | 'tsx'
 export interface Config {
   input: string
   output: string
+  localePath: string
   exclude: string[]
   rules: {
     js: Rule

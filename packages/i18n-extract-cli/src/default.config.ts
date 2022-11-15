@@ -17,6 +17,7 @@ const config: Config = {
   input: 'src',
   output: '',
   exclude: ['**/node_modules/**/*'],
+  localePath: './locales/zh-CN.json',
   rules: {
     js: getCommonRule(),
     ts: getCommonRule(),

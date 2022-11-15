@@ -19,6 +19,7 @@ import template from '@babel/template'
 import generate from '@babel/generator'
 import { includeChinese } from './utils/includeChinese'
 import { isObject } from './utils/assertType'
+import Collector from './collector'
 
 const t = require('@babel/types')
 
@@ -88,6 +89,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
 
       StringLiteral(path: NodePath<StringLiteral>) {
         if (includeChinese(path.node.value)) {
+          Collector.add(path.node.value)
           path.replaceWith(getReplaceValue(path.node.value))
         }
         path.skip()
@@ -117,6 +119,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
               params[key] = { isAstNode: true, value: node as TemplateLiteralNode }
             }
           })
+          Collector.add(value)
           path.replaceWith(getReplaceValue(value, params))
         }
         path.skip()
@@ -124,6 +127,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
 
       JSXText(path: NodePath<JSXText>) {
         if (includeChinese(path.node.value)) {
+          Collector.add(path.node.value)
           path.replaceWith(t.JSXExpressionContainer(getReplaceValue(path.node.value)))
         }
         path.skip()
@@ -135,6 +139,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
         if (valueType === 'StringLiteral' && node.value && includeChinese(node.value.value)) {
           const jsxIdentifier = t.jsxIdentifier(node.name.name)
           const jsxContainer = t.jSXExpressionContainer(getReplaceValue(node.value.value))
+          Collector.add(node.value.value)
           path.replaceWith(t.jsxAttribute(jsxIdentifier, jsxContainer))
           path.skip()
         }
