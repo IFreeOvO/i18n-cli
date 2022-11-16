@@ -60,5 +60,12 @@
     "@types/lodash": "^4.14.188",
     "@types/semver": "^7.3.13",
     "rimraf": "^3.0.2"
-  }
+  },
+  "files": [
+    "bin",
+    "dist",
+    "types",
+    "package.json",
+    "package-lock.json"
+  ]
 }
