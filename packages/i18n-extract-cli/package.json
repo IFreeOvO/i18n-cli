@@ -1,7 +1,7 @@
 {
   "name": "@ifreeovo/i18n-extract-cli",
-  "version": "1.0.0",
-  "description": "可以将代码里中文替换成国际化标记的工具",
+  "version": "1.0.1",
+  "description": "自动将中文替换成i18n国际化标记的脚手架工具",
   "publishConfig": {
     "access": "public"
   },
@@ -66,6 +66,15 @@
     "dist",
     "types",
     "package.json",
-    "package-lock.json"
-  ]
+    "package-lock.json",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IFreeOvO/i18n-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/IFreeOvO/i18n-cli/issues"
+  },
+  "homepage": "https://github.com/IFreeOvO/i18n-cli"
 }
