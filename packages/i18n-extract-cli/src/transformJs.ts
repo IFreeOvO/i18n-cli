@@ -20,6 +20,7 @@ import generate from '@babel/generator'
 import { includeChinese } from './utils/includeChinese'
 import { isObject } from './utils/assertType'
 import Collector from './collector'
+import { IGNORE_REMARK } from './utils/constants'
 
 const t = require('@babel/types')
 
@@ -50,7 +51,7 @@ function getObjectExpression(obj: TemplateParams) {
 }
 
 function transformJs(code: string, ext: FileExtension, options: transformOptions) {
-  const rule = options.rules[ext]
+  const rule = options.rule
   let hasImportI18n = false
 
   function getReplaceValue(key: string, params?: TemplateParams) {
@@ -75,7 +76,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
           // 是否跳过翻译
           let isSkipTransform = false
           leadingComments.every((comment: Comment) => {
-            if (comment.value.includes('i18n-ignore')) {
+            if (comment.value.includes(IGNORE_REMARK)) {
               isSkipTransform = true
               return false
             }

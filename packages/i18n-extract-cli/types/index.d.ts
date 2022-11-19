@@ -5,7 +5,7 @@ type deepPartial<T extends object> = {
 }
 
 export interface transformOptions {
-  rules: Rules
+  rule: Rule
   parse(code: string): ParseResult
   [k: string]: unknown
 }
@@ -21,7 +21,7 @@ export type Rules = {
   [k in keyof Config['rules']]: Rule
 }
 
-export type FileExtension = 'js' | 'ts' | 'cjs' | 'mjs' | 'jsx' | 'tsx'
+export type FileExtension = 'js' | 'ts' | 'cjs' | 'mjs' | 'jsx' | 'tsx' | 'vue'
 
 export interface Config {
   input: string
@@ -35,7 +35,7 @@ export interface Config {
     mjs: Rule
     tsx: Rule
     jsx: Rule
-    // vue: Rule
+    vue: Rule
   }
 }
 

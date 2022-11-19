@@ -7,7 +7,7 @@ class Collector {
   private constructor() {}
 
   static add(key: string) {
-    log.verbose('提取汉字：', key)
+    log.verbose('提取中文：', key)
     Collector.keyMap[key] = ''
   }
 }
