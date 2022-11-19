@@ -25,6 +25,12 @@ const config: Config = {
     mjs: getCommonRule(),
     jsx: getCommonRule(),
     tsx: getCommonRule(),
+    vue: {
+      caller: 'this',
+      functionName: '$t',
+      customizeKey: getCustomizeKey,
+      importDeclaration: '',
+    },
   },
 }
 

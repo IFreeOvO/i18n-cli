@@ -1,6 +1,7 @@
 import type { CommandOptions, FileExtension } from 'packages/i18n-extract-cli/types'
 import fs from 'fs-extra'
 import path from 'path'
+import { ProgressBar } from 'ascii-progress'
 import defaultConfig from './default.config'
 import transform from './transform'
 import glob from 'glob'
@@ -74,14 +75,20 @@ export default function (options: CommandOptions) {
   const i18nConfig = getI18nConfig(options)
   const { input, exclude, output, rules, localePath } = i18nConfig
   log.verbose(`脚手架配置信息:`, i18nConfig)
-  const sourceFiles = getSourceFiles(input, exclude)
+  log.info('正在转换中文，请稍等...')
 
+  const sourceFiles = getSourceFiles(input, exclude)
+  const bar = new ProgressBar({
+    schema: '提取进度:.cyan [:bar] :percent :current/:total :elapseds',
+    blank: '░',
+    total: sourceFiles.length,
+  })
   sourceFiles.forEach((sourceFile) => {
-    log.verbose(`正在提取文件中的汉字:`, sourceFile)
+    log.verbose(`正在提取文件中的中文:`, sourceFile)
     const sourceCode = fs.readFileSync(sourceFile, 'utf8')
     const ext = path.extname(sourceFile).replace('.', '') as FileExtension
     const { code } = transform(sourceCode, ext, rules)
-    log.verbose(`完成汉字提取和语法转换:`, sourceFile)
+    log.verbose(`完成中文提取和语法转换:`, sourceFile)
 
     if (output) {
       const filePath = sourceFile.replace(input + '/', '')
@@ -94,7 +101,8 @@ export default function (options: CommandOptions) {
       fs.writeFileSync(outputPath, code, 'utf8')
       log.verbose(`覆盖文件:`, outputPath)
     }
+    bar.tick()
   })
-
   saveLocale(localePath)
+  log.success('转换完毕!')
 }

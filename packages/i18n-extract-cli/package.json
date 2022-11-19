@@ -1,6 +1,6 @@
 {
   "name": "@ifreeovo/i18n-extract-cli",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "description": "自动将中文替换成i18n国际化标记的脚手架工具",
   "publishConfig": {
     "access": "public"
@@ -17,7 +17,10 @@
     "i18n",
     "intl",
     "extract",
-    "cli"
+    "intl-cli",
+    "i18n-cli",
+    "vue-i18n",
+    "react-i18n"
   ],
   "engines": {
     "node": ">=16"
@@ -41,12 +44,17 @@
     "@babel/template": "^7.18.10",
     "@babel/traverse": "^7.20.0",
     "@babel/types": "^7.20.0",
+    "@vue/compiler-sfc": "^3.2.39",
+    "ascii-progress": "^2.0.0",
     "chalk": "4.1.2",
     "commander": "^9.4.1",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
+    "htmlparser2": "^8.0.1",
     "leven": "3.1.0",
     "lodash": "^4.17.21",
+    "mustache": "^4.2.0",
+    "prettier": "^2.7.1",
     "semver": "^7.3.8",
     "slash": "3.0.0"
   },
@@ -58,6 +66,8 @@
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^8.0.0",
     "@types/lodash": "^4.14.188",
+    "@types/mustache": "^4.2.1",
+    "@types/prettier": "^2.7.1",
     "@types/semver": "^7.3.13",
     "rimraf": "^3.0.2"
   },
