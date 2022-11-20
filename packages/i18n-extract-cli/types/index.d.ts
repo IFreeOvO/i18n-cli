@@ -1,4 +1,5 @@
 import type { ParseResult } from '@babel/core'
+import type { Options } from 'prettier'
 
 type deepPartial<T extends object> = {
   [K in keyof T]?: T[K] extends object ? deepPartial<T[K]> : T[K]
@@ -37,6 +38,7 @@ export interface Config {
     jsx: Rule
     vue: Rule
   }
+  prettier: Options
 }
 
 export type CommandOptions = deepPartial<Config> & { configFile?: string }

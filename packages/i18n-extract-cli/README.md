@@ -1,3 +1,5 @@
+![下载](https://img.shields.io/npm/dw/@ifreeovo/i18n-extract-cli)
+
 # 介绍
 
 这是一个支持自动将中文替换成 i18n 国际化标记的脚手架工具
@@ -5,9 +7,10 @@
 ## 功能
 
 - 支持.mjs.cjs.js.ts.jsx.tsx.vue 后缀文件提取中文
-- 支持 vue2.0，vue3.0, react 提取中文
+- 支持 vue2.0，vue3.0，react 提取中文
 - 支持通过/\*i18n-ignore\*/注释，忽略中文提取
 - 支持将提取的中文以 key-value 形式存入.json 翻译字典里
+- 支持 prettier 格式化代码
 - 自定义翻译字典的 key
 - 自定义 i18n 工具的调用对象
 - 自定义 i18n 工具的方法名
@@ -151,6 +154,11 @@ module.exports = {
       customizeKey: getCustomizeKey,
       importDeclaration: '',
     },
+  },
+  // prettier配置，参考https://prettier.io/docs/en/options.html
+  prettier: {
+    semi: false,
+    singleQuote: true,
   },
 }
 ```

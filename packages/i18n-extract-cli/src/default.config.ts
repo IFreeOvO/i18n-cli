@@ -32,6 +32,10 @@ const config: Config = {
       importDeclaration: '',
     },
   },
+  prettier: {
+    semi: false,
+    singleQuote: true,
+  },
 }
 
 export default config
