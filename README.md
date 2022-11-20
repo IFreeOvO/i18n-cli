@@ -9,9 +9,10 @@
 ## 功能
 
 - [x] 支持.mjs.cjs.js.ts.jsx.tsx.vue 后缀文件提取中文
-- [x] 支持 vue2.0，vue3.0, react 提取中文
+- [x] 支持 vue2.0，vue3.0，react 提取中文
 - [x] 支持通过/\*i18n-ignore\*/注释，忽略中文提取
 - [x] 支持将提取的中文以 key-value 形式存入.json 翻译字典里
+- [x] 支持 prettier 格式化代码
 - [x] 自定义翻译字典的 key
 - [x] 自定义 i18n 工具的调用对象
 - [x] 自定义 i18n 工具的方法名
@@ -111,6 +112,11 @@ module.exports = {
       customizeKey: getCustomizeKey,
       importDeclaration: '',
     },
+  },
+  // prettier配置，参考https://prettier.io/docs/en/options.html
+  prettier: {
+    semi: false,
+    singleQuote: true,
   },
 }
 ```

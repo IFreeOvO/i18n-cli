@@ -1,6 +1,7 @@
 import type { CommandOptions, FileExtension } from 'packages/i18n-extract-cli/types'
 import fs from 'fs-extra'
 import path from 'path'
+import prettier from 'prettier'
 import { ProgressBar } from 'ascii-progress'
 import defaultConfig from './default.config'
 import transform from './transform'
@@ -71,6 +72,18 @@ function saveLocale(localePath: string) {
   fs.writeFileSync(localeAbsolutePath, JSON.stringify(keyMap, null, 2), 'utf8')
 }
 
+function getPrettierParser(ext: string) {
+  switch (ext) {
+    case 'vue':
+      return 'vue'
+    case 'ts':
+    case 'tsx':
+      return 'babel-ts'
+    default:
+      return 'babel'
+  }
+}
+
 export default function (options: CommandOptions) {
   const i18nConfig = getI18nConfig(options)
   const { input, exclude, output, rules, localePath } = i18nConfig
@@ -89,16 +102,21 @@ export default function (options: CommandOptions) {
     const ext = path.extname(sourceFile).replace('.', '') as FileExtension
     const { code } = transform(sourceCode, ext, rules)
     log.verbose(`完成中文提取和语法转换:`, sourceFile)
+    const stylizedCode = prettier.format(code, {
+      ...i18nConfig.prettier,
+      parser: getPrettierParser(ext),
+    })
+    log.verbose(`格式化代码完成`)
 
     if (output) {
       const filePath = sourceFile.replace(input + '/', '')
       const outputPath = getAbsolutePath(process.cwd(), output, filePath)
       fs.ensureFileSync(outputPath)
-      fs.writeFileSync(outputPath, code, 'utf8')
+      fs.writeFileSync(outputPath, stylizedCode, 'utf8')
       log.verbose(`生成文件:`, outputPath)
     } else {
       const outputPath = getAbsolutePath(process.cwd(), sourceFile)
-      fs.writeFileSync(outputPath, code, 'utf8')
+      fs.writeFileSync(outputPath, stylizedCode, 'utf8')
       log.verbose(`覆盖文件:`, outputPath)
     }
     bar.tick()
