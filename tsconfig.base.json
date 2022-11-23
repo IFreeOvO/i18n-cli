@@ -9,6 +9,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "declaration": true,
+    "skipLibCheck": true,
     "lib": ["esnext", "dom"]
   },
   "exclude": ["**/node_modules", "**/examples", "**/dist", "**/*.test.ts"]

@@ -8,7 +8,7 @@ class Collector {
 
   static add(key: string) {
     log.verbose('提取中文：', key)
-    Collector.keyMap[key] = ''
+    Collector.keyMap[key] = key
   }
 }
 

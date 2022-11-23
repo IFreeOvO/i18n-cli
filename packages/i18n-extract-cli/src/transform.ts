@@ -5,7 +5,13 @@ import transformVue from './transformVue'
 import { initParse } from './parse'
 const presetTypescript = require('@babel/preset-typescript')
 
-function transform(code: string, ext: FileExtension, rules: Rules) {
+function transform(
+  code: string,
+  ext: FileExtension,
+  rules: Rules
+): {
+  code: string
+} {
   switch (ext) {
     case 'cjs':
     case 'mjs':
