@@ -164,7 +164,7 @@ function removeQuotes(value: string): string {
   return value
 }
 
-function getWrapperTemplate(sfcBlock: SFCTemplateBlock | SFCScriptBlock | SFCStyleBlock) {
+function getWrapperTemplate(sfcBlock: SFCTemplateBlock | SFCScriptBlock | SFCStyleBlock): string {
   const { type, lang, attrs } = sfcBlock
   let template = `<${type}`
 
@@ -186,7 +186,12 @@ function getWrapperTemplate(sfcBlock: SFCTemplateBlock | SFCScriptBlock | SFCSty
   return template
 }
 
-function transformVue(code: string, rule: Rule) {
+function transformVue(
+  code: string,
+  rule: Rule
+): {
+  code: string
+} {
   const { descriptor, errors } = parse(code)
   if (errors.length > 0) {
     log.error('vue文件解析出现错误：', errors[0].toString())

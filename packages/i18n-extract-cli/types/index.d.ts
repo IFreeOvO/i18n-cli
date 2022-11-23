@@ -1,7 +1,7 @@
 import type { ParseResult } from '@babel/core'
 import type { Options } from 'prettier'
 
-type deepPartial<T extends object> = {
+export type deepPartial<T extends object> = {
   [K in keyof T]?: T[K] extends object ? deepPartial<T[K]> : T[K]
 }
 
@@ -24,10 +24,22 @@ export type Rules = {
 
 export type FileExtension = 'js' | 'ts' | 'cjs' | 'mjs' | 'jsx' | 'tsx' | 'vue'
 
-export interface Config {
+export interface YoudaoConfig {
+  key?: string
+  secret?: string
+}
+export interface TranslateConfig {
+  translator?: 'google' | 'youdao'
+  google?: {
+    proxy?: string
+  }
+  youdao?: YoudaoConfig
+}
+export type Config = {
   input: string
   output: string
   localePath: string
+  translations: string[]
   exclude: string[]
   rules: {
     js: Rule
@@ -39,6 +51,17 @@ export interface Config {
     vue: Rule
   }
   prettier: Options
-}
+  skipExtract: boolean
+  skipTranslate: boolean
+} & TranslateConfig
 
-export type CommandOptions = deepPartial<Config> & { configFile?: string }
+export interface CommandOptions {
+  input?: string
+  output?: string
+  localePath?: string
+  configFile?: string
+  translations?: string[]
+  verbose?: boolean
+  skipExtract?: boolean
+  skipTranslate?: boolean
+}

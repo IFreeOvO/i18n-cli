@@ -18,6 +18,7 @@ const config: Config = {
   output: '',
   exclude: ['**/node_modules/**/*'],
   localePath: './locales/zh-CN.json',
+  translations: ['en-US'],
   rules: {
     js: getCommonRule(),
     ts: getCommonRule(),
@@ -36,6 +37,8 @@ const config: Config = {
     semi: false,
     singleQuote: true,
   },
+  skipExtract: false,
+  skipTranslate: true,
 }
 
 export default config

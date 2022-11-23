@@ -12,6 +12,7 @@ import type {
   ImportDeclaration,
   CallExpression,
 } from '@babel/types'
+import type { GeneratorResult } from '@babel/generator'
 import type { FileExtension, transformOptions } from '../types'
 import traverse from '@babel/traverse'
 import babelGenerator from '@babel/generator'
@@ -34,7 +35,7 @@ type TemplateParams = {
       }
 }
 
-function getObjectExpression(obj: TemplateParams) {
+function getObjectExpression(obj: TemplateParams): string {
   const ObjectPropertyArr: Array<ObjectMethod | ObjectProperty | SpreadElement> = []
   Object.keys(obj).forEach((k) => {
     const tempValue = obj[k]
@@ -50,7 +51,7 @@ function getObjectExpression(obj: TemplateParams) {
   return generate(ast).code
 }
 
-function transformJs(code: string, ext: FileExtension, options: transformOptions) {
+function transformJs(code: string, ext: FileExtension, options: transformOptions): GeneratorResult {
   const rule = options.rule
   let hasImportI18n = false
 

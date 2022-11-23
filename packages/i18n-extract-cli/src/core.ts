@@ -1,4 +1,4 @@
-import type { CommandOptions, FileExtension } from 'packages/i18n-extract-cli/types'
+import type { CommandOptions, FileExtension, deepPartial, Config } from '../types'
 import fs from 'fs-extra'
 import path from 'path'
 import prettier from 'prettier'
@@ -10,22 +10,23 @@ import merge from 'lodash/merge'
 import log from './utils/log'
 import { getAbsolutePath } from './utils/getAbsolutePath'
 import Collector from './collector'
+import translate from './translate'
 
-function isValidInput(input: string) {
+function isValidInput(input: string): boolean {
   const inputPath = getAbsolutePath(process.cwd(), input)
 
   if (!fs.existsSync(inputPath)) {
-    log.error('input路径不存在,请重新设置input参数')
+    log.error(`路径${inputPath}不存在,请重新设置input参数`)
     process.exit(1)
   }
   if (!fs.statSync(inputPath).isDirectory()) {
-    log.error('input不是一个目录,请重新设置input参数')
+    log.error(`路径${inputPath}不是一个目录,请重新设置input参数`)
     process.exit(1)
   }
   return true
 }
 
-function getSourceFiles(input: string, exclude: string[]) {
+function getSourceFiles(input: string, exclude: string[]): string[] {
   if (isValidInput(input)) {
     return glob.sync(`${input}/**/*.{cjs,mjs,js,ts,tsx,jsx,vue}`, {
       ignore: exclude,
@@ -35,7 +36,7 @@ function getSourceFiles(input: string, exclude: string[]) {
   }
 }
 
-function getUserConfig(configFile?: string) {
+function getUserConfig(configFile?: string): deepPartial<Config> {
   if (configFile) {
     const configPath = getAbsolutePath(process.cwd(), configFile)
     if (!fs.existsSync(configPath)) {
@@ -50,7 +51,7 @@ function getUserConfig(configFile?: string) {
   }
 }
 
-function getI18nConfig(options: CommandOptions) {
+function getI18nConfig(options: CommandOptions): Config {
   const userConfig = getUserConfig(options.configFile)
   const config = merge(defaultConfig, options, userConfig)
   return config
@@ -65,14 +66,14 @@ function saveLocale(localePath: string) {
   }
 
   if (!fs.statSync(localeAbsolutePath).isFile()) {
-    log.error('localePath指向的路径不是一个文件,请重新设置localePath参数')
+    log.error(`路径${localePath}不是一个文件,请重新设置localePath参数`)
     process.exit(1)
   }
-  log.verbose(`输出字典文件到指定位置:`, localeAbsolutePath)
+  log.verbose(`输出中文语言包到指定位置:`, localeAbsolutePath)
   fs.writeFileSync(localeAbsolutePath, JSON.stringify(keyMap, null, 2), 'utf8')
 }
 
-function getPrettierParser(ext: string) {
+function getPrettierParser(ext: string): string {
   switch (ext) {
     case 'vue':
       return 'vue'
@@ -84,43 +85,55 @@ function getPrettierParser(ext: string) {
   }
 }
 
-export default function (options: CommandOptions) {
+export default async function (options: CommandOptions) {
   const i18nConfig = getI18nConfig(options)
-  const { input, exclude, output, rules, localePath } = i18nConfig
+  const { input, exclude, output, rules, localePath, translations, skipExtract, skipTranslate } =
+    i18nConfig
   log.verbose(`脚手架配置信息:`, i18nConfig)
-  log.info('正在转换中文，请稍等...')
+  if (!skipExtract) {
+    log.info('正在转换中文，请稍等...')
 
-  const sourceFiles = getSourceFiles(input, exclude)
-  const bar = new ProgressBar({
-    schema: '提取进度:.cyan [:bar] :percent :current/:total :elapseds',
-    blank: '░',
-    total: sourceFiles.length,
-  })
-  sourceFiles.forEach((sourceFile) => {
-    log.verbose(`正在提取文件中的中文:`, sourceFile)
-    const sourceCode = fs.readFileSync(sourceFile, 'utf8')
-    const ext = path.extname(sourceFile).replace('.', '') as FileExtension
-    const { code } = transform(sourceCode, ext, rules)
-    log.verbose(`完成中文提取和语法转换:`, sourceFile)
-    const stylizedCode = prettier.format(code, {
-      ...i18nConfig.prettier,
-      parser: getPrettierParser(ext),
+    const sourceFiles = getSourceFiles(input, exclude)
+    const bar = new ProgressBar({
+      schema: '提取进度:.cyan [:bar] :percent :current/:total :elapseds',
+      blank: '░',
+      total: sourceFiles.length,
     })
-    log.verbose(`格式化代码完成`)
+    sourceFiles.forEach((sourceFile) => {
+      log.verbose(`正在提取文件中的中文:`, sourceFile)
+      const sourceCode = fs.readFileSync(sourceFile, 'utf8')
+      const ext = path.extname(sourceFile).replace('.', '') as FileExtension
+      const { code } = transform(sourceCode, ext, rules)
+      log.verbose(`完成中文提取和语法转换:`, sourceFile)
+      const stylizedCode = prettier.format(code, {
+        ...i18nConfig.prettier,
+        parser: getPrettierParser(ext),
+      })
+      log.verbose(`格式化代码完成`)
 
-    if (output) {
-      const filePath = sourceFile.replace(input + '/', '')
-      const outputPath = getAbsolutePath(process.cwd(), output, filePath)
-      fs.ensureFileSync(outputPath)
-      fs.writeFileSync(outputPath, stylizedCode, 'utf8')
-      log.verbose(`生成文件:`, outputPath)
-    } else {
-      const outputPath = getAbsolutePath(process.cwd(), sourceFile)
-      fs.writeFileSync(outputPath, stylizedCode, 'utf8')
-      log.verbose(`覆盖文件:`, outputPath)
-    }
-    bar.tick()
-  })
-  saveLocale(localePath)
+      if (output) {
+        const filePath = sourceFile.replace(input + '/', '')
+        const outputPath = getAbsolutePath(process.cwd(), output, filePath)
+        fs.ensureFileSync(outputPath)
+        fs.writeFileSync(outputPath, stylizedCode, 'utf8')
+        log.verbose(`生成文件:`, outputPath)
+      } else {
+        const outputPath = getAbsolutePath(process.cwd(), sourceFile)
+        fs.writeFileSync(outputPath, stylizedCode, 'utf8')
+        log.verbose(`覆盖文件:`, outputPath)
+      }
+      bar.tick()
+    })
+    saveLocale(localePath)
+  }
+
+  if (!skipTranslate) {
+    console.log('') // 空一行
+    await translate(localePath, translations, {
+      translator: i18nConfig.translator,
+      google: i18nConfig.google,
+      youdao: i18nConfig.youdao,
+    })
+  }
   log.success('转换完毕!')
 }

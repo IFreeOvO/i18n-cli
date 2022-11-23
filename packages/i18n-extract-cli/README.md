@@ -9,9 +9,10 @@
 - 支持.mjs.cjs.js.ts.jsx.tsx.vue 后缀文件提取中文
 - 支持 vue2.0，vue3.0，react 提取中文
 - 支持通过/\*i18n-ignore\*/注释，忽略中文提取
-- 支持将提取的中文以 key-value 形式存入.json 翻译字典里
+- 支持将提取的中文以 key-value 形式存入\*.json 语言包里
 - 支持 prettier 格式化代码
-- 自定义翻译字典的 key
+- 支持将中文语言包自动翻译成其他语言
+- 自定义语言包的 key
 - 自定义 i18n 工具的调用对象
 - 自定义 i18n 工具的方法名
 - 自定义 i18n 第三方包的导入
@@ -82,9 +83,12 @@ it
 | -i, --input       | String  | 可选。指定待提取的文件目录。默认 src                                                       |
 | -o, --output      | String  | 可选。输出转换后文件路径。默认''，即完成提取后自动覆盖原始文件。当有值时，会输出到指定目录 |
 | -c, --config-file | String  | 可选。指定脚手架配置文件的所在路径（可以自定义更多功能）                                   |
-| --localePath      | String  | 可选。指定提取的中文字典所存放的路径。默认存放在'./locales/zh-CN.json'路径                 |
+| --localePath      | String  | 可选。指定提取的中文语言包所存放的路径。默认存放在'./locales/zh-CN.json'路径               |
 | -v,--verbose      | Boolean | 可选。控制台打印更多调试信息                                                               |
 | -h,--help         | Boolean | 可选。查看指令用法                                                                         |
+| --skip-extract    | Boolean | 可选。跳过中文提取阶段                                                                     |
+| --skip-translate  | Boolean | 可选。跳过中文翻译阶段                                                                     |
+| --translations    | Array   | 可选。根据中文语言包自动翻译成其他语言。用法例子 --translations en zh-CHT                  |
 
 ## 脚手架配置
 
@@ -96,7 +100,7 @@ module.exports = {
   input: 'src',
   output: '',
   exclude: ['**/node_modules/**/*'], // 排除不需要提取的文件
-  localePath: './locales/zh-CN.json', // 中文字典的存放位置
+  localePath: './locales/zh-CN.json', // 中文语言包的存放位置
   // rules每个属性对应的是不同后缀文件的处理方式
   rules: {
     js: {
@@ -159,6 +163,20 @@ module.exports = {
   prettier: {
     semi: false,
     singleQuote: true,
+  },
+  skipExtract: false, // 跳过提取中文阶段
+  // 以下是和翻译相关的配置，注意搭配使用
+  skipTranslate: true, // 跳过翻译语言包阶段。默认不翻译
+  translations: [], // 需要翻译的语言包。例如['en', 'zh-CHT']，会自动翻译英文和繁体
+  translator: '', // 支持有道和谷歌翻译，填'youdao'或'google'。
+  google: {
+    // translator值为'google'时，则必填以下属性
+    proxy: '', // vpn代理地址
+  },
+  youdao: {
+    // translator值为'youdao'时，则必填以下属性
+    key: '', // 有道的appId
+    secret: '', // 有道的appSecret
   },
 }
 ```
