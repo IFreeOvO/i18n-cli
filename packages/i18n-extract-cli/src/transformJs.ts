@@ -129,8 +129,8 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
 
       JSXText(path: NodePath<JSXText>) {
         if (includeChinese(path.node.value)) {
-          Collector.add(path.node.value)
-          path.replaceWith(t.JSXExpressionContainer(getReplaceValue(path.node.value)))
+          Collector.add(path.node.value.trim())
+          path.replaceWith(t.JSXExpressionContainer(getReplaceValue(path.node.value.trim())))
         }
         path.skip()
       },
