@@ -1,5 +1,3 @@
-![下载](https://img.shields.io/npm/dw/@ifreeovo/i18n-extract-cli)
-
 # 介绍
 
 这是一个支持自动将中文替换成 i18n 国际化标记的脚手架工具
@@ -16,51 +14,6 @@
 - 自定义 i18n 工具的调用对象
 - 自定义 i18n 工具的方法名
 - 自定义 i18n 第三方包的导入
-
-## 例子
-
-转换前的 jsx 原始文件
-
-```jsx
-import { useState } from 'react'
-
-/*i18n-ignore*/
-const b = '被忽略提取的文案'
-
-function Example() {
-  const [msg, setMsg] = useState('你好')
-
-  return (
-    <div>
-      <p title="标题">{msg + '呵呵'}</p>
-      <button onClick={() => setMsg(msg + '啊')}>点击</button>
-    </div>
-  )
-}
-
-export default Example
-```
-
-转换后
-
-```jsx
-import { t } from 'i18n'
-import { useState } from 'react'
-
-/*i18n-ignore*/
-const b = '被忽略提取的文案'
-
-function Example() {
-  const [msg, setMsg] = useState(t('你好'))
-  return (
-    <div>
-      <p title={t('标题')}>{msg + t('呵呵')}</p>
-      <button onClick={() => setMsg(msg + t('啊'))}>{t('点击')}</button>
-    </div>
-  )
-}
-export default Example
-```
 
 ## 安装
 
@@ -179,6 +132,117 @@ module.exports = {
     secret: '', // 有道的appSecret
   },
 }
+```
+
+## 转换效果示例
+
+#### react 转换示例
+
+转换前
+
+```jsx
+import { useState } from 'react'
+
+/*i18n-ignore*/
+const b = '被忽略提取的文案'
+
+function Example() {
+  const [msg, setMsg] = useState('你好')
+
+  return (
+    <div>
+      <p title="标题">{msg + '呵呵'}</p>
+      <button onClick={() => setMsg(msg + '啊')}>点击</button>
+    </div>
+  )
+}
+
+export default Example
+```
+
+转换后
+
+```jsx
+import { t } from 'i18n'
+import { useState } from 'react'
+
+/*i18n-ignore*/
+const b = '被忽略提取的文案'
+
+function Example() {
+  const [msg, setMsg] = useState(t('你好'))
+  return (
+    <div>
+      <p title={t('标题')}>{msg + t('呵呵')}</p>
+      <button onClick={() => setMsg(msg + t('啊'))}>{t('点击')}</button>
+    </div>
+  )
+}
+export default Example
+```
+
+#### vue 转换示例
+
+转换前
+
+```vue
+<template>
+  <div :label="'标签'" :title="1 + '标题'">
+    {{ message + '内容2' }}
+    <p title="测试注释">内容</p>
+    <button @click="handleClick('信息')">点击</button>
+  </div>
+</template>
+
+<script>
+import { ref, reactive } from 'vue'
+
+export default {
+  setup() {
+    // i18n-ignore
+    const a = ref('啦啦')
+    const message = reactive(a + '哈哈')
+
+    const handleClick = () => {
+      console.log('点了')
+    }
+
+    return {
+      message,
+      handleClick,
+    }
+  },
+}
+</script>
+```
+
+转换后
+
+```vue
+<template>
+  <div :label="$t('标签')" :title="1 + $t('标题')">
+    {{ message + $t('内容2') }}
+    <p :title="$t('测试注释')">{{ $t('内容') }}</p>
+    <button @click="handleClick($t('信息'))">{{ $t('点击') }}</button>
+  </div>
+</template>
+<script>
+import { ref, reactive } from 'vue'
+export default {
+  setup() {
+    // i18n-ignore
+    const a = ref('啦啦')
+    const message = reactive(a + this.$t('哈哈'))
+    const handleClick = () => {
+      console.log(this.$t('点了'))
+    }
+    return {
+      message,
+      handleClick,
+    }
+  },
+}
+</script>
 ```
 
 ## 开源许可证
