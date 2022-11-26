@@ -106,7 +106,11 @@ export default async function (
     let targetLocale: Record<string, string> = {}
     const newLang: Record<string, string> = {}
     if (fs.existsSync(targetLocalePath)) {
-      targetLocale = require(targetLocalePath)
+      try {
+        targetLocale = require(targetLocalePath)
+      } catch {
+        targetLocale = {}
+      }
     } else {
       fs.ensureFileSync(targetLocalePath)
     }
