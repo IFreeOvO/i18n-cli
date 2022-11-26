@@ -117,10 +117,8 @@ export default async function (
         newLang[key] = targetLocale[key]
       } else {
         if (options.translator === GOOGLE) {
-          console.log(111)
           newLang[key] = await translateByGoogle(key, targetLang, options.google?.proxy)
         } else if (options.translator === YOUDAO && options.youdao) {
-          console.log(222)
           newLang[key] = await translateByYoudao(key, targetLang, options.youdao)
         }
       }
