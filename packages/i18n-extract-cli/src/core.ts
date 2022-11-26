@@ -127,8 +127,8 @@ export default async function (options: CommandOptions) {
     saveLocale(localePath)
   }
 
+  console.log('') // 空一行
   if (!skipTranslate) {
-    console.log('') // 空一行
     await translate(localePath, translations, {
       translator: i18nConfig.translator,
       google: i18nConfig.google,
