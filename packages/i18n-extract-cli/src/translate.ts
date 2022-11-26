@@ -97,6 +97,10 @@ export default async function (
   translations: string[],
   options: TranslateConfig
 ) {
+  if (![GOOGLE, YOUDAO].includes(options.translator || '')) {
+    log.error('翻译失败，请确认translator参数是否配置正确')
+    process.exit(1)
+  }
   const sourceLocalePath = getAbsolutePath(process.cwd(), localePath)
   const sourceLang = require(sourceLocalePath)
 
@@ -121,8 +125,16 @@ export default async function (
         newLang[key] = targetLocale[key]
       } else {
         if (options.translator === GOOGLE) {
-          newLang[key] = await translateByGoogle(key, targetLang, options.google?.proxy)
-        } else if (options.translator === YOUDAO && options.youdao) {
+          if (!options.google || !options.google?.proxy) {
+            log.error('翻译失败，当前翻译器为谷歌，请完善google配置参数')
+            process.exit(1)
+          }
+          newLang[key] = await translateByGoogle(key, targetLang, options.google.proxy)
+        } else if (options.translator === YOUDAO) {
+          if (!options.youdao || !options.youdao?.key || !options.youdao?.secret) {
+            log.error('翻译失败，当前翻译器为有道，请完善youdao配置参数')
+            process.exit(1)
+          }
           newLang[key] = await translateByYoudao(key, targetLang, options.youdao)
         }
       }
