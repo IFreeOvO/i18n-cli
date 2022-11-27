@@ -10,17 +10,17 @@ jobs:
     steps:
       - name: 拉取代码
         uses: actions/checkout@v3
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.x
       - name: 安装node
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
           cache: pnpm
-      - name: 安装pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7.x
       - name: 安装依赖
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       - name: 发布npm
         uses: changesets/action@v1
         with:
