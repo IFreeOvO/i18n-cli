@@ -119,9 +119,14 @@ function handleTemplate(code: string, rule: Rule): string {
         htmlString += str
       },
 
-      onclosetag(tagName) {
-        htmlString += `</${tagName}>`
+      onclosetag(tagName, isImplied) {
         shouldIgnore = false
+        // 如果是自闭合标签
+        if (isImplied) {
+          htmlString = htmlString.slice(0, htmlString.length - 2) + '/>'
+          return
+        }
+        htmlString += `</${tagName}>`
       },
 
       oncomment(comment) {
