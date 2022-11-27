@@ -1,0 +1,32 @@
+name: 自动构建发布npm包
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v3
+      - name: 安装node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: pnpm
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.x
+      - name: 安装依赖
+        run: pnpm install
+      - name: 发布npm
+        uses: changesets/action@v1
+        with:
+          publish: pnpm release
+          version: pnpm version-packages
+          commit: 'chore: version packages'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
