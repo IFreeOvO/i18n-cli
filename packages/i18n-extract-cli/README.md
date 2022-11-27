@@ -134,6 +134,12 @@ module.exports = {
 }
 ```
 
+具体用法可以点击下方链接参考
+
+- [react 项目实战例子](https://github.com/IFreeOvO/i18n-cli/tree/master/examples/react-demo)
+
+- [vue 项目实战例子](https://github.com/IFreeOvO/i18n-cli/tree/master/examples/vue-demo)
+
 ## 转换效果示例
 
 #### react 转换示例
