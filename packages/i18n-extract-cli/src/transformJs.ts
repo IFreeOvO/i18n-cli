@@ -53,7 +53,8 @@ function getObjectExpression(obj: TemplateParams): string {
 
 function transformJs(code: string, ext: FileExtension, options: transformOptions): GeneratorResult {
   const rule = options.rule
-  let hasImportI18n = false
+  let hasImportI18n = false // 文件是否导入过i18n
+  let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
 
   function getReplaceValue(key: string, params?: TemplateParams) {
     const { caller, functionName, customizeKey } = rule
@@ -91,6 +92,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
 
       StringLiteral(path: NodePath<StringLiteral>) {
         if (includeChinese(path.node.value)) {
+          hasTransformed = true
           Collector.add(path.node.value)
           path.replaceWith(getReplaceValue(path.node.value))
         }
@@ -121,6 +123,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
               params[key] = { isAstNode: true, value: node as TemplateLiteralNode }
             }
           })
+          hasTransformed = true
           Collector.add(value)
           path.replaceWith(getReplaceValue(value, params))
         }
@@ -129,6 +132,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
 
       JSXText(path: NodePath<JSXText>) {
         if (includeChinese(path.node.value)) {
+          hasTransformed = true
           Collector.add(path.node.value.trim())
           path.replaceWith(t.JSXExpressionContainer(getReplaceValue(path.node.value.trim())))
         }
@@ -141,6 +145,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
         if (valueType === 'StringLiteral' && node.value && includeChinese(node.value.value)) {
           const jsxIdentifier = t.jsxIdentifier(node.name.name)
           const jsxContainer = t.jSXExpressionContainer(getReplaceValue(node.value.value))
+          hasTransformed = true
           Collector.add(node.value.value)
           path.replaceWith(t.jsxAttribute(jsxIdentifier, jsxContainer))
           path.skip()
@@ -186,7 +191,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
           hasImportI18n = true
         }
 
-        if (!hasImportI18n) {
+        if (!hasImportI18n && hasTransformed) {
           const importAst = template.statements(importDeclaration)()
           const program = path.parent as Program
           importAst.forEach((statement) => {
@@ -203,7 +208,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
 
   const result = babelGenerator(ast)
   // 文件里没有出现任何导入语句的情况
-  if (!hasImportI18n) {
+  if (!hasImportI18n && hasTransformed) {
     const { importDeclaration } = rule
     result.code = `${importDeclaration}\n${result.code}`
   }
