@@ -8,6 +8,7 @@ import type { TranslateConfig, YoudaoConfig } from '../types'
 import { getAbsolutePath } from './utils/getAbsolutePath'
 import log from './utils/log'
 import { GOOGLE, YOUDAO } from './utils/constants'
+import getLang from './utils/getLang'
 
 async function request(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -95,51 +96,49 @@ async function translateByYoudao(
 export default async function (
   localePath: string,
   translations: string[],
+  oldPrimaryLang: Record<string, string>,
   options: TranslateConfig
 ) {
   if (![GOOGLE, YOUDAO].includes(options.translator || '')) {
     log.error('翻译失败，请确认translator参数是否配置正确')
     process.exit(1)
   }
-  const sourceLocalePath = getAbsolutePath(process.cwd(), localePath)
-  const sourceLang = require(sourceLocalePath)
+  const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
+  const newPrimaryLang = require(primaryLangPath)
 
-  for (const targetLang of translations) {
-    const targetPath = localePath.replace(/\/[A-Za-z-]+.json/g, `/${targetLang}.json`)
+  for (const targetTranslation of translations) {
+    const targetPath = localePath.replace(/\/[A-Za-z-]+.json/g, `/${targetTranslation}.json`)
     const targetLocalePath = getAbsolutePath(process.cwd(), targetPath)
-    let targetLocale: Record<string, string> = {}
-    const newLang: Record<string, string> = {}
+    let oldTargetLang: Record<string, string> = {}
+    const newTargetLang: Record<string, string> = {}
     if (fs.existsSync(targetLocalePath)) {
-      try {
-        targetLocale = require(targetLocalePath)
-      } catch {
-        targetLocale = {}
-      }
+      oldTargetLang = getLang(targetLocalePath)
     } else {
       fs.ensureFileSync(targetLocalePath)
     }
 
-    const keyList = Object.keys(sourceLang)
+    const keyList = Object.keys(newPrimaryLang)
     for (const key of keyList) {
-      if (targetLocale[key]) {
-        newLang[key] = targetLocale[key]
+      const isNotChanged = oldPrimaryLang[key] === newPrimaryLang[key]
+      if (isNotChanged && oldTargetLang[key]) {
+        newTargetLang[key] = oldTargetLang[key]
       } else {
         if (options.translator === GOOGLE) {
           if (!options.google || !options.google?.proxy) {
             log.error('翻译失败，当前翻译器为谷歌，请完善google配置参数')
             process.exit(1)
           }
-          newLang[key] = await translateByGoogle(key, targetLang, options.google.proxy)
+          newTargetLang[key] = await translateByGoogle(key, targetTranslation, options.google.proxy)
         } else if (options.translator === YOUDAO) {
           if (!options.youdao || !options.youdao?.key || !options.youdao?.secret) {
             log.error('翻译失败，当前翻译器为有道，请完善youdao配置参数')
             process.exit(1)
           }
-          newLang[key] = await translateByYoudao(key, targetLang, options.youdao)
+          newTargetLang[key] = await translateByYoudao(key, targetTranslation, options.youdao)
         }
       }
     }
-    log.info(`完成${targetLang}语言包翻译`)
-    fs.writeFileSync(targetLocalePath, JSON.stringify(newLang, null, 2), 'utf8')
+    log.info(`完成${targetTranslation}语言包翻译`)
+    fs.writeFileSync(targetLocalePath, JSON.stringify(newTargetLang, null, 2), 'utf8')
   }
 }
