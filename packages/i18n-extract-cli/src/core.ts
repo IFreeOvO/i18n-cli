@@ -3,14 +3,15 @@ import fs from 'fs-extra'
 import path from 'path'
 import prettier from 'prettier'
 import { ProgressBar } from 'ascii-progress'
-import defaultConfig from './default.config'
-import transform from './transform'
 import glob from 'glob'
 import merge from 'lodash/merge'
+import defaultConfig from './default.config'
+import transform from './transform'
 import log from './utils/log'
 import { getAbsolutePath } from './utils/getAbsolutePath'
 import Collector from './collector'
 import translate from './translate'
+import getLang from './utils/getLang'
 
 function isValidInput(input: string): boolean {
   const inputPath = getAbsolutePath(process.cwd(), input)
@@ -90,6 +91,9 @@ export default async function (options: CommandOptions) {
   const { input, exclude, output, rules, localePath, translations, skipExtract, skipTranslate } =
     i18nConfig
   log.verbose(`脚手架配置信息:`, i18nConfig)
+  let oldPrimaryLang: Record<string, string> = {}
+  const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
+  oldPrimaryLang = getLang(primaryLangPath)
   if (!skipExtract) {
     log.info('正在转换中文，请稍等...')
 
@@ -129,7 +133,7 @@ export default async function (options: CommandOptions) {
 
   console.log('') // 空一行
   if (!skipTranslate) {
-    await translate(localePath, translations, {
+    await translate(localePath, translations, oldPrimaryLang, {
       translator: i18nConfig.translator,
       google: i18nConfig.google,
       youdao: i18nConfig.youdao,
