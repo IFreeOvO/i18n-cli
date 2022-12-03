@@ -47,6 +47,7 @@
     "@babel/template": "^7.18.10",
     "@babel/traverse": "^7.20.0",
     "@babel/types": "^7.20.0",
+    "@ifreeovo/translate-utils": "workspace:*",
     "@vitalets/google-translate-api": "9.0.0",
     "@vue/compiler-sfc": "^3.2.39",
     "ascii-progress": "^2.0.0",
@@ -85,16 +86,15 @@
     "bin",
     "dist",
     "types",
-    "package.json",
-    "package-lock.json",
     "README.md"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IFreeOvO/i18n-cli.git"
+    "url": "https://github.com/IFreeOvO/i18n-cli.git",
+    "directory": "packages/@ifreeovo/i18n-extract-cli"
   },
   "bugs": {
     "url": "https://github.com/IFreeOvO/i18n-cli/issues"
   },
-  "homepage": "https://github.com/IFreeOvO/i18n-cli"
+  "homepage": "https://github.com/IFreeOvO/i18n-cli/tree/master/packages/i18n-extract-cli"
 }
