@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.2.9
+
+### Patch Changes
+
+- a5c7d6e: 依赖问题
+
 ## 1.2.8
 
 ### Patch Changes
