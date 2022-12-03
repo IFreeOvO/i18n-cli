@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.2.7
+
+### Patch Changes
+
+- b43fc17: 打包依赖问题
+
 ## 1.2.6
 
 ### Patch Changes
