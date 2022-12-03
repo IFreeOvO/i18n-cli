@@ -200,29 +200,17 @@ export default Example
 ```vue
 <template>
   <div :label="'标签'" :title="1 + '标题'">
-    {{ message + '内容2' }}
     <p title="测试注释">内容</p>
     <button @click="handleClick('信息')">点击</button>
   </div>
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
-
 export default {
-  setup() {
-    // i18n-ignore
-    const a = ref('啦啦')
-    const message = reactive(a + '哈哈')
-
-    const handleClick = () => {
+  methods: {
+    handleClick() {
       console.log('点了')
-    }
-
-    return {
-      message,
-      handleClick,
-    }
+    },
   },
 }
 </script>
@@ -233,25 +221,16 @@ export default {
 ```vue
 <template>
   <div :label="$t('标签')" :title="1 + $t('标题')">
-    {{ message + $t('内容2') }}
     <p :title="$t('测试注释')">{{ $t('内容') }}</p>
     <button @click="handleClick($t('信息'))">{{ $t('点击') }}</button>
   </div>
 </template>
 <script>
-import { ref, reactive } from 'vue'
 export default {
-  setup() {
-    // i18n-ignore
-    const a = ref('啦啦')
-    const message = reactive(a + this.$t('哈哈'))
-    const handleClick = () => {
+  methods: {
+    handleClick() {
       console.log(this.$t('点了'))
-    }
-    return {
-      message,
-      handleClick,
-    }
+    },
   },
 }
 </script>

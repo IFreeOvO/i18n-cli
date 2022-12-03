@@ -1,0 +1,38 @@
+{
+  "name": "@ifreeovo/translate-utils",
+  "version": "0.0.1",
+  "description": "翻译工具函数，支持有道，谷歌",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "dev:cjs": "tsc --watch -p ./tsconfig.cjs.json",
+    "dev:esm": "tsc --watch -p ./tsconfig.esm.json",
+    "build": "rimraf dist && tsc --build -p ./tsconfig.cjs.json && tsc --build -p ./tsconfig.esm.json"
+  },
+  "keywords": [
+    "translate"
+  ],
+  "author": "IFreeOvO",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "index.d.ts",
+    "README.md"
+  ],
+  "dependencies": {
+    "@vitalets/google-translate-api": "9.0.0",
+    "got": "11.8.5",
+    "md5": "^2.3.0",
+    "proxy-agent": "^5.0.0",
+    "qs": "^6.11.0"
+  },
+  "devDependencies": {
+    "@types/md5": "^2.3.2",
+    "@types/qs": "^6.9.7",
+    "rimraf": "^3.0.2"
+  }
+}
