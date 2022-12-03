@@ -47,7 +47,7 @@
     "@babel/template": "^7.18.10",
     "@babel/traverse": "^7.20.0",
     "@babel/types": "^7.20.0",
-    "@ifreeovo/translate-utils": "workspace:../translate-utils",
+    "@ifreeovo/translate-utils": "workspace:*",
     "@vitalets/google-translate-api": "9.0.0",
     "@vue/compiler-sfc": "^3.2.39",
     "ascii-progress": "^2.0.0",
