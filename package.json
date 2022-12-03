@@ -10,7 +10,7 @@
     "build": "turbo run build",
     "changeset": "changeset add",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && pnpm publish && changeset publish"
   },
   "author": "IFreeOvO",
   "license": "MIT",
