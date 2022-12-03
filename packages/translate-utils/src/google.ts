@@ -17,7 +17,7 @@ export async function googleTranslate(
       .then((res) => {
         resolve(res.text || '')
       })
-      .catch((e) => {
+      .catch((e: any) => {
         reject(e)
       })
   })

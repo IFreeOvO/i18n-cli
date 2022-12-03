@@ -1,5 +1,6 @@
 import md5 from 'md5'
 import qs from 'qs'
+import { Response } from 'got/dist/source/core/index'
 const got = require('got')
 
 export interface YoudaoConfig {
@@ -31,7 +32,7 @@ export async function youdaoTranslate(
   return new Promise((resolve, reject) => {
     got
       .get(url)
-      .then(({ body }) => {
+      .then(({ body }: Response<string>) => {
         const res = JSON.parse(body)
         if (res.errorCode === '0') {
           resolve(res.translation[0])
@@ -39,7 +40,7 @@ export async function youdaoTranslate(
           reject(body)
         }
       })
-      .catch((e) => {
+      .catch((e: any) => {
         reject(e)
       })
   })
