@@ -1,6 +1,6 @@
 {
   "name": "@ifreeovo/translate-utils",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "翻译工具函数，支持有道，谷歌",
   "publishConfig": {
     "access": "public"
