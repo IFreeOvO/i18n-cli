@@ -5,7 +5,14 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "dev:cjs": {
+      "cache": false
+    },
+    "dev:esm": {
+      "cache": false
+    },
     "dev": {
+      "dependsOn": ["dev:cjs", "dev:esm"],
       "cache": false
     }
   },
