@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.0
+
+### Minor Changes
+
+- 3384b5d: 支持初始化配置
+
 ## 1.2.9
 
 ### Patch Changes
