@@ -46,7 +46,7 @@ async function translateByYoudao(
 
 export default async function (
   localePath: string,
-  translations: string[],
+  locales: string[],
   oldPrimaryLang: Record<string, string>,
   options: TranslateConfig
 ) {
@@ -58,9 +58,9 @@ export default async function (
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
   const newPrimaryLang = require(primaryLangPath)
 
-  for (const targetTranslation of translations) {
-    log.info(`正在翻译${targetTranslation}语言包`)
-    const targetPath = localePath.replace(/\/[A-Za-z-]+.json/g, `/${targetTranslation}.json`)
+  for (const targetLocale of locales) {
+    log.info(`正在翻译${targetLocale}语言包`)
+    const targetPath = localePath.replace(/\/[A-Za-z-]+.json/g, `/${targetLocale}.json`)
     const targetLocalePath = getAbsolutePath(process.cwd(), targetPath)
     let oldTargetLangPack: Record<string, string> = {}
     const newTargetLangPack: Record<string, string> = {}
@@ -80,19 +80,19 @@ export default async function (
         if (options.translator === GOOGLE) {
           newTargetLangPack[key] = await translateByGoogle(
             newPrimaryLang[key],
-            targetTranslation,
+            targetLocale,
             options
           )
         } else if (options.translator === YOUDAO) {
           newTargetLangPack[key] = await translateByYoudao(
             newPrimaryLang[key],
-            targetTranslation,
+            targetLocale,
             options
           )
         }
       }
     }
-    log.info(`完成${targetTranslation}语言包翻译`)
+    log.info(`完成${targetLocale}语言包翻译`)
     fs.writeFileSync(targetLocalePath, JSON.stringify(newTargetLangPack, null, 2), 'utf8')
   }
 }

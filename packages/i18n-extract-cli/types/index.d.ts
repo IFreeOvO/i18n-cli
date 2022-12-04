@@ -39,7 +39,7 @@ export type Config = {
   input: string
   output: string
   localePath: string
-  translations: string[]
+  locales: string[]
   exclude: string[]
   rules: {
     js: Rule
@@ -60,7 +60,7 @@ export interface CommandOptions {
   output?: string
   localePath?: string
   configFile?: string
-  translations?: string[]
+  locales?: string[]
   verbose?: boolean
   skipExtract?: boolean
   skipTranslate?: boolean
