@@ -88,7 +88,7 @@ function getPrettierParser(ext: string): string {
 
 export default async function (options: CommandOptions) {
   const i18nConfig = getI18nConfig(options)
-  const { input, exclude, output, rules, localePath, translations, skipExtract, skipTranslate } =
+  const { input, exclude, output, rules, localePath, locales, skipExtract, skipTranslate } =
     i18nConfig
   log.debug(`脚手架配置信息:`, i18nConfig)
   let oldPrimaryLang: Record<string, string> = {}
@@ -133,7 +133,7 @@ export default async function (options: CommandOptions) {
 
   console.log('') // 空一行
   if (!skipTranslate) {
-    await translate(localePath, translations, oldPrimaryLang, {
+    await translate(localePath, locales, oldPrimaryLang, {
       translator: i18nConfig.translator,
       google: i18nConfig.google,
       youdao: i18nConfig.youdao,

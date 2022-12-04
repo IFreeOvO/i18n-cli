@@ -38,7 +38,7 @@ const config: Config = {
   skipExtract: false,
   skipTranslate: true,
   localePath: './locales/zh-CN.json',
-  translations: ['en-US'],
+  locales: ['en-US'],
   translator: 'youdao',
   google: {
     proxy: '',
