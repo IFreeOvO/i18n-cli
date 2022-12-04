@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.2
+
+### Patch Changes
+
+- 697f3d1: 修复对象里有大写字母属性时,无法正确解析
+
 ## 1.3.1
 
 ### Patch Changes
