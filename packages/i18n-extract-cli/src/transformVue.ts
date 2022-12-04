@@ -70,8 +70,9 @@ function handleTemplate(code: string, rule: Rule): string {
           const isVueDirective = key.startsWith(':') || key.startsWith('@') || key.startsWith('v-')
           if (includeChinese(attrValue) && isVueDirective) {
             const source = parseJsSyntax(attrValue, rule)
-            // 处理属性类似于:xx="'xx'"，这种值不是js表达式的情况
-            if (attrValue === source) {
+            // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
+            // attrValue.startsWith是为了排除:xx="$t('xx')"的情况
+            if (attrValue === source && !attrValue.startsWith(rule.functionName)) {
               Collector.add(removeQuotes(attrValue))
               attrs += ` ${key}="${rule.functionName}(${attrValue})" `
             } else {
