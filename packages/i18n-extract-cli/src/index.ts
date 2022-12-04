@@ -12,7 +12,7 @@ program
   .option('-i, --input <path>', '输入文件路径')
   .option('-o, --output <path>', '输出文件路径')
   .option('-c, --config-file <path>', '配置文件所在路径')
-  .option('-v --verbose', '控制台打印更多调试信息')
+  .option('-v, --verbose', '控制台打印更多调试信息')
   .option('--skip-extract', '跳过中文提取阶段')
   .option('--skip-translate', '跳过中文翻译阶段')
   .option('--locales <locales...>', '根据中文语言包自动翻译成其他语言')
