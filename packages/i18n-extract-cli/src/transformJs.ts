@@ -12,8 +12,8 @@ import type {
   ImportDeclaration,
   CallExpression,
   ObjectExpression,
-  BinaryExpression,
   MemberExpression,
+  Expression,
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
 import type { FileExtension, transformOptions } from '../types'
@@ -28,13 +28,12 @@ import { IGNORE_REMARK } from './utils/constants'
 
 const t = require('@babel/types')
 
-type TemplateLiteralNode = NodePath<TemplateLiteral>['node']
 type TemplateParams = {
   [k: string]:
     | string
     | {
         isAstNode: true
-        value: TemplateLiteralNode | BinaryExpression | MemberExpression
+        value: Expression
       }
 }
 
@@ -117,7 +116,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
   }
 
   // 转换BinaryExpression节点里的中文
-  function transformBinaryExpression(node: BinaryExpression) {
+  function transformExpression(node: Expression): Expression {
     let code = babelGenerator(node).code
     const words = getChineseWords(code)
     for (const word of words) {
@@ -221,7 +220,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
               value += `{${key}}`
               params[key] = {
                 isAstNode: true,
-                value: transformBinaryExpression(node as BinaryExpression) as BinaryExpression,
+                value: transformExpression(node as Expression),
               }
             }
           })
