@@ -12,12 +12,14 @@ import type {
   ImportDeclaration,
   CallExpression,
   ObjectExpression,
+  BinaryExpression,
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
 import type { FileExtension, transformOptions } from '../types'
 import traverse from '@babel/traverse'
 import babelGenerator from '@babel/generator'
 import template from '@babel/template'
+import isEmpty from 'lodash/isEmpty'
 import { includeChinese } from './utils/includeChinese'
 import { isObject } from './utils/assertType'
 import Collector from './collector'
@@ -31,7 +33,7 @@ type TemplateParams = {
     | string
     | {
         isAstNode: true
-        value: TemplateLiteralNode
+        value: TemplateLiteralNode | BinaryExpression
       }
 }
 
@@ -84,16 +86,44 @@ function isPropNode(path: NodePath<StringLiteral>): boolean {
   return isMeetProp && isMeetKey && isMeetContainer
 }
 
+function getStringLiteral(value: string): StringLiteral {
+  return Object.assign(t.StringLiteral(value), {
+    extra: {
+      raw: `'${value}'`,
+      rawValue: value,
+    },
+  })
+}
+
+// 收集中文
+function getChineseWords(code: string): string[] {
+  const words =
+    code.match(new RegExp(`('.*?[\u{4E00}-\u{9FFF}]+.*?')|(".*?[\u{4E00}-\u{9FFF}]+.*?")`, 'g')) ||
+    []
+  return words
+}
+
 function transformJs(code: string, ext: FileExtension, options: transformOptions): GeneratorResult {
   const rule = options.rule
   let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
 
-  function getCallExpression(identifier: string): string {
+  function getCallExpression(identifier: string, quote = "'"): string {
     const { caller, functionName } = rule
     const callerName = caller ? caller + '.' : ''
-    const expression = `${callerName}${functionName}('${identifier}')`
+    const expression = `${callerName}${functionName}(${quote}${identifier}${quote})`
     return expression
+  }
+
+  // 转换BinaryExpression节点里的中文
+  function transformBinaryExpression(node: BinaryExpression) {
+    let code = babelGenerator(node).code
+    const words = getChineseWords(code)
+    for (const word of words) {
+      code = code.replace(word, getCallExpression(word, ''))
+      Collector.add(word)
+    }
+    return template.expression(code)()
   }
 
   function getReplaceValue(key: string, params?: TemplateParams) {
@@ -102,13 +132,17 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
     let expression
     // i18n标记有参数的情况
     if (params) {
+      const keyLiteral = getStringLiteral(customizeKey(key))
       if (caller) {
         return t.callExpression(
           t.memberExpression(t.identifier(caller), t.identifier(functionName)),
-          [getObjectExpression(params)]
+          [keyLiteral, getObjectExpression(params)]
         )
       } else {
-        return t.callExpression(t.identifier(functionName), [getObjectExpression(params)])
+        return t.callExpression(t.identifier(functionName), [
+          keyLiteral,
+          getObjectExpression(params),
+        ])
       }
     } else {
       // i18n标记没参数的情况
@@ -177,14 +211,17 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
               // 处理${}内容为表达式的情况。例如`测试${a + b}`，把 a+b 这个语法树作为params的值, 并自定义params的键为slot加数字的形式
               const key = `slot${slotIndex++}`
               value += `{${key}}`
-              params[key] = { isAstNode: true, value: node as TemplateLiteralNode }
+              params[key] = {
+                isAstNode: true,
+                value: transformBinaryExpression(node as BinaryExpression) as BinaryExpression,
+              }
             }
           })
           hasTransformed = true
           Collector.add(value)
-          path.replaceWith(getReplaceValue(value, params))
+          const slotParams = isEmpty(params) ? undefined : params
+          path.replaceWith(getReplaceValue(value, slotParams))
         }
-        path.skip()
       },
 
       JSXText(path: NodePath<JSXText>) {
