@@ -90,7 +90,7 @@ export default async function (options: CommandOptions) {
   const i18nConfig = getI18nConfig(options)
   const { input, exclude, output, rules, localePath, translations, skipExtract, skipTranslate } =
     i18nConfig
-  log.verbose(`脚手架配置信息:`, i18nConfig)
+  log.debug(`脚手架配置信息:`, i18nConfig)
   let oldPrimaryLang: Record<string, string> = {}
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
   oldPrimaryLang = getLang(primaryLangPath)
