@@ -17,8 +17,6 @@ const config: Config = {
   input: 'src',
   output: '',
   exclude: ['**/node_modules/**/*'],
-  localePath: './locales/zh-CN.json',
-  translations: ['en-US'],
   rules: {
     js: getCommonRule(),
     ts: getCommonRule(),
@@ -39,6 +37,16 @@ const config: Config = {
   },
   skipExtract: false,
   skipTranslate: true,
+  localePath: './locales/zh-CN.json',
+  translations: ['en-US'],
+  translator: 'youdao',
+  google: {
+    proxy: '',
+  },
+  youdao: {
+    key: '',
+    secret: '',
+  },
 }
 
 export default config

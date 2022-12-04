@@ -72,6 +72,7 @@ importers:
       '@types/prettier': ^2.7.1
       '@types/qs': ^6.9.7
       '@types/semver': ^7.3.13
+      '@types/serialize-javascript': ^5.0.2
       '@vitalets/google-translate-api': 9.0.0
       '@vue/compiler-sfc': ^3.2.39
       ascii-progress: ^2.0.0
@@ -89,6 +90,7 @@ importers:
       qs: ^6.11.0
       rimraf: ^3.0.2
       semver: ^7.3.8
+      serialize-javascript: ^6.0.0
       slash: 3.0.0
     dependencies:
       '@babel/core': 7.20.2
@@ -124,6 +126,7 @@ importers:
       proxy-agent: 5.0.0
       qs: 6.11.0
       semver: 7.3.8
+      serialize-javascript: 6.0.0
       slash: 3.0.0
     devDependencies:
       '@types/babel__core': 7.1.20
@@ -139,6 +142,7 @@ importers:
       '@types/prettier': 2.7.1
       '@types/qs': 6.9.7
       '@types/semver': 7.3.13
+      '@types/serialize-javascript': 5.0.2
       rimraf: 3.0.2
 
   packages/translate-utils:
@@ -1258,6 +1262,10 @@ packages:
 
   /@types/semver/7.3.13:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
+    dev: true
+
+  /@types/serialize-javascript/5.0.2:
+    resolution: {integrity: sha512-BRLlwZzRoZukGaBtcUxkLsZsQfWZpvog6MZk3PWQO9Q6pXmXFzjU5iGzZ+943evp6tkkbN98N1Z31KT0UG1yRw==}
     dev: true
 
   /@typescript-eslint/eslint-plugin/5.40.1_c4zyna56jjjrggqkyejnaxjxfu:
@@ -4171,6 +4179,12 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
+  /randombytes/2.1.0:
+    resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
+    dependencies:
+      safe-buffer: 5.2.1
+    dev: false
+
   /raw-body/2.5.1:
     resolution: {integrity: sha512-qqJBtEyVgS0ZmPGdCFPWJ3FreoqvG4MVQln/kCgF7Olq95IbOp0/BWyMwbdtn4VTvkM8Y7khCQ2Xgk/tcrCXig==}
     engines: {node: '>= 0.8'}
@@ -4355,7 +4369,6 @@ packages:
 
   /safe-buffer/5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
-    dev: true
 
   /safe-regex-test/1.0.0:
     resolution: {integrity: sha512-JBUUzyOgEwXQY1NuPtvcj/qcBDbDmEvWufhlnXZIm75DEHp+afM1r1ujJpJsV/gSM4t59tpDyPi1sd6ZaPFfsA==}
@@ -4392,6 +4405,12 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
+
+  /serialize-javascript/6.0.0:
+    resolution: {integrity: sha512-Qr3TosvguFt8ePWqsvRfrKyQXIiW+nGbYpy8XK24NQHE83caxWt+mIymTT19DGFbNWNLfEwsrkSmN64lVWB9ag==}
+    dependencies:
+      randombytes: 2.1.0
+    dev: false
 
   /set-blocking/2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}

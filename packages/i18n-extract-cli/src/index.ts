@@ -2,6 +2,7 @@
 import { program, Command, Option } from 'commander'
 import leven from 'leven'
 import execCommand from './core'
+import execInit from './commands/init'
 
 const chalk = require('chalk')
 
@@ -18,6 +19,13 @@ program
   .option('--localePath <path>', '指定提取的中文字典所存放的路径')
   .action((options) => {
     execCommand(options)
+  })
+
+program
+  .command('init')
+  .description('在项目里初始化一个脚手架配置')
+  .action(() => {
+    execInit()
   })
 
 program.addOption(new Option('-d, --debug').hideHelp())
