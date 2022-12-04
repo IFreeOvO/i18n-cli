@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.1
+
+### Patch Changes
+
+- 8d1768d: 替换指令参数 translations 为 locales
+
 ## 1.3.0
 
 ### Minor Changes
