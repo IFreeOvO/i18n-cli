@@ -11,13 +11,13 @@ import type {
   Program,
   ImportDeclaration,
   CallExpression,
+  ObjectExpression,
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
 import type { FileExtension, transformOptions } from '../types'
 import traverse from '@babel/traverse'
 import babelGenerator from '@babel/generator'
 import template from '@babel/template'
-import generate from '@babel/generator'
 import { includeChinese } from './utils/includeChinese'
 import { isObject } from './utils/assertType'
 import Collector from './collector'
@@ -35,7 +35,7 @@ type TemplateParams = {
       }
 }
 
-function getObjectExpression(obj: TemplateParams): string {
+function getObjectExpression(obj: TemplateParams): ObjectExpression {
   const ObjectPropertyArr: Array<ObjectMethod | ObjectProperty | SpreadElement> = []
   Object.keys(obj).forEach((k) => {
     const tempValue = obj[k]
@@ -48,7 +48,7 @@ function getObjectExpression(obj: TemplateParams): string {
     ObjectPropertyArr.push(t.objectProperty(t.identifier(k), newValue))
   })
   const ast = t.objectExpression(ObjectPropertyArr)
-  return generate(ast).code
+  return ast
 }
 
 function transformJs(code: string, ext: FileExtension, options: transformOptions): GeneratorResult {
@@ -60,14 +60,22 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
     const { caller, functionName, customizeKey } = rule
     // 表达式结构 obj.fn('xx',{xx:xx})
     let expression
+    // i18n标记有参数的情况
     if (params) {
-      expression = `${caller ? caller + '.' : ''}${functionName}('${customizeKey(
-        key
-      )})', ${getObjectExpression(params)})`
+      if (caller) {
+        return t.callExpression(
+          t.memberExpression(t.identifier(caller), t.identifier(functionName)),
+          [getObjectExpression(params)]
+        )
+      } else {
+        return t.callExpression(t.identifier(functionName), [getObjectExpression(params)])
+      }
     } else {
-      expression = `${caller ? caller + '.' : ''}${functionName}('${customizeKey(key)}')`
+      // i18n标记没参数的情况
+      const callerName = caller ? caller + '.' : ''
+      expression = `${callerName}${functionName}('${customizeKey(key)}')`
+      return template.expression(expression)()
     }
-    return template.expression(expression)()
   }
 
   function getTraverseOptions() {
