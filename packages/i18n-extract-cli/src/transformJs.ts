@@ -51,10 +51,50 @@ function getObjectExpression(obj: TemplateParams): ObjectExpression {
   return ast
 }
 
+// 判断节点是否是props属性的默认值
+function isPropNode(path: NodePath<StringLiteral>): boolean {
+  const objWithProps = path.parentPath?.parentPath?.parentPath?.parentPath?.parent
+  const rootNode =
+    path.parentPath?.parentPath?.parentPath?.parentPath?.parentPath?.parentPath?.parent
+  let isMeetProp = false
+  let isMeetKey = false
+  let isMeetContainer = false
+  // 属性是否包含在props结构里
+  if (
+    objWithProps &&
+    objWithProps.type === 'ObjectProperty' &&
+    objWithProps.key.type === 'Identifier' &&
+    objWithProps.key.name === 'props'
+  ) {
+    isMeetProp = true
+  }
+  // 对应key是否是default
+  if (
+    path.parent &&
+    path.parent.type === 'ObjectProperty' &&
+    path.parent.key.type === 'Identifier' &&
+    path.parent.key.name === 'default'
+  ) {
+    isMeetKey = true
+  }
+  // 遍历到指定层数后是否是导出声明
+  if (rootNode && rootNode.type === 'ExportDefaultDeclaration') {
+    isMeetContainer = true
+  }
+  return isMeetProp && isMeetKey && isMeetContainer
+}
+
 function transformJs(code: string, ext: FileExtension, options: transformOptions): GeneratorResult {
   const rule = options.rule
   let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
+
+  function getCallExpression(identifier: string): string {
+    const { caller, functionName } = rule
+    const callerName = caller ? caller + '.' : ''
+    const expression = `${callerName}${functionName}('${identifier}')`
+    return expression
+  }
 
   function getReplaceValue(key: string, params?: TemplateParams) {
     const { caller, functionName, customizeKey } = rule
@@ -72,8 +112,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
       }
     } else {
       // i18n标记没参数的情况
-      const callerName = caller ? caller + '.' : ''
-      expression = `${callerName}${functionName}('${customizeKey(key)}')`
+      expression = getCallExpression(customizeKey(key))
       return template.expression(expression)()
     }
   }
@@ -99,6 +138,15 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
       },
 
       StringLiteral(path: NodePath<StringLiteral>) {
+        if (includeChinese(path.node.value) && options.isJsInVue && isPropNode(path)) {
+          const expression = `function() {
+            return ${getCallExpression(path.node.value)}
+          }`
+          path.replaceWith(template.expression(expression)())
+          path.skip()
+          return
+        }
+
         if (includeChinese(path.node.value)) {
           hasTransformed = true
           Collector.add(path.node.value)
