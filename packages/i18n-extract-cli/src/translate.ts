@@ -19,7 +19,7 @@ async function translateByGoogle(
     return await googleTranslate(word, 'zh-CN', locale, options.google.proxy)
   } catch (e: any) {
     if (e.name === 'TooManyRequestsError') {
-      log.error('请求超过谷歌api调用次数限制')
+      log.error('翻译失败，请求超过谷歌api调用次数限制')
     } else {
       log.error('谷歌翻译请求出错', e)
     }
@@ -54,10 +54,12 @@ export default async function (
     log.error('翻译失败，请确认translator参数是否配置正确')
     process.exit(1)
   }
+  log.verbose('当前使用的翻译器：', options.translator)
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
   const newPrimaryLang = require(primaryLangPath)
 
   for (const targetTranslation of translations) {
+    log.info(`正在翻译${targetTranslation}语言包`)
     const targetPath = localePath.replace(/\/[A-Za-z-]+.json/g, `/${targetTranslation}.json`)
     const targetLocalePath = getAbsolutePath(process.cwd(), targetPath)
     let oldTargetLangPack: Record<string, string> = {}

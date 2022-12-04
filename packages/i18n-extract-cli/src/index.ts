@@ -1,5 +1,5 @@
 // import type { Command } from 'commander'
-import { program, Command } from 'commander'
+import { program, Command, Option } from 'commander'
 import leven from 'leven'
 import execCommand from './core'
 
@@ -20,8 +20,13 @@ program
     execCommand(options)
   })
 
+program.addOption(new Option('-d, --debug').hideHelp())
+
 program.on('option:verbose', function () {
   process.env.CLI_VERBOSE = program.opts().verbose
+})
+program.on('option:debug', function () {
+  process.env.CLI_DEBUG = program.opts().debug
 })
 
 enhanceErrorMessages()
