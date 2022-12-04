@@ -13,6 +13,7 @@ import type {
   CallExpression,
   ObjectExpression,
   BinaryExpression,
+  MemberExpression,
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
 import type { FileExtension, transformOptions } from '../types'
@@ -33,7 +34,7 @@ type TemplateParams = {
     | string
     | {
         isAstNode: true
-        value: TemplateLiteralNode | BinaryExpression
+        value: TemplateLiteralNode | BinaryExpression | MemberExpression
       }
 }
 
@@ -207,6 +208,13 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
               params[node.name] = node.name
             } else if (node.type === 'TemplateElement') {
               value += node.value.raw // 用raw防止字符串中出现 /n
+            } else if (node.type === 'MemberExpression') {
+              const key = `slot${slotIndex++}`
+              value += `{${key}}`
+              params[key] = {
+                isAstNode: true,
+                value: node as MemberExpression,
+              }
             } else {
               // 处理${}内容为表达式的情况。例如`测试${a + b}`，把 a+b 这个语法树作为params的值, 并自定义params的键为slot加数字的形式
               const key = `slot${slotIndex++}`
