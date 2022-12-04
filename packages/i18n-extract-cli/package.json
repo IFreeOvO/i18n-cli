@@ -64,6 +64,7 @@
     "proxy-agent": "^5.0.0",
     "qs": "^6.11.0",
     "semver": "^7.3.8",
+    "serialize-javascript": "^6.0.0",
     "slash": "3.0.0"
   },
   "devDependencies": {
@@ -80,6 +81,7 @@
     "@types/prettier": "^2.7.1",
     "@types/qs": "^6.9.7",
     "@types/semver": "^7.3.13",
+    "@types/serialize-javascript": "^5.0.2",
     "rimraf": "^3.0.2"
   },
   "files": [
