@@ -206,7 +206,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
               value += `{${node.name}}`
               params[node.name] = node.name
             } else if (node.type === 'TemplateElement') {
-              value += node.value.raw // 用raw防止字符串中出现 /n
+              value += node.value.raw.replace(/[\r\n]/g, '') // 用raw防止字符串中出现 /n
             } else if (node.type === 'MemberExpression') {
               const key = `slot${slotIndex++}`
               value += `{${key}}`
