@@ -1,5 +1,13 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.3
+
+### Patch Changes
+
+- 465da20: 修复 vue 的 props 属性,转换效果不符合预期
+- 71adfc5: 修复 vue 模板里 html 属性值如果已经翻译了,不应该再翻译
+- 54ea76f: 修复模版字符串的提取转换不全
+
 ## 1.3.2
 
 ### Patch Changes
