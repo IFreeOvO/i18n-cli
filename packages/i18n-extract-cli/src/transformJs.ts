@@ -97,9 +97,12 @@ function getStringLiteral(value: string): StringLiteral {
 
 // 收集中文
 function getChineseWords(code: string): string[] {
+  // 正则意思：1.竖线'|'的前半部分指，非'和"的任意字符 (非贪婪模式) 加上 中文至少出现一次 加上任意文字
+  //         2.竖线'|'左右的两对括号是分别考虑双引号和单引号的情况
   const words =
-    code.match(new RegExp(`('.*?[\u{4E00}-\u{9FFF}]+.*?')|(".*?[\u{4E00}-\u{9FFF}]+.*?")`, 'g')) ||
-    []
+    code.match(
+      new RegExp(`('[^['"]]*?[\u{4E00}-\u{9FFF}]+.*?')|("[^['"]]*?[\u{4E00}-\u{9FFF}]+.*?")`, 'g')
+    ) || []
   return words
 }
 
