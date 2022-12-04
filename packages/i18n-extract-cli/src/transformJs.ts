@@ -142,6 +142,7 @@ function transformJs(code: string, ext: FileExtension, options: transformOptions
           const expression = `function() {
             return ${getCallExpression(path.node.value)}
           }`
+          Collector.add(path.node.value)
           path.replaceWith(template.expression(expression)())
           path.skip()
           return
