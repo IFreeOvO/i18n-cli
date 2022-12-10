@@ -1,5 +1,13 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.4
+
+### Patch Changes
+
+- be38073: 修复模板字符串含回车时报错
+- f814072: 修复表达式语句中的中文正则匹配错误
+- adb3f1e: 修复模板字符串缺了 MemberExpression 的场景
+
 ## 1.3.3
 
 ### Patch Changes
