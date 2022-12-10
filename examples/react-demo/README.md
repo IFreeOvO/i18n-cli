@@ -7,7 +7,7 @@ react项目模板，用于测试翻译效果
 yarn i
 ```
 
-装脚手架
+装命令行工具
 ```
 yarn i -g @ovointl/i18n-extract-cli
 ```
