@@ -10,7 +10,7 @@ vue 项目模板，用于测试翻译效果
 npm i
 ```
 
-装脚手架
+装命令行工具
 
 ```
 npm i -g @ovointl/i18n-extract-cli
