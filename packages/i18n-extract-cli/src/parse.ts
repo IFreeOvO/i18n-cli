@@ -1,5 +1,3 @@
-// import { parse as jsParser } from '@babel/parser'
-// import presetEnv from '@babel/preset-env'
 import type { PluginItem } from '@babel/core'
 const babel = require('@babel/core')
 const pluginSyntaxJSX = require('@babel/plugin-syntax-jsx')
