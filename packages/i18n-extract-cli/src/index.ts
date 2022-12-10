@@ -16,14 +16,14 @@ program
   .option('--skip-extract', '跳过中文提取阶段')
   .option('--skip-translate', '跳过中文翻译阶段')
   .option('--locales <locales...>', '根据中文语言包自动翻译成其他语言')
-  .option('--localePath <path>', '指定提取的中文字典所存放的路径')
+  .option('--localePath <path>', '指定提取的中文语言包所存放的路径')
   .action((options) => {
     execCommand(options)
   })
 
 program
   .command('init')
-  .description('在项目里初始化一个脚手架配置')
+  .description('在项目里初始化一个配置文件')
   .action(() => {
     execInit()
   })
