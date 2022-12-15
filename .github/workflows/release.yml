@@ -5,7 +5,10 @@ on:
       - master
 jobs:
   deployment:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     environment: release
     steps:
       - name: 拉取代码
