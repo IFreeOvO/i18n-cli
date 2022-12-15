@@ -26,7 +26,7 @@
     "translate"
   ],
   "engines": {
-    "node": ">=16"
+    "node": ">=12"
   },
   "author": "IFreeOvO",
   "license": "MIT",
