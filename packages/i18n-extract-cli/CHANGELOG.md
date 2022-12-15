@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.5
+
+### Patch Changes
+
+- 7944fcc: 降低包的使用门槛.支持到 node12.x 以上
+
 ## 1.3.4
 
 ### Patch Changes
