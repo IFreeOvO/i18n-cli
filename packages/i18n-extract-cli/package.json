@@ -1,6 +1,6 @@
 {
   "name": "@ifreeovo/i18n-extract-cli",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "实现中文自动替换i18n标记并翻译的命令行工具",
   "publishConfig": {
     "access": "public"
