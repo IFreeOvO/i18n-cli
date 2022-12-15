@@ -5,10 +5,13 @@ on:
       - master
 jobs:
   deployment:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    # 后期加测试脚本时再用
+    # strategy:
+    #   matrix:
+    #     os: [ubuntu-latest, windows-latest, macos-latest]
+    # runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+
     environment: release
     steps:
       - name: 拉取代码
