@@ -1,5 +1,13 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.6
+
+### Patch Changes
+
+- eae9fd0: 修复 vue 模板属性值为对象时的转换报错
+- d3c6f65: 修复模板里{{!xxx}}这种情况会被忽略渲染
+- 664b562: vue 模板里的 v-else 转换错误
+
 ## 1.3.5
 
 ### Patch Changes
