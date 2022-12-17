@@ -3,6 +3,7 @@ import { parse } from '@vue/compiler-sfc'
 import * as htmlparser2 from 'htmlparser2'
 import prettier from 'prettier'
 import mustache from 'mustache'
+import ejs from 'ejs'
 import type { Rule } from '../types'
 import { includeChinese } from './utils/includeChinese'
 import log from './utils/log'
@@ -11,6 +12,9 @@ import { initParse } from './parse'
 import Collector from './collector'
 import { IGNORE_REMARK } from './utils/constants'
 const presetTypescript = require('@babel/preset-typescript')
+
+type Handler = (source: string, rule: Rule) => string
+const COMMENT_TYPE = '!'
 
 function parseJsSyntax(source: string, rule: Rule): string {
   // html属性有可能是{xx:xx}这种对象形式，直接解析会报错，需要特殊处理。
@@ -126,6 +130,9 @@ function handleTemplate(code: string, rule: Rule): string {
               str += value
             } else if (type === 'name') {
               str += `{{${value}}}`
+            } else if (type === COMMENT_TYPE) {
+              // 形如{{!xxxx}}这种形式，在mustache里属于注释语法
+              str += `{{!${value}}}`
             }
           }
         }
@@ -169,7 +176,7 @@ function handleScript(source: string, rule: Rule): string {
     isJsInVue: true, // 标记处理vue里的js
     parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
   })
-  return code
+  return '\n' + code + '\n'
 }
 
 function mergeCode(templateCode: string, scriptCode: string, stylesCode: string): string {
@@ -202,8 +209,20 @@ function getWrapperTemplate(sfcBlock: SFCTemplateBlock | SFCScriptBlock | SFCSty
       template += ` ${attr}="${attrs[attr]}"`
     }
   }
-  template += `>{{&code}}</${type}>`
+  template += `><%- code %></${type}>`
   return template
+}
+
+function generateSource(
+  sfcBlock: SFCTemplateBlock | SFCScriptBlock,
+  handler: Handler,
+  rule: Rule
+): string {
+  const wrapperTemplate = getWrapperTemplate(sfcBlock)
+  const source = handler(sfcBlock.content, rule)
+  return ejs.render(wrapperTemplate, {
+    code: source,
+  })
 }
 
 function transformVue(
@@ -226,27 +245,15 @@ function transformVue(
   let stylesCode = ''
 
   if (template) {
-    const wrapperTemplate = getWrapperTemplate(template)
-    const source = handleTemplate(template.content, rule)
-    templateCode = mustache.render(wrapperTemplate, {
-      code: source,
-    })
+    templateCode = generateSource(template, handleTemplate, rule)
   }
 
   if (script) {
-    const wrapperTemplate = getWrapperTemplate(script)
-    const source = '\n' + handleScript(script.content, rule) + '\n'
-    scriptCode = mustache.render(wrapperTemplate, {
-      code: source,
-    })
+    scriptCode = generateSource(script, handleScript, rule)
   }
 
   if (scriptSetup) {
-    const wrapperTemplate = getWrapperTemplate(scriptSetup)
-    const source = '\n' + handleScript(scriptSetup.content, rule) + '\n'
-    scriptCode = mustache.render(wrapperTemplate, {
-      code: source,
-    })
+    scriptCode = generateSource(scriptSetup, handleScript, rule)
   }
 
   if (styles) {
@@ -254,7 +261,7 @@ function transformVue(
       const wrapperTemplate = getWrapperTemplate(style)
       const source = style.content
       stylesCode +=
-        mustache.render(wrapperTemplate, {
+        ejs.render(wrapperTemplate, {
           code: source,
         }) + '\n'
     }
