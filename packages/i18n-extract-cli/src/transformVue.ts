@@ -81,6 +81,8 @@ function handleTemplate(code: string, rule: Rule): string {
           } else if (includeChinese(attrValue) && !isVueDirective) {
             attrs += ` :${key}="${getReplaceValue(attrValue)}" `
             Collector.add(attrValue)
+          } else if (isVueDirective && key === 'v-else') {
+            attrs += key
           } else {
             attrs += ` ${key}="${attrValue}" `
           }
