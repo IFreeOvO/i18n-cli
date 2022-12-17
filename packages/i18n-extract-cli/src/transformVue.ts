@@ -13,6 +13,13 @@ import { IGNORE_REMARK } from './utils/constants'
 const presetTypescript = require('@babel/preset-typescript')
 
 function parseJsSyntax(source: string, rule: Rule): string {
+  // html属性有可能是{xx:xx}这种对象形式，直接解析会报错，需要特殊处理。
+  // 先处理成temp = {xx:xx} 让babel解析，解析完再还原成{xx:xx}
+  let isObjectStruct = false
+  if (/\{.*\}/.test(source)) {
+    isObjectStruct = true
+    source = `temp=${source}`
+  }
   const { code } = transformJs(source, 'tsx', {
     rule: {
       ...rule,
@@ -22,11 +29,15 @@ function parseJsSyntax(source: string, rule: Rule): string {
     parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
   })
 
-  const stylizedCode = prettier.format(code, {
+  let stylizedCode = prettier.format(code, {
     singleQuote: true,
     semi: false,
     parser: 'babel',
   })
+
+  if (isObjectStruct) {
+    stylizedCode = stylizedCode.replace('temp = ', '')
+  }
   return stylizedCode.endsWith('\n') ? stylizedCode.slice(0, stylizedCode.length - 1) : stylizedCode
 }
 
