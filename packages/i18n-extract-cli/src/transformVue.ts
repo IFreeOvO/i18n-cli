@@ -1,4 +1,9 @@
-import type { SFCScriptBlock, SFCStyleBlock, SFCTemplateBlock } from '@vue/compiler-sfc'
+import type {
+  SFCScriptBlock,
+  SFCStyleBlock,
+  SFCTemplateBlock,
+  SFCDescriptor,
+} from '@vue/compiler-sfc'
 import { parse } from '@vue/compiler-sfc'
 import * as htmlparser2 from 'htmlparser2'
 import prettier from 'prettier'
@@ -96,7 +101,7 @@ function handleTemplate(code: string, rule: Rule): string {
           } else if (includeChinese(attrValue) && !isVueDirective) {
             attrs += ` :${key}="${getReplaceValue(attrValue)}" `
             Collector.add(attrValue)
-          } else if (isVueDirective && key === 'v-else') {
+          } else if (attrValue === '') {
             attrs += key
           } else {
             attrs += ` ${key}="${attrValue}" `
@@ -171,11 +176,18 @@ function handleTemplate(code: string, rule: Rule): string {
 }
 
 function handleScript(source: string, rule: Rule): string {
-  const { code } = transformJs(source, 'tsx', {
+  const tsDecorator = source.match(/@Component[(][^)]*[)]/g)
+  if (tsDecorator) {
+    source = source.replace(tsDecorator[0], '')
+  }
+  let { code } = transformJs(source, 'tsx', {
     rule,
     isJsInVue: true, // 标记处理vue里的js
     parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
   })
+  if (tsDecorator) {
+    code = tsDecorator + code
+  }
   return '\n' + code + '\n'
 }
 
@@ -225,6 +237,30 @@ function generateSource(
   })
 }
 
+function removeSnippet(
+  source: string,
+  sfcBlock: SFCTemplateBlock | SFCScriptBlock | SFCStyleBlock | null
+): string {
+  return sfcBlock ? source.replace(sfcBlock.content, '') : source
+}
+
+// 提取文件头注释
+// * 这里投机取巧了一下，把标签内容清空再匹配注释。避免匹配错了。后期有好的方案再替换
+function getFileComment(descriptor: SFCDescriptor): string {
+  const { template, script, scriptSetup, styles } = descriptor
+  let source = descriptor.source
+  source = removeSnippet(source, template)
+  source = removeSnippet(source, script)
+  source = removeSnippet(source, scriptSetup)
+  if (styles) {
+    for (const style of styles) {
+      source = removeSnippet(source, style)
+    }
+  }
+  const result = source.match(/<!--[\s\S]*?-->/)
+  return result ? result[0] : ''
+}
+
 function transformVue(
   code: string,
   rule: Rule
@@ -243,6 +279,8 @@ function transformVue(
   let templateCode = ''
   let scriptCode = ''
   let stylesCode = ''
+
+  const fileComment = getFileComment(descriptor)
 
   if (template) {
     templateCode = generateSource(template, handleTemplate, rule)
@@ -268,6 +306,9 @@ function transformVue(
   }
 
   code = mergeCode(templateCode, scriptCode, stylesCode)
+  if (fileComment) {
+    code = fileComment + code
+  }
   return {
     code,
   }
