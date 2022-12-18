@@ -1,5 +1,13 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.7
+
+### Patch Changes
+
+- 0850fd2: 修复 vue 使用 ts 组件声明的转换问题
+- 6906921: 修复转换会丢失文件注释
+- 2fa4d9b: 修复 html 属性没有属性值的时不应该赋空字符串
+
 ## 1.3.6
 
 ### Patch Changes
