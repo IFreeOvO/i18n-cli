@@ -1,4 +1,9 @@
-import type { SFCScriptBlock, SFCStyleBlock, SFCTemplateBlock } from '@vue/compiler-sfc'
+import type {
+  SFCScriptBlock,
+  SFCStyleBlock,
+  SFCTemplateBlock,
+  SFCDescriptor,
+} from '@vue/compiler-sfc'
 import { parse } from '@vue/compiler-sfc'
 import * as htmlparser2 from 'htmlparser2'
 import prettier from 'prettier'
@@ -232,6 +237,30 @@ function generateSource(
   })
 }
 
+function removeSnippet(
+  source: string,
+  sfcBlock: SFCTemplateBlock | SFCScriptBlock | SFCStyleBlock | null
+): string {
+  return sfcBlock ? source.replace(sfcBlock.content, '') : source
+}
+
+// 提取文件头注释
+// * 这里投机取巧了一下，把标签内容清空再匹配注释。避免匹配错了。后期有好的方案再替换
+function getFileComment(descriptor: SFCDescriptor): string {
+  const { template, script, scriptSetup, styles } = descriptor
+  let source = descriptor.source
+  source = removeSnippet(source, template)
+  source = removeSnippet(source, script)
+  source = removeSnippet(source, scriptSetup)
+  if (styles) {
+    for (const style of styles) {
+      source = removeSnippet(source, style)
+    }
+  }
+  const result = source.match(/<!--[\s\S]*?-->/)
+  return result ? result[0] : ''
+}
+
 function transformVue(
   code: string,
   rule: Rule
@@ -250,6 +279,8 @@ function transformVue(
   let templateCode = ''
   let scriptCode = ''
   let stylesCode = ''
+
+  const fileComment = getFileComment(descriptor)
 
   if (template) {
     templateCode = generateSource(template, handleTemplate, rule)
@@ -275,6 +306,9 @@ function transformVue(
   }
 
   code = mergeCode(templateCode, scriptCode, stylesCode)
+  if (fileComment) {
+    code = fileComment + code
+  }
   return {
     code,
   }
