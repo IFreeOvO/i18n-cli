@@ -171,11 +171,18 @@ function handleTemplate(code: string, rule: Rule): string {
 }
 
 function handleScript(source: string, rule: Rule): string {
-  const { code } = transformJs(source, 'tsx', {
+  const tsDecorator = source.match(/@Component[(][^)]*[)]/g)
+  if (tsDecorator) {
+    source = source.replace(tsDecorator[0], '')
+  }
+  let { code } = transformJs(source, 'tsx', {
     rule,
     isJsInVue: true, // 标记处理vue里的js
     parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
   })
+  if (tsDecorator) {
+    code = tsDecorator + code
+  }
   return '\n' + code + '\n'
 }
 
