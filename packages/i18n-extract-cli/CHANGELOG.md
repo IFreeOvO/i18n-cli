@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.9
+
+### Patch Changes
+
+- 62ecdc2: 进度条插件的安装报错
+
 ## 1.3.8
 
 ### Patch Changes
