@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.8
+
+### Patch Changes
+
+- 2df0472: 修复进度条插件的安装报错
+
 ## 1.3.7
 
 ### Patch Changes
