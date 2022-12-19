@@ -1,8 +1,10 @@
 import type { CommandOptions, FileExtension, deepPartial, Config } from '../types'
 import fs from 'fs-extra'
+import chalk from 'chalk'
 import path from 'path'
 import prettier from 'prettier'
 import { ProgressBar } from 'ascii-progress'
+import cliProgress from 'cli-progress'
 import glob from 'glob'
 import merge from 'lodash/merge'
 import defaultConfig from './default.config'
@@ -98,11 +100,14 @@ export default async function (options: CommandOptions) {
     log.info('正在转换中文，请稍等...')
 
     const sourceFiles = getSourceFiles(input, exclude)
-    const bar = new ProgressBar({
-      schema: '提取进度:.cyan [:bar] :percent :current/:total :elapseds',
-      blank: '░',
-      total: sourceFiles.length,
-    })
+    const bar = new cliProgress.SingleBar(
+      {
+        format: `${chalk.cyan('提取进度:')} [{bar}] {percentage}% {value}/{total}`,
+      },
+      cliProgress.Presets.shades_classic
+    )
+    const startTime = new Date().getTime()
+    bar.start(sourceFiles.length, 0)
     sourceFiles.forEach((sourceFile) => {
       log.verbose(`正在提取文件中的中文:`, sourceFile)
       const sourceCode = fs.readFileSync(sourceFile, 'utf8')
@@ -126,9 +131,12 @@ export default async function (options: CommandOptions) {
         fs.writeFileSync(outputPath, stylizedCode, 'utf8')
         log.verbose(`覆盖文件:`, outputPath)
       }
-      bar.tick()
+      bar.increment()
     })
     saveLocale(localePath)
+    bar.stop()
+    const endTime = new Date().getTime()
+    log.info(`耗时${((endTime - startTime) / 1000).toFixed(2)}s`)
   }
 
   console.log('') // 空一行
