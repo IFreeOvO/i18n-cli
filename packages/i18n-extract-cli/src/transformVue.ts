@@ -14,6 +14,7 @@ import { includeChinese } from './utils/includeChinese'
 import log from './utils/log'
 import transformJs from './transformJs'
 import { initParse } from './parse'
+import { escapeQuotes } from './utils/escapeQuotes'
 import Collector from './collector'
 import { IGNORE_REMARK } from './utils/constants'
 const presetTypescript = require('@babel/preset-typescript')
@@ -53,10 +54,11 @@ function parseJsSyntax(source: string, rule: Rule): string {
 function handleTemplate(code: string, rule: Rule): string {
   let htmlString = ''
 
-  function getReplaceValue(key: string): string {
+  function getReplaceValue(value: string): string {
+    value = escapeQuotes(value)
     const { functionName, customizeKey } = rule
     // 表达式结构 $t('xx')
-    const expression = `${functionName}('${customizeKey(key)}')`
+    const expression = `${functionName}('${customizeKey(value)}')`
     return expression
   }
 
@@ -94,7 +96,7 @@ function handleTemplate(code: string, rule: Rule): string {
             // attrValue.startsWith是为了排除:xx="$t('xx')"的情况
             if (attrValue === source && !attrValue.startsWith(rule.functionName)) {
               Collector.add(removeQuotes(attrValue))
-              attrs += ` ${key}="${rule.functionName}(${attrValue})" `
+              attrs += ` ${key}="${getReplaceValue(removeQuotes(attrValue))}" `
             } else {
               attrs += ` ${key}="${source}" `
             }
