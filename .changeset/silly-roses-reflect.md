@@ -2,4 +2,4 @@
 '@ifreeovo/i18n-extract-cli': patch
 ---
 
-进度条插件的安装报错
+vue2 中@Component 的处理逻辑问题
