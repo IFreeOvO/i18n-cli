@@ -25,7 +25,7 @@ function parseJsSyntax(source: string, rule: Rule): string {
   // html属性有可能是{xx:xx}这种对象形式，直接解析会报错，需要特殊处理。
   // 先处理成temp = {xx:xx} 让babel解析，解析完再还原成{xx:xx}
   let isObjectStruct = false
-  if (/\{.*\}/.test(source)) {
+  if (source.startsWith('{') && source.endsWith('}')) {
     isObjectStruct = true
     source = `temp=${source}`
   }
