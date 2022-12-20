@@ -240,6 +240,25 @@ export default {
 </script>
 ```
 
+## 注意事项
+
+使用 ts 的 vue 项目请将下面形式语法
+
+```ts
+@Component
+export default class Home extends Vue {}
+```
+
+手动改写成
+
+```ts
+@Component
+class Home extends Vue {}
+export default Home
+```
+
+避免解析时报错
+
 ## 开源许可证
 
 [MIT](./LICENSE)
