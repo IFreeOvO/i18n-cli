@@ -17,13 +17,13 @@ function transform(
     case 'mjs':
     case 'js':
     case 'jsx':
-      return transformJs(code, ext, {
+      return transformJs(code, {
         rule: rules[ext],
         parse: initParse(),
       })
     case 'ts':
     case 'tsx':
-      return transformJs(code, ext, {
+      return transformJs(code, {
         rule: rules[ext],
         parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
       })

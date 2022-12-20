@@ -106,7 +106,7 @@ function getChineseWords(code: string): string[] {
   return words
 }
 
-function transformJs(code: string, ext: FileExtension, options: transformOptions): GeneratorResult {
+function transformJs(code: string, options: transformOptions): GeneratorResult {
   const rule = options.rule
   let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
