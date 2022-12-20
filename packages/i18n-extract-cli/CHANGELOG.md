@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.13
+
+### Patch Changes
+
+- 5e11170: 修复字符串中的引号未转义
+
 ## 1.3.12
 
 ### Patch Changes
