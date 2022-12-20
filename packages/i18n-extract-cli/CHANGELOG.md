@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.12
+
+### Patch Changes
+
+- 948b08e: 修复模板字符串里表达式存在大写单词会报错的问题
+
 ## 1.3.11
 
 ### Patch Changes
