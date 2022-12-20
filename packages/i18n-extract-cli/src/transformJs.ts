@@ -16,14 +16,15 @@ import type {
   Expression,
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
-import type { FileExtension, transformOptions } from '../types'
+import type { transformOptions } from '../types'
 import traverse from '@babel/traverse'
 import babelGenerator from '@babel/generator'
 import template from '@babel/template'
 import isEmpty from 'lodash/isEmpty'
+import Collector from './collector'
 import { includeChinese } from './utils/includeChinese'
 import { isObject } from './utils/assertType'
-import Collector from './collector'
+import { escapeQuotes } from './utils/escapeQuotes'
 import { IGNORE_REMARK } from './utils/constants'
 
 const t = require('@babel/types')
@@ -107,13 +108,14 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
     return expression
   }
 
-  function getReplaceValue(key: string, params?: TemplateParams) {
+  function getReplaceValue(value: string, params?: TemplateParams) {
+    value = escapeQuotes(value)
     const { caller, functionName, customizeKey } = rule
     // 表达式结构 obj.fn('xx',{xx:xx})
     let expression
     // i18n标记有参数的情况
     if (params) {
-      const keyLiteral = getStringLiteral(customizeKey(key))
+      const keyLiteral = getStringLiteral(customizeKey(value))
       if (caller) {
         return t.callExpression(
           t.memberExpression(t.identifier(caller), t.identifier(functionName)),
@@ -127,7 +129,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
       }
     } else {
       // i18n标记没参数的情况
-      expression = getCallExpression(customizeKey(key))
+      expression = getCallExpression(customizeKey(value))
       return template.expression(expression)()
     }
   }
