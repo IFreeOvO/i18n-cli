@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.11
+
+### Patch Changes
+
+- d64b33f: 修复 vue 动态类名转换报错
+
 ## 1.3.10
 
 ### Patch Changes
