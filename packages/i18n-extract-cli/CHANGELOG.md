@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 1.3.10
+
+### Patch Changes
+
+- 429cb25: vue2 中@Component 的处理逻辑问题
+
 ## 1.3.9
 
 ### Patch Changes
