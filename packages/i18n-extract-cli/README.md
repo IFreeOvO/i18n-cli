@@ -43,8 +43,8 @@ it
 | --localePath      | String  | 可选。指定提取的中文语言包所存放的路径。默认存放在'./locales/zh-CN.json'路径               |
 | -v,--verbose      | Boolean | 可选。控制台打印更多调试信息                                                               |
 | -h,--help         | Boolean | 可选。查看指令用法                                                                         |
-| --skip-extract    | Boolean | 可选。跳过中文提取阶段                                                                     |
-| --skip-translate  | Boolean | 可选。跳过中文翻译阶段                                                                     |
+| --skip-extract    | Boolean | 可选。跳过中文提取阶段。默认 false                                                         |
+| --skip-translate  | Boolean | 可选。跳过中文翻译阶段。默认 false                                                         |
 | --locales         | Array   | 可选。根据中文语言包自动翻译成其他语言。用法例子 --locales en zh-CHT                       |
 
 ## 子命令
@@ -131,16 +131,6 @@ module.exports = {
   // 以下是和翻译相关的配置，注意搭配使用
   skipTranslate: true, // 跳过翻译语言包阶段。默认不翻译
   locales: [], // 需要翻译的语言包。例如['en', 'zh-CHT']，会自动翻译英文和繁体
-  translator: '', // 支持有道和谷歌翻译，填'youdao'或'google'。
-  google: {
-    // translator值为'google'时，则必填以下属性
-    proxy: '', // vpn代理地址
-  },
-  youdao: {
-    // translator值为'youdao'时，则必填以下属性
-    key: '', // 有道的appId
-    secret: '', // 有道的appSecret
-  },
 }
 ```
 
