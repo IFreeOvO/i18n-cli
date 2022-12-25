@@ -19,7 +19,7 @@ yarn start
 ```
 
 ## 体验@ifreeovo/i18n-extract-cli转换效果
-在当前目录(react-demo)下执行
+在当前目录(react-demo)下执行(有道翻译配置可填appKey: '2d8e89a6fd072117', appSecret: 'HiX7rGmYRad3ISMLYexRLfpkJi2taMPh')
 ```
 it -c ./i18n.config.js
 ```

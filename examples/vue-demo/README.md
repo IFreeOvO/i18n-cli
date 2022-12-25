@@ -26,8 +26,8 @@ npm start
 
 ## 体验@ifreeovo/i18n-extract-cli 转换效果
 
-在当前目录(vue-demo)下执行(PS:这里用.cjs，是因为这个示例项目的`package.json`声明了`"type": "module"`，此时需要就明确文件模块类型。当然你去掉这个声明后再使用.js 也是可以的)
+在当前目录(vue-demo)下执行(有道翻译配置可填 appKey: '2d8e89a6fd072117', appSecret: 'HiX7rGmYRad3ISMLYexRLfpkJi2taMPh')
 
 ```
-it -c ./i18n.config.cjs
+it
 ```
