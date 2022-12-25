@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.0.0
+
+### Major Changes
+
+- 847d9b1: 修改命令行交互
+
 ## 1.3.13
 
 ### Patch Changes
