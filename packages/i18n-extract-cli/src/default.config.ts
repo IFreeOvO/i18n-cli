@@ -36,17 +36,17 @@ const config: Config = {
     singleQuote: true,
   },
   skipExtract: false,
-  skipTranslate: true,
   localePath: './locales/zh-CN.json',
+  skipTranslate: false,
   locales: ['en-US'],
-  translator: 'youdao',
-  google: {
-    proxy: '',
-  },
-  youdao: {
-    key: '',
-    secret: '',
-  },
+  // translator: 'youdao',
+  // google: {
+  //   proxy: '',
+  // },
+  // youdao: {
+  //   key: '',
+  //   secret: '',
+  // },
 }
 
 export default config

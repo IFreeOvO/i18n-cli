@@ -1,6 +1,7 @@
-import type { CommandOptions, FileExtension, deepPartial, Config } from '../types'
+import type { CommandOptions, FileExtension, deepPartial, Config, TranslateConfig } from '../types'
 import fs from 'fs-extra'
 import chalk from 'chalk'
+import inquirer from 'inquirer'
 import path from 'path'
 import prettier from 'prettier'
 import cliProgress from 'cli-progress'
@@ -13,6 +14,14 @@ import { getAbsolutePath } from './utils/getAbsolutePath'
 import Collector from './collector'
 import translate from './translate'
 import getLang from './utils/getLang'
+import { YOUDAO, GOOGLE } from './utils/constants'
+
+interface InquirerResult {
+  translator?: 'google' | 'youdao'
+  key?: string
+  secret?: string
+  proxy?: string
+}
 
 function isValidInput(input: string): boolean {
   const inputPath = getAbsolutePath(process.cwd(), input)
@@ -28,7 +37,7 @@ function isValidInput(input: string): boolean {
   return true
 }
 
-function getSourceFiles(input: string, exclude: string[]): string[] {
+function getSourceFilePaths(input: string, exclude: string[]): string[] {
   if (isValidInput(input)) {
     return glob.sync(`${input}/**/*.{cjs,mjs,js,ts,tsx,jsx,vue}`, {
       ignore: exclude,
@@ -87,8 +96,108 @@ function getPrettierParser(ext: string): string {
   }
 }
 
+function getOutputPath(input: string, output: string, sourceFilePath: string): string {
+  let outputPath
+  if (output) {
+    const filePath = sourceFilePath.replace(input + '/', '')
+    outputPath = getAbsolutePath(process.cwd(), output, filePath)
+    fs.ensureFileSync(outputPath)
+  } else {
+    outputPath = getAbsolutePath(process.cwd(), sourceFilePath)
+  }
+  return outputPath
+}
+
+function formatInquirerResult(answers: InquirerResult): TranslateConfig {
+  if (answers.translator === YOUDAO) {
+    return {
+      translator: answers.translator,
+      youdao: {
+        key: answers.key,
+        secret: answers.secret,
+      },
+    }
+  } else {
+    return {
+      translator: answers.translator,
+      google: {
+        proxy: answers.proxy,
+      },
+    }
+  }
+}
+
+async function getTranslationConfig() {
+  const cachePath = getAbsolutePath(__dirname, '../.cache/configCache.json')
+  fs.ensureFileSync(cachePath)
+  const cache = fs.readFileSync(cachePath, 'utf8') || '{}'
+  const oldConfigCache: InquirerResult = JSON.parse(cache)
+
+  const answers = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'translator',
+      message: '请选择翻译接口',
+      default: YOUDAO,
+      choices: [
+        { name: '有道翻译', value: YOUDAO },
+        { name: '谷歌翻译', value: GOOGLE },
+      ],
+      when(answers) {
+        return !answers.skipTranslate
+      },
+    },
+    {
+      type: 'input',
+      name: 'proxy',
+      message: '使用谷歌服务需要翻墙，请输入代理地址',
+      default: oldConfigCache.proxy || '',
+      when(answers) {
+        return answers.translator === GOOGLE
+      },
+      validate(input) {
+        return input.length === 0 ? '代理地址不能为空' : true
+      },
+    },
+    {
+      type: 'input',
+      name: 'key',
+      message: '请输入有道翻译appKey',
+      default: oldConfigCache.key || '',
+      when(answers) {
+        return answers.translator === YOUDAO
+      },
+      validate(input) {
+        return input.length === 0 ? 'appKey不能为空' : true
+      },
+    },
+    {
+      type: 'input',
+      name: 'secret',
+      message: '请输入有道翻译appSecret',
+      default: oldConfigCache.secret || '',
+      when(answers) {
+        return answers.translator === YOUDAO
+      },
+      validate(input) {
+        return input.length === 0 ? 'appSecret不能为空' : true
+      },
+    },
+  ])
+
+  const newConfigCache = Object.assign(oldConfigCache, answers)
+  fs.writeFileSync(cachePath, JSON.stringify(newConfigCache), 'utf8')
+
+  const result = formatInquirerResult(answers)
+  return result
+}
+
 export default async function (options: CommandOptions) {
-  const i18nConfig = getI18nConfig(options)
+  let i18nConfig = getI18nConfig(options)
+  if (!i18nConfig.skipTranslate) {
+    const translationConfig = await getTranslationConfig()
+    i18nConfig = merge(i18nConfig, translationConfig)
+  }
   const { input, exclude, output, rules, localePath, locales, skipExtract, skipTranslate } =
     i18nConfig
   log.debug(`命令行配置信息:`, i18nConfig)
@@ -98,7 +207,7 @@ export default async function (options: CommandOptions) {
   if (!skipExtract) {
     log.info('正在转换中文，请稍等...')
 
-    const sourceFiles = getSourceFiles(input, exclude)
+    const sourceFilePaths = getSourceFilePaths(input, exclude)
     const bar = new cliProgress.SingleBar(
       {
         format: `${chalk.cyan('提取进度:')} [{bar}] {percentage}% {value}/{total}`,
@@ -106,30 +215,21 @@ export default async function (options: CommandOptions) {
       cliProgress.Presets.shades_classic
     )
     const startTime = new Date().getTime()
-    bar.start(sourceFiles.length, 0)
-    sourceFiles.forEach((sourceFile) => {
-      log.verbose(`正在提取文件中的中文:`, sourceFile)
-      const sourceCode = fs.readFileSync(sourceFile, 'utf8')
-      const ext = path.extname(sourceFile).replace('.', '') as FileExtension
+    bar.start(sourceFilePaths.length, 0)
+    sourceFilePaths.forEach((sourceFilePath) => {
+      log.verbose(`正在提取文件中的中文:`, sourceFilePath)
+      const sourceCode = fs.readFileSync(sourceFilePath, 'utf8')
+      const ext = path.extname(sourceFilePath).replace('.', '') as FileExtension
       const { code } = transform(sourceCode, ext, rules)
-      log.verbose(`完成中文提取和语法转换:`, sourceFile)
+      log.verbose(`完成中文提取和语法转换:`, sourceFilePath)
       const stylizedCode = prettier.format(code, {
         ...i18nConfig.prettier,
         parser: getPrettierParser(ext),
       })
       log.verbose(`格式化代码完成`)
-
-      if (output) {
-        const filePath = sourceFile.replace(input + '/', '')
-        const outputPath = getAbsolutePath(process.cwd(), output, filePath)
-        fs.ensureFileSync(outputPath)
-        fs.writeFileSync(outputPath, stylizedCode, 'utf8')
-        log.verbose(`生成文件:`, outputPath)
-      } else {
-        const outputPath = getAbsolutePath(process.cwd(), sourceFile)
-        fs.writeFileSync(outputPath, stylizedCode, 'utf8')
-        log.verbose(`覆盖文件:`, outputPath)
-      }
+      const outputPath = getOutputPath(input, output, sourceFilePath)
+      fs.writeFileSync(outputPath, stylizedCode, 'utf8')
+      log.verbose(`生成文件:`, outputPath)
       bar.increment()
     })
     saveLocale(localePath)
