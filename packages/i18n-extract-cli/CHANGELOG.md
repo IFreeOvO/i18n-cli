@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.1.0
+
+### Minor Changes
+
+- 76f8bd2: 支持增量提取中文到中文语言包
+
 ## 2.0.0
 
 ### Major Changes
