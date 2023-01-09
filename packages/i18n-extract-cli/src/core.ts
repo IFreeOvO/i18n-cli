@@ -232,6 +232,10 @@ export default async function (options: CommandOptions) {
       log.verbose(`生成文件:`, outputPath)
       bar.increment()
     })
+    // 增量转换时，保留之前的提取的中文结果
+    if (i18nConfig.incremental) {
+      Collector.keyMap = Object.assign(oldPrimaryLang, Collector.keyMap)
+    }
     saveLocale(localePath)
     bar.stop()
     const endTime = new Date().getTime()
