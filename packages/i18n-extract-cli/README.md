@@ -6,7 +6,7 @@
 
 见[掘金文章](https://juejin.cn/post/7174082242426175525)
 
-## 功能
+## 功能 🎉
 
 - 支持.mjs.cjs.js.ts.jsx.tsx.vue 后缀文件提取中文
 - 支持 vue2.0，vue3.0，react 提取中文
@@ -35,17 +35,18 @@ it
 
 ## 指令参数
 
-| 参数              | 类型    | 描述                                                                                       |
-| ----------------- | ------- | ------------------------------------------------------------------------------------------ |
-| -i, --input       | String  | 可选。指定待提取的文件目录。默认 src                                                       |
-| -o, --output      | String  | 可选。输出转换后文件路径。默认''，即完成提取后自动覆盖原始文件。当有值时，会输出到指定目录 |
-| -c, --config-file | String  | 可选。指定命令行配置文件的所在路径（可以自定义更多功能）                                   |
-| --localePath      | String  | 可选。指定提取的中文语言包所存放的路径。默认存放在'./locales/zh-CN.json'路径               |
-| -v,--verbose      | Boolean | 可选。控制台打印更多调试信息                                                               |
-| -h,--help         | Boolean | 可选。查看指令用法                                                                         |
-| --skip-extract    | Boolean | 可选。跳过中文提取阶段。默认 false                                                         |
-| --skip-translate  | Boolean | 可选。跳过中文翻译阶段。默认 false                                                         |
-| --locales         | Array   | 可选。根据中文语言包自动翻译成其他语言。用法例子 --locales en zh-CHT                       |
+| 参数              | 类型    | 默认值                 | 描述                                                                                   |
+| ----------------- | ------- | ---------------------- | -------------------------------------------------------------------------------------- |
+| -i, --input       | String  | 'src'                  | 指定待提取的文件目录。                                                                 |
+| -o, --output      | String  | ''                     | 输出转换后文件路径。没有值时表示完成提取后自动覆盖原始文件。当有值时，会输出到指定目录 |
+| -c, --config-file | String  | ''                     | 指定命令行配置文件的所在路径（可以自定义更多功能）                                     |
+| --localePath      | String  | './locales/zh-CN.json' | 指定提取的中文语言包所存放的路径。                                                     |
+| -v,--verbose      | Boolean | false                  | 控制台打印更多调试信息                                                                 |
+| -h,--help         | Boolean | false                  | 查看指令用法                                                                           |
+| --skip-extract    | Boolean | false                  | 跳过 i18n 转换阶段。                                                                   |
+| --skip-translate  | Boolean | false                  | 跳过中文翻译阶段。                                                                     |
+| --locales         | Array   | ['en-US']              | 根据中文语言包自动翻译成其他语言。用法例子 --locales en zh-CHT                         |
+| --incremental     | Boolean | false                  | 开启后。支持将文件中提取到中文键值对，追加到原有的中文语言包。                         |
 
 ## 子命令
 
@@ -140,6 +141,38 @@ module.exports = {
 
 - [vue 项目实战例子](https://github.com/IFreeOvO/i18n-cli/tree/master/examples/vue-demo)
 
+## 举几个栗子 🌰
+
+1. 跳过转换阶段，仅将中文语言包翻译成其他语言(例如英语、中文繁体等)
+
+```
+it --skip-extract --locales en zh-CHT
+```
+
+2. 跳过自动翻译阶段，仅进行 i18n 转换，并将提取到的 key-value 提取到中文语言包
+
+```
+it --skip-translate
+```
+
+3. 使用自定义配置进行 i18n 转换
+
+```
+it -c ./i18n.config.js
+```
+
+4. 指定需要自动翻译的语言(例如日语)，并指定项目里中文语言包的位置(相对于命令的执行位置)。命令执行时会自动根据中文语言包，将日语翻译出来并存入到`ja.json`文件中
+
+```
+it --localePath	./locales/zh-CN.json  --locales ja
+```
+
+5. 指定需要转换的文件目录，并增量提取中文。例如项目的 src 目录有 A、B、C 三个文件夹，里面分别有 A,B,C 三个文件，其中 A、B 已经替换过 i18n，此时执行命令，会将 C 文件的中文进行 i18n 替换，并将新提取到的中文追加到原有的中文语言包里
+
+```
+it --incremental -i ./src/C
+```
+
 ## 转换效果示例
 
 #### react 转换示例
@@ -232,14 +265,14 @@ export default {
 
 ## 注意事项
 
-使用 ts 的 vue 项目请将下面形式语法
+1. 使用 ts 的 vue 项目如果出现下面形式语法
 
 ```ts
 @Component
 export default class Home extends Vue {}
 ```
 
-手动改写成
+请手动改写成
 
 ```ts
 @Component
@@ -248,6 +281,8 @@ export default Home
 ```
 
 避免解析时报错
+
+2. 执行`it`命令时，如果需要自动翻译，请确保项目里中文语言包`zh-CN.json`文件存在，并且中文语言包的路径配置正确
 
 ## 开源许可证
 
