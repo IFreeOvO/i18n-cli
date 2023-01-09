@@ -53,6 +53,7 @@ export type Config = {
   prettier: Options
   skipExtract: boolean
   skipTranslate: boolean
+  incremental: boolean
 } & TranslateConfig
 
 export interface CommandOptions {
