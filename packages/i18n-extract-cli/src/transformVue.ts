@@ -51,6 +51,11 @@ function parseJsSyntax(source: string, rule: Rule): string {
   return stylizedCode.endsWith('\n') ? stylizedCode.slice(0, stylizedCode.length - 1) : stylizedCode
 }
 
+// 判断表达式是否已经转换成i18n
+function hasTransformed(code: string, functionName: string): boolean {
+  return new RegExp(`\\${functionName}\\(.*\\)`, 'g').test(code)
+}
+
 function handleTemplate(code: string, rule: Rule): string {
   let htmlString = ''
 
@@ -93,8 +98,8 @@ function handleTemplate(code: string, rule: Rule): string {
           if (includeChinese(attrValue) && isVueDirective) {
             const source = parseJsSyntax(attrValue, rule)
             // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
-            // attrValue.startsWith是为了排除:xx="$t('xx')"的情况
-            if (attrValue === source && !attrValue.startsWith(rule.functionName)) {
+            // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
+            if (attrValue === source && !hasTransformed(source, rule.functionName)) {
               Collector.add(removeQuotes(attrValue))
               attrs += ` ${key}="${getReplaceValue(removeQuotes(attrValue))}" `
             } else {
