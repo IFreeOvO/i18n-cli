@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.1.1
+
+### Patch Changes
+
+- 94f6327: vue 模版属性值如果已经被转换过，不应该再进行二次转换
+- 5232efb: 修复 replaceAll 方法报错
+
 ## 2.1.0
 
 ### Minor Changes
