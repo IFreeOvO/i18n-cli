@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.1.2
+
+### Patch Changes
+
+- a5e13da: 中文语言包存在的情况下进行翻译，其他语言包不会新增 key-value
+
 ## 2.1.1
 
 ### Patch Changes
