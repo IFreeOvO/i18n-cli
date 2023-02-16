@@ -56,7 +56,7 @@ export default async function (
   }
   log.verbose('当前使用的翻译器：', options.translator)
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
-  const newPrimaryLang = require(primaryLangPath)
+  const newPrimaryLang = getLang(primaryLangPath)
 
   for (const targetLocale of locales) {
     log.info(`正在翻译${targetLocale}语言包`)
