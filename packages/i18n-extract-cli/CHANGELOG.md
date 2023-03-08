@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.1.3
+
+### Patch Changes
+
+- 752e918: 多语言文件的自定义 key 未生效
+
 ## 2.1.2
 
 ### Patch Changes
