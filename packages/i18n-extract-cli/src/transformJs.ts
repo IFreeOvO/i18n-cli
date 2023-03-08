@@ -98,11 +98,11 @@ function getStringLiteral(value: string): StringLiteral {
 
 function transformJs(code: string, options: transformOptions): GeneratorResult {
   const rule = options.rule
+  const { caller, functionName, customizeKey, importDeclaration } = rule
   let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
 
   function getCallExpression(identifier: string, quote = "'"): string {
-    const { caller, functionName } = rule
     const callerName = caller ? caller + '.' : ''
     const expression = `${callerName}${functionName}(${quote}${identifier}${quote})`
     return expression
@@ -110,7 +110,6 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
 
   function getReplaceValue(value: string, params?: TemplateParams) {
     value = escapeQuotes(value)
-    const { caller, functionName, customizeKey } = rule
     // 表达式结构 obj.fn('xx',{xx:xx})
     let expression
     // i18n标记有参数的情况
@@ -160,7 +159,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
             const expression = `function() {
               return ${getCallExpression(path.node.value)}
             }`
-            Collector.add(path.node.value)
+            Collector.add(customizeKey(path.node.value))
             path.replaceWith(template.expression(expression)())
             path.skip()
             return
@@ -168,7 +167,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
 
           if (includeChinese(path.node.value)) {
             hasTransformed = true
-            Collector.add(path.node.value)
+            Collector.add(customizeKey(path.node.value))
             path.replaceWith(getReplaceValue(path.node.value))
           }
           path.skip()
@@ -212,7 +211,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
               }
             })
             hasTransformed = true
-            Collector.add(value)
+            Collector.add(customizeKey(value))
             const slotParams = isEmpty(params) ? undefined : params
             path.replaceWith(getReplaceValue(value, slotParams))
           }
@@ -221,7 +220,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
         JSXText(path: NodePath<JSXText>) {
           if (includeChinese(path.node.value)) {
             hasTransformed = true
-            Collector.add(path.node.value.trim())
+            Collector.add(customizeKey(path.node.value.trim()))
             path.replaceWith(t.JSXExpressionContainer(getReplaceValue(path.node.value.trim())))
           }
           path.skip()
@@ -234,7 +233,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
             const jsxIdentifier = t.jsxIdentifier(node.name.name)
             const jsxContainer = t.jSXExpressionContainer(getReplaceValue(node.value.value))
             hasTransformed = true
-            Collector.add(node.value.value)
+            Collector.add(customizeKey(node.value.value))
             path.replaceWith(t.jsxAttribute(jsxIdentifier, jsxContainer))
             path.skip()
           }
@@ -242,7 +241,6 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
 
         CallExpression(path: NodePath<CallExpression>) {
           const { node } = path
-          const { caller, functionName } = rule
           const callee = node.callee
 
           // 无调用对象的情况，例如$t('xx')
@@ -271,7 +269,6 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
         },
 
         ImportDeclaration(path: NodePath<ImportDeclaration>) {
-          const { importDeclaration } = rule
           const res = importDeclaration.match(/from ["'](.*)["']/)
           const packageName = res ? res[1] : ''
 
@@ -300,7 +297,6 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
   const result = babelGenerator(ast)
   // 文件里没有出现任何导入语句的情况
   if (!hasImportI18n && hasTransformed) {
-    const { importDeclaration } = rule
     result.code = `${importDeclaration}\n${result.code}`
   }
   return result

@@ -58,10 +58,10 @@ function hasTransformed(code: string, functionName: string): boolean {
 
 function handleTemplate(code: string, rule: Rule): string {
   let htmlString = ''
+  const { functionName, customizeKey } = rule
 
   function getReplaceValue(value: string): string {
     value = escapeQuotes(value)
-    const { functionName, customizeKey } = rule
     // 表达式结构 $t('xx')
     const expression = `${functionName}('${customizeKey(value)}')`
     return expression
@@ -100,14 +100,14 @@ function handleTemplate(code: string, rule: Rule): string {
             // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
             // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
             if (attrValue === source && !hasTransformed(source, rule.functionName)) {
-              Collector.add(removeQuotes(attrValue))
+              Collector.add(customizeKey(removeQuotes(attrValue)))
               attrs += ` ${key}="${getReplaceValue(removeQuotes(attrValue))}" `
             } else {
               attrs += ` ${key}="${source}" `
             }
           } else if (includeChinese(attrValue) && !isVueDirective) {
             attrs += ` :${key}="${getReplaceValue(attrValue)}" `
-            Collector.add(attrValue)
+            Collector.add(customizeKey(attrValue))
           } else if (attrValue === '') {
             attrs += key
           } else {
@@ -132,7 +132,7 @@ function handleTemplate(code: string, rule: Rule): string {
             value = formatValue(value)
             if (type === 'text') {
               str += `{{${getReplaceValue(value)}}}`
-              Collector.add(value)
+              Collector.add(customizeKey(value))
             } else if (type === 'name') {
               const source = parseJsSyntax(value, rule)
               str += `{{${source}}}`
