@@ -62,7 +62,7 @@ it
 // 以下为i18n.config.js默认的完整配置，所有属性均为可选，可以根据自身需要修改
 module.exports = {
   input: 'src',
-  output: '',
+  output: '', // 没有值时表示完成提取后自动覆盖原始文件
   exclude: ['**/node_modules/**/*'], // 排除不需要提取的文件
   localePath: './locales/zh-CN.json', // 中文语言包的存放位置
   // rules每个属性对应的是不同后缀文件的处理方式
@@ -119,7 +119,9 @@ module.exports = {
     vue: {
       caller: 'this',
       functionName: '$t',
-      customizeKey: getCustomizeKey,
+      customizeKey: : function (key) {
+        return key
+      },
       importDeclaration: '',
     },
   },
