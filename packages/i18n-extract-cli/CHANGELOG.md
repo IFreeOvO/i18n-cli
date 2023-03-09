@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.2.1
+
+### Patch Changes
+
+- 9932fd9: 应该跳过 console.log 的转换
+
 ## 2.2.0
 
 ### Minor Changes
