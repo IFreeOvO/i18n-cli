@@ -278,6 +278,16 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           const { node } = path
           const callee = node.callee
 
+          // 跳过console.log的提取
+          if (
+            callee.type === 'MemberExpression' &&
+            callee.object.type === 'Identifier' &&
+            callee.object.name === 'console'
+          ) {
+            path.skip()
+            return
+          }
+
           // 无调用对象的情况，例如$t('xx')
           if (callee.type === 'Identifier' && callee.name === functionName) {
             path.skip()
