@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.2.0
+
+### Minor Changes
+
+- 134ddbf: react 函数组件支持插入代码
+
 ## 2.1.3
 
 ### Patch Changes
