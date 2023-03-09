@@ -22,8 +22,14 @@ const config: Config = {
     ts: getCommonRule(),
     cjs: getCommonRule(),
     mjs: getCommonRule(),
-    jsx: getCommonRule(),
-    tsx: getCommonRule(),
+    jsx: {
+      ...getCommonRule(),
+      functionSnippets: '',
+    },
+    tsx: {
+      ...getCommonRule(),
+      functionSnippets: '',
+    },
     vue: {
       caller: 'this',
       functionName: '$t',
@@ -40,14 +46,6 @@ const config: Config = {
   localePath: './locales/zh-CN.json',
   skipTranslate: false,
   locales: ['en-US'],
-  // translator: 'youdao',
-  // google: {
-  //   proxy: '',
-  // },
-  // youdao: {
-  //   key: '',
-  //   secret: '',
-  // },
 }
 
 export default config
