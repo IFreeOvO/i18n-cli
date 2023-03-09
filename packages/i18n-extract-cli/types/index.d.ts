@@ -16,10 +16,12 @@ export interface Rule {
   functionName: string
   importDeclaration: string
   customizeKey: (key: string) => string
+  // TODO: 可优化成根据范型动态生成规则
+  functionSnippets?: string
 }
 
 export type Rules = {
-  [k in keyof Config['rules']]: Rule
+  [k in keyof Config['rules']]: Config['rules'][k]
 }
 
 export type FileExtension = 'js' | 'ts' | 'cjs' | 'mjs' | 'jsx' | 'tsx' | 'vue'
@@ -46,8 +48,12 @@ export type Config = {
     ts: Rule
     cjs: Rule
     mjs: Rule
-    tsx: Rule
-    jsx: Rule
+    tsx: Rule & {
+      functionSnippets: string
+    }
+    jsx: Rule & {
+      functionSnippets: string
+    }
     vue: Rule
   }
   prettier: Options

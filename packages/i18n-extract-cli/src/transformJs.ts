@@ -1,4 +1,4 @@
-import type { NodePath } from '@babel/traverse'
+import { NodePath } from '@babel/traverse'
 import type {
   Comment,
   StringLiteral,
@@ -14,6 +14,10 @@ import type {
   ObjectExpression,
   MemberExpression,
   Expression,
+  ArrowFunctionExpression,
+  Node,
+  ReturnStatement,
+  FunctionExpression,
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
 import type { transformOptions } from '../types'
@@ -96,9 +100,40 @@ function getStringLiteral(value: string): StringLiteral {
   })
 }
 
+function nodeToCode(node: Node): string {
+  return babelGenerator(node).code
+}
+
+// 允许往react函数组件中加入自定义代码
+function insertSnippets(node: ArrowFunctionExpression | FunctionExpression, snippets?: string) {
+  if (node.body.type === 'BlockStatement' && snippets) {
+    const returnStatement = node.body.body.find((node: Node) => node.type === 'ReturnStatement')
+    if (returnStatement) {
+      const arg = (returnStatement as ReturnStatement).argument
+      const argType = arg?.type
+      const code = nodeToCode(node)
+      // 函数是否是react函数组件
+      // 情况1: 返回的三元表达式包含JSXElement
+      // 情况2: 直接返回了JSXElement
+      if (
+        argType === 'ConditionalExpression' &&
+        (arg.consequent.type === 'JSXElement' || arg.alternate.type === 'JSXElement')
+      ) {
+        if (includeChinese(code)) {
+          const statements = template.statements(snippets)()
+          node.body.body.unshift(...statements)
+        }
+      } else if (argType === 'JSXElement') {
+        const statements = template.statements(snippets)()
+        node.body.body.unshift(...statements)
+      }
+    }
+  }
+}
+
 function transformJs(code: string, options: transformOptions): GeneratorResult {
   const rule = options.rule
-  const { caller, functionName, customizeKey, importDeclaration } = rule
+  const { caller, functionName, customizeKey, importDeclaration, functionSnippets } = rule
   let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
 
@@ -284,6 +319,26 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
             })
             hasImportI18n = true
           }
+        },
+
+        ArrowFunctionExpression(path: NodePath<ArrowFunctionExpression>) {
+          const { node } = path
+          // 函数组件必须在代码最外层
+          if (path.parentPath.scope.block.type !== 'Program') {
+            return
+          }
+          // 允许往react函数组件中加入自定义代码
+          insertSnippets(node, functionSnippets)
+        },
+
+        FunctionExpression(path: NodePath<FunctionExpression>) {
+          const { node } = path
+          // 函数组件必须在代码最外层
+          if (path.parentPath.scope.block.type !== 'Program') {
+            return
+          }
+          // 允许往react函数组件中加入自定义代码
+          insertSnippets(node, functionSnippets)
         },
       }
     }
