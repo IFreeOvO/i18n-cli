@@ -107,6 +107,7 @@ module.exports = {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
+      functionSnippets: '', // react函数组件里，全局加代码片段
     },
     tsx: {
       caller: '',
@@ -115,6 +116,7 @@ module.exports = {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
+      functionSnippets: '',
     },
     vue: {
       caller: 'this',
