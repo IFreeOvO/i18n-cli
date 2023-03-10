@@ -5,10 +5,14 @@ export type deepPartial<T extends object> = {
   [K in keyof T]?: T[K] extends object ? deepPartial<T[K]> : T[K]
 }
 
+export interface GlobalRule {
+  ignoreMethods: string[]
+}
+
 export interface transformOptions {
   rule: Rule
-  parse(code: string): ParseResult
-  [k: string]: unknown
+  parse?: (code: string) => ParseResult
+  isJsInVue?: boolean
 }
 
 export interface Rule {
@@ -60,6 +64,7 @@ export type Config = {
   skipExtract: boolean
   skipTranslate: boolean
   incremental: boolean
+  globalRule: GlobalRule
 } & TranslateConfig
 
 export interface CommandOptions {

@@ -46,6 +46,9 @@ const config: Config = {
   localePath: './locales/zh-CN.json',
   skipTranslate: false,
   locales: ['en-US'],
+  globalRule: {
+    ignoreMethods: [],
+  },
 }
 
 export default config

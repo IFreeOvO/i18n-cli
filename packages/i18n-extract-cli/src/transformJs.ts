@@ -30,6 +30,7 @@ import { includeChinese } from './utils/includeChinese'
 import { isObject } from './utils/assertType'
 import { escapeQuotes } from './utils/escapeQuotes'
 import { IGNORE_REMARK } from './utils/constants'
+import { getCliConfig } from './utils/cliConfig'
 
 const t = require('@babel/types')
 
@@ -132,7 +133,7 @@ function insertSnippets(node: ArrowFunctionExpression | FunctionExpression, snip
 }
 
 function transformJs(code: string, options: transformOptions): GeneratorResult {
-  const rule = options.rule
+  const { rule } = options
   const { caller, functionName, customizeKey, importDeclaration, functionSnippets } = rule
   let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
@@ -278,6 +279,16 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           const { node } = path
           const callee = node.callee
 
+          // 根据全局配置，跳过不需要提取的函数
+          const globalRule = getCliConfig().globalRule
+          const code = nodeToCode(node)
+          globalRule.ignoreMethods.forEach((ignoreRule) => {
+            if (code.startsWith(ignoreRule)) {
+              path.skip()
+              return
+            }
+          })
+
           // 跳过console.log的提取
           if (
             callee.type === 'MemberExpression' &&
@@ -353,7 +364,8 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
       }
     }
 
-    const ast = options.parse(code)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const ast = options.parse!(code)
     traverse(ast, getTraverseOptions())
     return ast
   }

@@ -15,6 +15,7 @@ import Collector from './collector'
 import translate from './translate'
 import getLang from './utils/getLang'
 import { YOUDAO, GOOGLE } from './utils/constants'
+import { setCliConfig } from './utils/cliConfig'
 
 interface InquirerResult {
   translator?: 'google' | 'youdao'
@@ -198,9 +199,13 @@ export default async function (options: CommandOptions) {
     const translationConfig = await getTranslationConfig()
     i18nConfig = merge(i18nConfig, translationConfig)
   }
+  // 全局缓存脚手架配置
+  setCliConfig(i18nConfig)
+
   const { input, exclude, output, rules, localePath, locales, skipExtract, skipTranslate } =
     i18nConfig
   log.debug(`命令行配置信息:`, i18nConfig)
+
   let oldPrimaryLang: Record<string, string> = {}
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
   oldPrimaryLang = getLang(primaryLangPath)

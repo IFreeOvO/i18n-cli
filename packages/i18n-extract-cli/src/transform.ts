@@ -28,7 +28,9 @@ function transform(
         parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
       })
     case 'vue':
-      return transformVue(code, rules[ext])
+      return transformVue(code, {
+        rule: rules[ext],
+      })
     default:
       throw new Error(chalk.red(`不支持对.${ext}后缀的文件进行提取`))
   }
