@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.3.0
+
+### Minor Changes
+
+- 970d49c: 支持自定义忽略的方法
+
 ## 2.2.1
 
 ### Patch Changes
