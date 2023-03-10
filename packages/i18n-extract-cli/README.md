@@ -128,7 +128,7 @@ module.exports = {
     },
   },
   globalRule: {
-    ignoreMethods: [] // 忽略指定函数调用的中文提取。支持正则表达式。例如想忽略sensor.track('中文')的提取。这里就写['sensor.track']
+    ignoreMethods: [] // 忽略指定函数调用的中文提取。例如想忽略sensor.track('中文')的提取。这里就写['sensor.track']
   },
   // prettier配置，参考https://prettier.io/docs/en/options.html
   prettier: {
