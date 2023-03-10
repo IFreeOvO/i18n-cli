@@ -9,7 +9,7 @@ import * as htmlparser2 from 'htmlparser2'
 import prettier from 'prettier'
 import mustache from 'mustache'
 import ejs from 'ejs'
-import type { Rule } from '../types'
+import type { Rule, transformOptions } from '../types'
 import { includeChinese } from './utils/includeChinese'
 import log from './utils/log'
 import transformJs from './transformJs'
@@ -245,7 +245,7 @@ function removeSnippet(
 }
 
 // 提取文件头注释
-// * 这里投机取巧了一下，把标签内容清空再匹配注释。避免匹配错了。后期有好的方案再替换
+// TODO: 这里投机取巧了一下，把标签内容清空再匹配注释。避免匹配错了。后期有好的方案再替换
 function getFileComment(descriptor: SFCDescriptor): string {
   const { template, script, scriptSetup, styles } = descriptor
   let source = descriptor.source
@@ -263,10 +263,11 @@ function getFileComment(descriptor: SFCDescriptor): string {
 
 function transformVue(
   code: string,
-  rule: Rule
+  options: transformOptions
 ): {
   code: string
 } {
+  const { rule } = options
   const { descriptor, errors } = parse(code)
   if (errors.length > 0) {
     log.error('vue文件解析出现错误：', errors[0].toString())
