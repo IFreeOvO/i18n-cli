@@ -44,6 +44,7 @@ const config: Config = {
   incremental: false,
   skipExtract: false,
   localePath: './locales/zh-CN.json',
+  localeFileType: 'json',
   skipTranslate: false,
   locales: ['en-US'],
   globalRule: {
