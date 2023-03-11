@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.3.1
+
+### Patch Changes
+
+- d8deab0: 没有发生提取替换的文件不需要进行修改
+- d8deab0: vue 文件中的非 export default 部分应该按 js 规则解析
+
 ## 2.3.0
 
 ### Minor Changes
