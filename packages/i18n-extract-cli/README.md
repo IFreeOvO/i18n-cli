@@ -65,6 +65,7 @@ module.exports = {
   output: '', // 没有值时表示完成提取后自动覆盖原始文件
   exclude: ['**/node_modules/**/*'], // 排除不需要提取的文件
   localePath: './locales/zh-CN.json', // 中文语言包的存放位置
+  localeFileType: 'json', // 设置语言包的文件类型，支持js、json。默认为json
   // rules每个属性对应的是不同后缀文件的处理方式
   rules: {
     js: {
