@@ -17,6 +17,7 @@ import { initParse } from './parse'
 import { escapeQuotes } from './utils/escapeQuotes'
 import Collector from './collector'
 import { IGNORE_REMARK } from './utils/constants'
+import StateManager from './utils/stateManager'
 const presetTypescript = require('@babel/preset-typescript')
 
 type Handler = (source: string, rule: Rule) => string
@@ -183,12 +184,22 @@ function handleTemplate(code: string, rule: Rule): string {
 }
 
 function handleScript(source: string, rule: Rule): string {
-  const { code } = transformJs(source, {
+  //把vue的script拆分成 export default 部分和非export default部分分别解析
+  const matchResult = source.match(/export default.*/gs) ?? []
+  const defaultPartSource = matchResult[0] ?? ''
+  const notDefaultPartSource = source.replace(defaultPartSource, '')
+
+  const transformOptions = {
     rule,
     isJsInVue: true, // 标记处理vue里的js
     parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
-  })
-  return '\n' + code + '\n'
+  }
+  const defaultCode = transformJs(defaultPartSource, transformOptions).code
+  const notDefaultCode = transformJs(notDefaultPartSource, {
+    ...transformOptions,
+    rule: StateManager.getCliConfig().rules.js,
+  }).code
+  return notDefaultCode + '\n' + defaultCode + '\n'
 }
 
 function mergeCode(templateCode: string, scriptCode: string, stylesCode: string): string {
