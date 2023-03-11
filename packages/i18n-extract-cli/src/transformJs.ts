@@ -30,7 +30,7 @@ import { includeChinese } from './utils/includeChinese'
 import { isObject } from './utils/assertType'
 import { escapeQuotes } from './utils/escapeQuotes'
 import { IGNORE_REMARK } from './utils/constants'
-import { getCliConfig } from './utils/cliConfig'
+import StateManager from './utils/stateManager'
 
 const t = require('@babel/types')
 
@@ -280,7 +280,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           const callee = node.callee
 
           // 根据全局配置，跳过不需要提取的函数
-          const globalRule = getCliConfig().globalRule
+          const globalRule = StateManager.getCliConfig().globalRule
           const code = nodeToCode(node)
           globalRule.ignoreMethods.forEach((ignoreRule) => {
             if (code.startsWith(ignoreRule)) {

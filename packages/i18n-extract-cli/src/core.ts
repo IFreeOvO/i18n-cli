@@ -15,7 +15,7 @@ import Collector from './collector'
 import translate from './translate'
 import getLang from './utils/getLang'
 import { YOUDAO, GOOGLE } from './utils/constants'
-import { setCliConfig } from './utils/cliConfig'
+import StateManager from './utils/stateManager'
 
 interface InquirerResult {
   translator?: 'google' | 'youdao'
@@ -70,7 +70,7 @@ function getI18nConfig(options: CommandOptions): Config {
 }
 
 function saveLocale(localePath: string) {
-  const keyMap = Collector.keyMap
+  const keyMap = Collector.getKeyMap()
   const localeAbsolutePath = getAbsolutePath(process.cwd(), localePath)
 
   if (!fs.existsSync(localeAbsolutePath)) {
@@ -200,7 +200,7 @@ export default async function (options: CommandOptions) {
     i18nConfig = merge(i18nConfig, translationConfig)
   }
   // 全局缓存脚手架配置
-  setCliConfig(i18nConfig)
+  StateManager.setCliConfig(i18nConfig)
 
   const { input, exclude, output, rules, localePath, locales, skipExtract, skipTranslate } =
     i18nConfig
@@ -239,7 +239,8 @@ export default async function (options: CommandOptions) {
     })
     // 增量转换时，保留之前的提取的中文结果
     if (i18nConfig.incremental) {
-      Collector.keyMap = Object.assign(oldPrimaryLang, Collector.keyMap)
+      const newkeyMap = Object.assign(oldPrimaryLang, Collector.getKeyMap())
+      Collector.setKeyMap(newkeyMap)
     }
     saveLocale(localePath)
     bar.stop()
