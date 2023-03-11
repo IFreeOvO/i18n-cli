@@ -225,16 +225,22 @@ export default async function (options: CommandOptions) {
       log.verbose(`正在提取文件中的中文:`, sourceFilePath)
       const sourceCode = fs.readFileSync(sourceFilePath, 'utf8')
       const ext = path.extname(sourceFilePath).replace('.', '') as FileExtension
+      Collector.resetCountOfAdditions()
       const { code } = transform(sourceCode, ext, rules)
       log.verbose(`完成中文提取和语法转换:`, sourceFilePath)
-      const stylizedCode = prettier.format(code, {
-        ...i18nConfig.prettier,
-        parser: getPrettierParser(ext),
-      })
-      log.verbose(`格式化代码完成`)
-      const outputPath = getOutputPath(input, output, sourceFilePath)
-      fs.writeFileSync(outputPath, stylizedCode, 'utf8')
-      log.verbose(`生成文件:`, outputPath)
+
+      // 只有文件提取过中文时，才重新写入文件
+      if (Collector.getCountOfAdditions() > 0) {
+        const stylizedCode = prettier.format(code, {
+          ...i18nConfig.prettier,
+          parser: getPrettierParser(ext),
+        })
+        log.verbose(`格式化代码完成`)
+        const outputPath = getOutputPath(input, output, sourceFilePath)
+        fs.writeFileSync(outputPath, stylizedCode, 'utf8')
+        log.verbose(`生成文件:`, outputPath)
+      }
+
       bar.increment()
     })
     // 增量转换时，保留之前的提取的中文结果
