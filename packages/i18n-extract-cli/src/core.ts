@@ -16,6 +16,7 @@ import translate from './translate'
 import getLang from './utils/getLang'
 import { YOUDAO, GOOGLE } from './utils/constants'
 import StateManager from './utils/stateManager'
+import { serializeCode } from './utils/serializeCode'
 
 interface InquirerResult {
   translator?: 'google' | 'youdao'
@@ -82,7 +83,12 @@ function saveLocale(localePath: string) {
     process.exit(1)
   }
   log.verbose(`输出中文语言包到指定位置:`, localeAbsolutePath)
-  fs.writeFileSync(localeAbsolutePath, JSON.stringify(keyMap, null, 2), 'utf8')
+  const localeFileType = StateManager.getCliConfig().localeFileType
+  if (localeFileType === 'json') {
+    fs.writeFileSync(localeAbsolutePath, JSON.stringify(keyMap, null, 2), 'utf8')
+  } else {
+    fs.writeFileSync(localeAbsolutePath, serializeCode(keyMap), 'utf8')
+  }
 }
 
 function getPrettierParser(ext: string): string {

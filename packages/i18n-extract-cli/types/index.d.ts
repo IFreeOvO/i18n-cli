@@ -45,6 +45,7 @@ export type Config = {
   input: string
   output: string
   localePath: string
+  localeFileType: string
   locales: string[]
   exclude: string[]
   rules: {

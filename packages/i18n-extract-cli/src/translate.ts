@@ -5,6 +5,8 @@ import { getAbsolutePath } from './utils/getAbsolutePath'
 import log from './utils/log'
 import { GOOGLE, YOUDAO } from './utils/constants'
 import getLang from './utils/getLang'
+import StateManager from './utils/stateManager'
+import { serializeCode } from './utils/serializeCode'
 
 async function translateByGoogle(
   word: string,
@@ -57,10 +59,13 @@ export default async function (
   log.verbose('当前使用的翻译器：', options.translator)
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
   const newPrimaryLang = getLang(primaryLangPath)
+  const localeFileType = StateManager.getCliConfig().localeFileType
 
   for (const targetLocale of locales) {
     log.info(`正在翻译${targetLocale}语言包`)
-    const targetPath = localePath.replace(/\/[A-Za-z-]+.json/g, `/${targetLocale}.json`)
+
+    const reg = new RegExp(`/[A-Za-z-]+.${localeFileType}`, 'g')
+    const targetPath = localePath.replace(reg, `/${targetLocale}.${localeFileType}`)
     const targetLocalePath = getAbsolutePath(process.cwd(), targetPath)
     let oldTargetLangPack: Record<string, string> = {}
     const newTargetLangPack: Record<string, string> = {}
@@ -93,6 +98,10 @@ export default async function (
       }
     }
     log.info(`完成${targetLocale}语言包翻译`)
-    fs.writeFileSync(targetLocalePath, JSON.stringify(newTargetLangPack, null, 2), 'utf8')
+    if (localeFileType === 'json') {
+      fs.writeFileSync(targetLocalePath, JSON.stringify(newTargetLangPack, null, 2), 'utf8')
+    } else {
+      fs.writeFileSync(targetLocalePath, serializeCode(newTargetLangPack), 'utf8')
+    }
   }
 }
