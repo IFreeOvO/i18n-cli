@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.4.0
+
+### Minor Changes
+
+- 11fd67f: 支持加载 excel
+- 2bb91c6: 支持设置语言包文件类型
+
 ## 2.3.1
 
 ### Patch Changes
