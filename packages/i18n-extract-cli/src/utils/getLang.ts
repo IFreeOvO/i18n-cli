@@ -2,7 +2,7 @@ import fs from 'fs-extra'
 import StateManager from './stateManager'
 
 function getLang(langPath: string): Record<string, string> {
-  const localeFileType = StateManager.getCliConfig().localeFileType
+  const localeFileType = StateManager.getToolConfig().localeFileType
 
   try {
     if (localeFileType === 'json') {

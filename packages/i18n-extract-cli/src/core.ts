@@ -1,4 +1,4 @@
-import type { CommandOptions, FileExtension, deepPartial, Config, TranslateConfig } from '../types'
+import type { CommandOptions, FileExtension, TranslateConfig } from '../types'
 import fs from 'fs-extra'
 import chalk from 'chalk'
 import inquirer from 'inquirer'
@@ -7,7 +7,6 @@ import prettier from 'prettier'
 import cliProgress from 'cli-progress'
 import glob from 'glob'
 import merge from 'lodash/merge'
-import defaultConfig from './default.config'
 import transform from './transform'
 import log from './utils/log'
 import { getAbsolutePath } from './utils/getAbsolutePath'
@@ -16,7 +15,9 @@ import translate from './translate'
 import getLang from './utils/getLang'
 import { YOUDAO, GOOGLE } from './utils/constants'
 import StateManager from './utils/stateManager'
-import { serializeCode } from './utils/serializeCode'
+import exportExcel from './exportExcel'
+import { getI18nConfig } from './utils/initConfig'
+import { saveLocaleFile } from './utils/saveLocaleFile'
 
 interface InquirerResult {
   translator?: 'google' | 'youdao'
@@ -49,27 +50,6 @@ function getSourceFilePaths(input: string, exclude: string[]): string[] {
   }
 }
 
-function getUserConfig(configFile?: string): deepPartial<Config> {
-  if (configFile) {
-    const configPath = getAbsolutePath(process.cwd(), configFile)
-    if (!fs.existsSync(configPath)) {
-      log.warning('配置文件路径不存在，请重新设置指令参数 -c 或 --config-file 的值')
-      return {}
-    } else {
-      const config = require(configPath)
-      return config
-    }
-  } else {
-    return {}
-  }
-}
-
-function getI18nConfig(options: CommandOptions): Config {
-  const userConfig = getUserConfig(options.configFile)
-  const config = merge(defaultConfig, options, userConfig)
-  return config
-}
-
 function saveLocale(localePath: string) {
   const keyMap = Collector.getKeyMap()
   const localeAbsolutePath = getAbsolutePath(process.cwd(), localePath)
@@ -83,12 +63,7 @@ function saveLocale(localePath: string) {
     process.exit(1)
   }
   log.verbose(`输出中文语言包到指定位置:`, localeAbsolutePath)
-  const localeFileType = StateManager.getCliConfig().localeFileType
-  if (localeFileType === 'json') {
-    fs.writeFileSync(localeAbsolutePath, JSON.stringify(keyMap, null, 2), 'utf8')
-  } else {
-    fs.writeFileSync(localeAbsolutePath, serializeCode(keyMap), 'utf8')
-  }
+  saveLocaleFile(keyMap, localeAbsolutePath)
 }
 
 function getPrettierParser(ext: string): string {
@@ -206,7 +181,7 @@ export default async function (options: CommandOptions) {
     i18nConfig = merge(i18nConfig, translationConfig)
   }
   // 全局缓存脚手架配置
-  StateManager.setCliConfig(i18nConfig)
+  StateManager.setToolConfig(i18nConfig)
 
   const { input, exclude, output, rules, localePath, locales, skipExtract, skipTranslate } =
     i18nConfig
@@ -268,5 +243,12 @@ export default async function (options: CommandOptions) {
       youdao: i18nConfig.youdao,
     })
   }
+
   log.success('转换完毕!')
+
+  if (i18nConfig.exportExcel) {
+    log.info(`正在导出excel翻译文件`)
+    exportExcel()
+    log.success(`导出完毕!`)
+  }
 }

@@ -280,7 +280,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           const callee = node.callee
 
           // 根据全局配置，跳过不需要提取的函数
-          const globalRule = StateManager.getCliConfig().globalRule
+          const globalRule = StateManager.getToolConfig().globalRule
           const code = nodeToCode(node)
           globalRule.ignoreMethods.forEach((ignoreRule) => {
             if (code.startsWith(ignoreRule)) {

@@ -45,6 +45,8 @@ const config: Config = {
   skipExtract: false,
   localePath: './locales/zh-CN.json',
   localeFileType: 'json',
+  excelPath: './locales.xlsx',
+  exportExcel: false,
   skipTranslate: false,
   locales: ['en-US'],
   globalRule: {
