@@ -14,10 +14,13 @@
 - 支持将提取的中文以 key-value 形式存入\*.json 语言包里
 - 支持 prettier 格式化代码
 - 支持将中文语言包自动翻译成其他语言
+- 支持将翻译结果导出成 excel
+- 支持读取 excel 文件并转换成语音包
 - 自定义语言包的 key
 - 自定义 i18n 工具的调用对象
 - 自定义 i18n 工具的方法名
 - 自定义 i18n 第三方包的导入
+- 自定义忽略提取的方法
 
 ## 安装
 
@@ -47,12 +50,15 @@ it
 | --skip-translate  | Boolean | false                  | 跳过中文翻译阶段。                                                                     |
 | --locales         | Array   | ['en-US']              | 根据中文语言包自动翻译成其他语言。用法例子 --locales en zh-CHT                         |
 | --incremental     | Boolean | false                  | 开启后。支持将文件中提取到中文键值对，追加到原有的中文语言包。                         |
+| --exportExcel     | Boolean | false                  | 开启后。导出所有翻译内容到 excel。 默认导出到当前目录下的 locales.xlsx                 |
+| --excelPath       | String  | './locales.xlsx'       | 指定导出的 excel 路径。                                                                |
 
 ## 子命令
 
-| 子命令 | 描述                         |
-| ------ | ---------------------------- |
-| init   | 在项目里初始化一个命令行配置 |
+| 子命令    | 描述                                      |
+| --------- | ----------------------------------------- |
+| init      | 在项目里初始化一个命令行配置              |
+| loadExcel | 根据导入翻译文件的 excel 内容，生成语言包 |
 
 ## 命令行配置
 
@@ -140,6 +146,8 @@ module.exports = {
   // 以下是和翻译相关的配置，注意搭配使用
   skipTranslate: true, // 跳过翻译语言包阶段。默认不翻译
   locales: [], // 需要翻译的语言包。例如['en', 'zh-CHT']，会自动翻译英文和繁体
+  excelPath: './locales.xlsx', // excel存放路径
+  exportExcel: false, // 是否导出excel
 }
 ```
 
@@ -172,13 +180,33 @@ it -c ./i18n.config.js
 4. 指定需要自动翻译的语言(例如日语)，并指定项目里中文语言包的位置(相对于命令的执行位置)。命令执行时会自动根据中文语言包，将日语翻译出来并存入到`ja.json`文件中
 
 ```
-it --localePath	./locales/zh-CN.json  --locales ja
+it --localePath ./locales/zh-CN.json  --locales ja
 ```
 
 5. 指定需要转换的文件目录，并增量提取中文。例如项目的 src 目录有 A、B、C 三个文件夹，里面分别有 A,B,C 三个文件，其中 A、B 已经替换过 i18n，此时执行命令，会将 C 文件的中文进行 i18n 替换，并将新提取到的中文追加到原有的中文语言包里
 
 ```
 it --incremental -i ./src/C
+```
+
+6. 导入 excel
+
+excel 的表头格式`['字典key', 'zh-CN']`
+
+```
+# 方式1，根据指令参数
+it loadExcel --excelPath ./demo.xlsx --localePath ./locales/zh-CN.json
+# 方式2，根据本地配置
+it loadExcel -c ./i18n.config.js
+```
+
+1. 导出 excel
+
+```
+# 方式1，根据指令参数
+it --skip-extract --skip-translate --exportExcel --excelPath ./demo.xlsx
+# 方式2，根据本地配置
+it --skip-extract --skip-translate  -c ./i18n.config.js
 ```
 
 ## 转换效果示例
