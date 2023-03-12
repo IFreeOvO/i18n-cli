@@ -6,7 +6,7 @@ class StateManager {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
-  private cliConfig: Config = defaultConfig
+  private toolConfig: Config = defaultConfig
 
   static getInstance() {
     if (!this._instance) {
@@ -15,11 +15,11 @@ class StateManager {
     return this._instance
   }
 
-  setCliConfig(config: Config): void {
-    this.cliConfig = config
+  setToolConfig(config: Config): void {
+    this.toolConfig = config
   }
-  getCliConfig(): Config {
-    return this.cliConfig
+  getToolConfig(): Config {
+    return this.toolConfig
   }
 }
 

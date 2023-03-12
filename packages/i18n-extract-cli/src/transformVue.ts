@@ -197,7 +197,7 @@ function handleScript(source: string, rule: Rule): string {
   const defaultCode = transformJs(defaultPartSource, transformOptions).code
   const notDefaultCode = transformJs(notDefaultPartSource, {
     ...transformOptions,
-    rule: StateManager.getCliConfig().rules.js,
+    rule: StateManager.getToolConfig().rules.js,
   }).code
   return notDefaultCode + '\n' + defaultCode + '\n'
 }

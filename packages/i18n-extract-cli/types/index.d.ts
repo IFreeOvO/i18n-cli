@@ -66,6 +66,8 @@ export type Config = {
   skipTranslate: boolean
   incremental: boolean
   globalRule: GlobalRule
+  excelPath: string
+  exportExcel: boolean
 } & TranslateConfig
 
 export interface CommandOptions {
@@ -77,4 +79,6 @@ export interface CommandOptions {
   verbose?: boolean
   skipExtract?: boolean
   skipTranslate?: boolean
+  excelPath?: string
+  exportExcel?: boolean
 }

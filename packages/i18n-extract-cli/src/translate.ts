@@ -6,7 +6,7 @@ import log from './utils/log'
 import { GOOGLE, YOUDAO } from './utils/constants'
 import getLang from './utils/getLang'
 import StateManager from './utils/stateManager'
-import { serializeCode } from './utils/serializeCode'
+import { saveLocaleFile } from './utils/saveLocaleFile'
 
 async function translateByGoogle(
   word: string,
@@ -59,7 +59,7 @@ export default async function (
   log.verbose('当前使用的翻译器：', options.translator)
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
   const newPrimaryLang = getLang(primaryLangPath)
-  const localeFileType = StateManager.getCliConfig().localeFileType
+  const localeFileType = StateManager.getToolConfig().localeFileType
 
   for (const targetLocale of locales) {
     log.info(`正在翻译${targetLocale}语言包`)
@@ -98,10 +98,6 @@ export default async function (
       }
     }
     log.info(`完成${targetLocale}语言包翻译`)
-    if (localeFileType === 'json') {
-      fs.writeFileSync(targetLocalePath, JSON.stringify(newTargetLangPack, null, 2), 'utf8')
-    } else {
-      fs.writeFileSync(targetLocalePath, serializeCode(newTargetLangPack), 'utf8')
-    }
+    saveLocaleFile(newTargetLangPack, targetLocalePath)
   }
 }
