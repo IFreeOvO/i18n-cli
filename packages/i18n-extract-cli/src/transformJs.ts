@@ -145,7 +145,8 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
   }
 
   function getReplaceValue(value: string, params?: TemplateParams) {
-    value = escapeQuotes(value)
+    // 需要过滤处理引号和换行
+    value = escapeQuotes(value).replace(/[\r\n]/g, '')
     // 表达式结构 obj.fn('xx',{xx:xx})
     let expression
     // i18n标记有参数的情况
