@@ -192,11 +192,13 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
         },
 
         StringLiteral(path: NodePath<StringLiteral>) {
+          // 处理vue props里的中文
           if (includeChinese(path.node.value) && options.isJsInVue && isPropNode(path)) {
+            const value = path.node.value
             const expression = `function() {
-              return ${getCallExpression(path.node.value)}
+              return ${getCallExpression(value)}
             }`
-            Collector.add(customizeKey(path.node.value))
+            Collector.add(customizeKey(value))
             path.replaceWith(template.expression(expression)())
             path.skip()
             return
