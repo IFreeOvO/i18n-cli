@@ -46,6 +46,11 @@ function parseJsSyntax(source: string, rule: Rule): string {
     parser: 'babel',
   })
 
+  // pretter格式化后有时会多出分号
+  if (stylizedCode.startsWith(';')) {
+    stylizedCode = stylizedCode.slice(1)
+  }
+
   if (isObjectStruct) {
     stylizedCode = stylizedCode.replace('temp = ', '')
   }
