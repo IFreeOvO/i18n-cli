@@ -66,10 +66,17 @@ function handleTemplate(code: string, rule: Rule): string {
   let htmlString = ''
   const { functionName, customizeKey } = rule
 
-  function getReplaceValue(value: string): string {
+  function getReplaceValue(value: string, isAttribute?: boolean): string {
     value = escapeQuotes(value)
+
     // 表达式结构 $t('xx')
-    const expression = `${functionName}('${customizeKey(value)}')`
+    let expression = `${functionName}('${customizeKey(value)}')`
+
+    // 属性里的$t('')转成$t(``)，并把双引号转成单引号
+    if (isAttribute) {
+      expression = expression.replace(/'/g, '`').replace(/"/g, "'")
+    }
+
     return expression
   }
 
@@ -107,12 +114,14 @@ function handleTemplate(code: string, rule: Rule): string {
             // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
             if (attrValue === source && !hasTransformed(source, rule.functionName)) {
               Collector.add(customizeKey(removeQuotes(attrValue)))
-              attrs += ` ${key}="${getReplaceValue(removeQuotes(attrValue))}" `
+              const expression = getReplaceValue(removeQuotes(attrValue))
+              attrs += ` ${key}="${expression}" `
             } else {
               attrs += ` ${key}="${source}" `
             }
           } else if (includeChinese(attrValue) && !isVueDirective) {
-            attrs += ` :${key}="${getReplaceValue(attrValue)}" `
+            const expression = getReplaceValue(attrValue, true)
+            attrs += ` :${key}="${expression}" `
             Collector.add(customizeKey(attrValue))
           } else if (attrValue === '') {
             attrs += key
