@@ -1,5 +1,13 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.4.1
+
+### Patch Changes
+
+- 8cbef02: 中文提取后，表达式前面会多出一个分号
+- e1ecfe7: vue 模版属性里有双引号时解析报错
+- 57dfd05: 中文出现\n 时，执行命令会报错
+
 ## 2.4.0
 
 ### Minor Changes
