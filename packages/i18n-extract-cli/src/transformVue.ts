@@ -6,6 +6,7 @@ import type {
 } from '@vue/compiler-sfc'
 import { parse } from '@vue/compiler-sfc'
 import * as htmlparser2 from 'htmlparser2'
+import traverse from '@babel/traverse'
 import prettier from 'prettier'
 import mustache from 'mustache'
 import ejs from 'ejs'
@@ -197,23 +198,67 @@ function handleTemplate(code: string, rule: Rule): string {
   return htmlString
 }
 
-function handleScript(source: string, rule: Rule): string {
-  //把vue的script拆分成 export default 部分和非export default部分分别解析
-  const matchResult = source.match(/export default.*/gs) ?? []
-  const defaultPartSource = matchResult[0] ?? ''
-  const notDefaultPartSource = source.replace(defaultPartSource, '')
+// 找出@Component位置
+function findExportDefaultDeclaration(source: string, parser: (code: string) => any): number {
+  let startIndex = -1
+  const ast = parser(source)
+  traverse(ast, {
+    ExportDefaultDeclaration(path) {
+      const { node } = path
+      const declaration = path.get('declaration')
+      if (declaration.isClassDeclaration()) {
+        const decorators = declaration.node.decorators
+        if (decorators && decorators.length > 0) {
+          // 找出@Component装饰器进行分割
+          const componentDecorator = decorators.find((decorator) => {
+            return (
+              (decorator.expression.type === 'Identifier' &&
+                decorator.expression.name === 'Component') ||
+              (decorator.expression.type === 'CallExpression' &&
+                decorator.expression.callee.type === 'Identifier' &&
+                decorator.expression.callee.name === 'Component')
+            )
+          })
+          if (componentDecorator) {
+            startIndex = node.start ?? 0
+            path.skip()
+          }
+        }
+      }
+    },
+  })
+  return startIndex
+}
 
+function handleScript(source: string, rule: Rule): string {
+  // TODO: 这里babel解析可以优化，不然vue文件的script会重复解析两次浪费性能
+  const parser = initParse([[presetTypescript, { isTSX: true, allExtensions: true }]])
+  const startIndex = findExportDefaultDeclaration(source, parser)
   const transformOptions = {
     rule,
     isJsInVue: true, // 标记处理vue里的js
     parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
   }
-  const defaultCode = transformJs(defaultPartSource, transformOptions).code
-  const notDefaultCode = transformJs(notDefaultPartSource, {
-    ...transformOptions,
-    rule: StateManager.getToolConfig().rules.js,
-  }).code
-  return notDefaultCode + '\n' + defaultCode + '\n'
+
+  if (startIndex !== -1) {
+    // 含ts的vue处理
+    //把vue的script拆分成 export default 部分和非export default部分分别解析
+    const notDefaultPart = source.slice(0, startIndex)
+    const defaultPart = source.slice(startIndex)
+    const defaultCode = transformJs(defaultPart, transformOptions).code
+    const notDefaultCode = transformJs(notDefaultPart, {
+      ...transformOptions,
+      rule: StateManager.getToolConfig().rules.js,
+    }).code
+    if (notDefaultCode) {
+      return notDefaultCode + '\n' + defaultCode
+    } else {
+      return defaultCode
+    }
+  } else {
+    const code = transformJs(source, transformOptions).code
+    return code
+  }
 }
 
 function mergeCode(templateCode: string, scriptCode: string, stylesCode: string): string {
