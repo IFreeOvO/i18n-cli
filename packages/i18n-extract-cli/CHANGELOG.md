@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.4.2
+
+### Patch Changes
+
+- 14928bb: 解析@Component({})时报错
+
 ## 2.4.1
 
 ### Patch Changes
