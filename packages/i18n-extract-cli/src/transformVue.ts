@@ -125,7 +125,7 @@ function handleTemplate(code: string, rule: Rule): string {
             attrs += ` :${key}="${expression}" `
             Collector.add(customizeKey(attrValue))
           } else if (attrValue === '') {
-            attrs += key
+            attrs += `${key} `
           } else {
             attrs += ` ${key}="${attrValue}" `
           }
