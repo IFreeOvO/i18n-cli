@@ -63,6 +63,53 @@ function hasTransformed(code: string, functionName: string): boolean {
   return new RegExp(`\\${functionName}\\(.*\\)`, 'g').test(code)
 }
 
+function formatValue(value: string): string {
+  value = value.trim()
+  if (value.startsWith('\n')) {
+    value = value.slice(1, value.length - 1).trimStart()
+  }
+  if (value.endsWith('\n')) {
+    value = value.slice(0, value.length - 1)
+  }
+  return value
+}
+
+// TODO: 需要优化，传参方式太挫
+function parseTextNode(
+  text: string,
+  rule: Rule,
+  getReplaceValue: (value: string, isAttribute?: boolean) => string,
+  customizeKey: (key: string) => string
+) {
+  let str = ''
+  const tokens = mustache.parse(text)
+  for (const token of tokens) {
+    const type = token[0]
+    let value = token[1]
+
+    if (includeChinese(value)) {
+      value = formatValue(value)
+      if (type === 'text') {
+        str += `{{${getReplaceValue(value)}}}`
+        Collector.add(customizeKey(value))
+      } else if (type === 'name') {
+        const source = parseJsSyntax(value, rule)
+        str += `{{${source}}}`
+      }
+    } else {
+      if (type === 'text') {
+        str += value
+      } else if (type === 'name') {
+        str += `{{${value}}}`
+      } else if (type === COMMENT_TYPE) {
+        // 形如{{!xxxx}}这种形式，在mustache里属于注释语法
+        str += `{{!${value}}}`
+      }
+    }
+  }
+  return str
+}
+
 function handleTemplate(code: string, rule: Rule): string {
   let htmlString = ''
   const { functionName, customizeKey } = rule
@@ -81,21 +128,19 @@ function handleTemplate(code: string, rule: Rule): string {
     return expression
   }
 
-  function formatValue(value: string): string {
-    value = value.trim()
-    if (value.startsWith('\n')) {
-      value = value.slice(1, value.length - 1).trimStart()
-    }
-    if (value.endsWith('\n')) {
-      value = value.slice(0, value.length - 1)
-    }
-    return value
-  }
-
-  let shouldIgnore = false
+  let shouldIgnore = false // 是否忽略提取
+  let textNodeCache = '' // 缓存当前文本节点内容
   const parser = new htmlparser2.Parser(
     {
       onopentag(tagName, attributes) {
+        // 处理文本节点没有被标签包裹的情况
+        // 如果这个标签没被忽略提取，那么就进行文本节点解析
+        if (!shouldIgnore) {
+          const text = parseTextNode(textNodeCache, rule, getReplaceValue, customizeKey)
+          htmlString += text
+          textNodeCache = ''
+        }
+
         let attrs = ''
         if (shouldIgnore) {
           for (const key in attributes) {
@@ -138,37 +183,18 @@ function handleTemplate(code: string, rule: Rule): string {
           htmlString += text
           return
         }
-        let str = ''
-        const tokens = mustache.parse(text)
-        for (const token of tokens) {
-          const type = token[0]
-          let value = token[1]
-
-          if (includeChinese(value)) {
-            value = formatValue(value)
-            if (type === 'text') {
-              str += `{{${getReplaceValue(value)}}}`
-              Collector.add(customizeKey(value))
-            } else if (type === 'name') {
-              const source = parseJsSyntax(value, rule)
-              str += `{{${source}}}`
-            }
-          } else {
-            if (type === 'text') {
-              str += value
-            } else if (type === 'name') {
-              str += `{{${value}}}`
-            } else if (type === COMMENT_TYPE) {
-              // 形如{{!xxxx}}这种形式，在mustache里属于注释语法
-              str += `{{!${value}}}`
-            }
-          }
-        }
-
-        htmlString += str
+        textNodeCache += text
       },
 
       onclosetag(tagName, isImplied) {
+        // 处理文本被标签包裹的情况
+        // 如果这个标签没被忽略提取，那么就进行文本节点解析
+        if (!shouldIgnore) {
+          const text = parseTextNode(textNodeCache, rule, getReplaceValue, customizeKey)
+          htmlString += text
+          textNodeCache = ''
+        }
+
         shouldIgnore = false
         // 如果是自闭合标签
         if (isImplied) {
