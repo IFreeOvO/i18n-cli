@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.4.3
+
+### Patch Changes
+
+- 5b695c5: vue 模版标签属性为空字符串时，会生成错误的属性
+- 9233c13: 文本节点里包含某些三元表达式会解析报错
+
 ## 2.4.2
 
 ### Patch Changes
