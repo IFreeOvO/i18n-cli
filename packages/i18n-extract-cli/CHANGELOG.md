@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.4.4
+
+### Patch Changes
+
+- 1ff520b: 解析 vue 模版时，无法区分空字符串属性和布尔属性的问题
+
 ## 2.4.3
 
 ### Patch Changes
