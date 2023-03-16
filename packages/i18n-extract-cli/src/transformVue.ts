@@ -130,9 +130,10 @@ function handleTemplate(code: string, rule: Rule): string {
 
   let shouldIgnore = false // 是否忽略提取
   let textNodeCache = '' // 缓存当前文本节点内容
+  let attrsCache: Record<string, string | undefined> = {} // 缓存当前标签的属性
   const parser = new htmlparser2.Parser(
     {
-      onopentag(tagName, attributes) {
+      onopentag(tagName) {
         // 处理文本节点没有被标签包裹的情况
         // 如果这个标签没被忽略提取，那么就进行文本节点解析
         if (!shouldIgnore) {
@@ -142,6 +143,7 @@ function handleTemplate(code: string, rule: Rule): string {
         }
 
         let attrs = ''
+        const attributes = attrsCache
         if (shouldIgnore) {
           for (const key in attributes) {
             const attrValue = attributes[key]
@@ -154,7 +156,9 @@ function handleTemplate(code: string, rule: Rule): string {
         for (const key in attributes) {
           const attrValue = attributes[key]
           const isVueDirective = key.startsWith(':') || key.startsWith('@') || key.startsWith('v-')
-          if (includeChinese(attrValue) && isVueDirective) {
+          if (attrValue === undefined) {
+            attrs += ` ${key} `
+          } else if (includeChinese(attrValue) && isVueDirective) {
             const source = parseJsSyntax(attrValue, rule)
             // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
             // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
@@ -170,12 +174,27 @@ function handleTemplate(code: string, rule: Rule): string {
             attrs += ` :${key}="${expression}" `
             Collector.add(customizeKey(attrValue))
           } else if (attrValue === '') {
-            attrs += `${key} `
+            // 这里key=''是因为之后还会被pretttier处理一遍，所以写死单引号没什么影响
+            attrs += `${key}='' `
           } else {
             attrs += ` ${key}="${attrValue}" `
           }
         }
+        // 重置属性缓存
+        attrsCache = {}
         htmlString += `<${tagName} ${attrs}>`
+      },
+
+      onattribute(name, value, quote) {
+        if (value) {
+          attrsCache[name] = value
+        } else {
+          if (quote === undefined) {
+            attrsCache[name] = undefined
+          } else {
+            attrsCache[name] = value
+          }
+        }
       },
 
       ontext(text) {
