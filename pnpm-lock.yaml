@@ -77,7 +77,6 @@ importers:
       '@types/qs': ^6.9.7
       '@types/semver': ^7.3.13
       '@types/serialize-javascript': ^5.0.2
-      '@vitalets/google-translate-api': 9.0.0
       '@vue/compiler-sfc': ^3.2.39
       chalk: 4.1.2
       cli-progress: ^3.11.2
@@ -118,7 +117,6 @@ importers:
       '@babel/traverse': 7.20.0
       '@babel/types': 7.20.0
       '@ifreeovo/translate-utils': link:../translate-utils
-      '@vitalets/google-translate-api': 9.0.0
       '@vue/compiler-sfc': 3.2.39
       chalk: 4.1.2
       cli-progress: 3.11.2
