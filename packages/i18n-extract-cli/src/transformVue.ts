@@ -382,10 +382,12 @@ function transformVue(
 ): {
   code: string
 } {
-  const { rule } = options
+  const { rule, filePath } = options
   const { descriptor, errors } = parse(code)
   if (errors.length > 0) {
-    log.error('vue文件解析出现错误：', errors[0].toString())
+    const line = (errors[0] as any).loc.start.line
+    log.error(`源文件${filePath}第${line}行附近解析出现错误：`, errors[0].toString())
+
     return {
       code,
     }

@@ -207,7 +207,7 @@ export default async function (options: CommandOptions) {
       const sourceCode = fs.readFileSync(sourceFilePath, 'utf8')
       const ext = path.extname(sourceFilePath).replace('.', '') as FileExtension
       Collector.resetCountOfAdditions()
-      const { code } = transform(sourceCode, ext, rules)
+      const { code } = transform(sourceCode, ext, rules, sourceFilePath)
       log.verbose(`完成中文提取和语法转换:`, sourceFilePath)
 
       // 只有文件提取过中文时，才重新写入文件
