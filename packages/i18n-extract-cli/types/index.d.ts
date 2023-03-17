@@ -13,6 +13,7 @@ export interface transformOptions {
   rule: Rule
   parse?: (code: string) => ParseResult
   isJsInVue?: boolean
+  filePath?: string
 }
 
 export interface Rule {

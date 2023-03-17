@@ -8,7 +8,8 @@ const presetTypescript = require('@babel/preset-typescript')
 function transform(
   code: string,
   ext: FileExtension,
-  rules: Rules
+  rules: Rules,
+  filePath: string
 ): {
   code: string
 } {
@@ -30,6 +31,7 @@ function transform(
     case 'vue':
       return transformVue(code, {
         rule: rules[ext],
+        filePath,
       })
     default:
       throw new Error(chalk.red(`不支持对.${ext}后缀的文件进行提取`))
