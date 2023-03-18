@@ -301,24 +301,7 @@ export default {
 
 ## 注意事项
 
-1. 使用 ts 的 vue 项目如果出现下面形式语法
-
-```ts
-@Component
-export default class Home extends Vue {}
-```
-
-请手动改写成
-
-```ts
-@Component
-class Home extends Vue {}
-export default Home
-```
-
-避免解析时报错
-
-2. 执行`it`命令时，如果需要自动翻译，请确保项目里中文语言包`zh-CN.json`文件存在，并且中文语言包的路径配置正确
+- 执行`it`命令时，如果需要自动翻译，请确保项目里中文语言包`zh-CN.json`文件存在，并且中文语言包的路径配置正确
 
 ## 开源许可证
 
