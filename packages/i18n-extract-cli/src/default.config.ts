@@ -1,6 +1,8 @@
 import { Config, Rule } from '../types'
 
-function getCustomizeKey(key: string) {
+// 第二个参数path，在生成配置文件时需要展示在文件里，所以不需要去掉
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getCustomizeKey(key: string, path?: string): string {
   return key
 }
 

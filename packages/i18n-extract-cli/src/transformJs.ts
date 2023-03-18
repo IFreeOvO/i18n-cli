@@ -151,7 +151,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
     let expression
     // i18n标记有参数的情况
     if (params) {
-      const keyLiteral = getStringLiteral(customizeKey(value))
+      const keyLiteral = getStringLiteral(customizeKey(value, Collector.getCurrentCollectorPath()))
       if (caller) {
         return t.callExpression(
           t.memberExpression(t.identifier(caller), t.identifier(functionName)),
@@ -165,7 +165,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
       }
     } else {
       // i18n标记没参数的情况
-      expression = getCallExpression(customizeKey(value))
+      expression = getCallExpression(customizeKey(value, Collector.getCurrentCollectorPath()))
       return template.expression(expression)()
     }
   }
@@ -192,22 +192,22 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
         },
 
         StringLiteral(path: NodePath<StringLiteral>) {
+          const value = path.node.value
           // 处理vue props里的中文
-          if (includeChinese(path.node.value) && options.isJsInVue && isPropNode(path)) {
-            const value = path.node.value
+          if (includeChinese(value) && options.isJsInVue && isPropNode(path)) {
             const expression = `function() {
               return ${getCallExpression(value)}
             }`
-            Collector.add(customizeKey(value))
+            Collector.add(value, customizeKey)
             path.replaceWith(template.expression(expression)())
             path.skip()
             return
           }
 
-          if (includeChinese(path.node.value)) {
+          if (includeChinese(value)) {
             hasTransformed = true
-            Collector.add(customizeKey(path.node.value))
-            path.replaceWith(getReplaceValue(path.node.value))
+            Collector.add(value, customizeKey)
+            path.replaceWith(getReplaceValue(value))
           }
           path.skip()
         },
@@ -250,17 +250,18 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
               }
             })
             hasTransformed = true
-            Collector.add(customizeKey(value))
+            Collector.add(value, customizeKey)
             const slotParams = isEmpty(params) ? undefined : params
             path.replaceWith(getReplaceValue(value, slotParams))
           }
         },
 
         JSXText(path: NodePath<JSXText>) {
-          if (includeChinese(path.node.value)) {
+          const value = path.node.value
+          if (includeChinese(value)) {
             hasTransformed = true
-            Collector.add(customizeKey(path.node.value.trim()))
-            path.replaceWith(t.JSXExpressionContainer(getReplaceValue(path.node.value.trim())))
+            Collector.add(value.trim(), customizeKey)
+            path.replaceWith(t.JSXExpressionContainer(getReplaceValue(value.trim())))
           }
           path.skip()
         },
@@ -269,10 +270,11 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           const node = path.node as NodePath<JSXAttribute>['node']
           const valueType = node.value?.type
           if (valueType === 'StringLiteral' && node.value && includeChinese(node.value.value)) {
+            const value = node.value.value
             const jsxIdentifier = t.jsxIdentifier(node.name.name)
-            const jsxContainer = t.jSXExpressionContainer(getReplaceValue(node.value.value))
+            const jsxContainer = t.jSXExpressionContainer(getReplaceValue(value))
             hasTransformed = true
-            Collector.add(customizeKey(node.value.value))
+            Collector.add(value, customizeKey)
             path.replaceWith(t.jsxAttribute(jsxIdentifier, jsxContainer))
             path.skip()
           }
