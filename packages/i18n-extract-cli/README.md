@@ -77,7 +77,7 @@ module.exports = {
     js: {
       caller: '', // 自定义this.$t('xxx')中的this。不填则默认没有调用对象
       functionName: 't', // 自定义this.$t('xxx')中的$t
-      customizeKey: function (key) {
+      customizeKey: function (key, currentFilePath) {
         return key
       }, // 自定义this.$t('xxx')中的'xxx'部分的生成规则
       importDeclaration: 'import { t } from "i18n"', // 默认在文件里导入i18n包。不填则默认不导入i18n的包。由于i18n的npm包有很多，用户可根据项目自行修改导入语法
@@ -86,7 +86,7 @@ module.exports = {
     ts: {
       caller: '',
       functionName: 't',
-      customizeKey: function (key) {
+      customizeKey: function (key, currentFilePath) {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
@@ -94,7 +94,7 @@ module.exports = {
     cjs: {
       caller: '',
       functionName: 't',
-      customizeKey: function (key) {
+      customizeKey: function (key, currentFilePath) {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
@@ -102,7 +102,7 @@ module.exports = {
     mjs: {
       caller: '',
       functionName: 't',
-      customizeKey: function (key) {
+      customizeKey: function (key, currentFilePath) {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
@@ -110,7 +110,7 @@ module.exports = {
     jsx: {
       caller: '',
       functionName: 't',
-      customizeKey: function (key) {
+      customizeKey: function (key, currentFilePath) {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
@@ -119,7 +119,7 @@ module.exports = {
     tsx: {
       caller: '',
       functionName: 't',
-      customizeKey: function (key) {
+      customizeKey: function (key, currentFilePath) {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
@@ -128,7 +128,7 @@ module.exports = {
     vue: {
       caller: 'this',
       functionName: '$t',
-      customizeKey: : function (key) {
+      customizeKey: : function (key, currentFilePath) {
         return key
       },
       importDeclaration: '',
