@@ -7,6 +7,7 @@ import prettier from 'prettier'
 import cliProgress from 'cli-progress'
 import glob from 'glob'
 import merge from 'lodash/merge'
+import cloneDeep from 'lodash/cloneDeep'
 import transform from './transform'
 import log from './utils/log'
 import { getAbsolutePath } from './utils/getAbsolutePath'
@@ -62,8 +63,8 @@ function saveLocale(localePath: string) {
     log.error(`路径${localePath}不是一个文件,请重新设置localePath参数`)
     process.exit(1)
   }
-  log.verbose(`输出中文语言包到指定位置:`, localeAbsolutePath)
   saveLocaleFile(keyMap, localeAbsolutePath)
+  log.verbose(`输出中文语言包到指定位置:`, localeAbsolutePath)
 }
 
 function getPrettierParser(ext: string): string {
@@ -183,8 +184,17 @@ export default async function (options: CommandOptions) {
   // 全局缓存脚手架配置
   StateManager.setToolConfig(i18nConfig)
 
-  const { input, exclude, output, rules, localePath, locales, skipExtract, skipTranslate } =
-    i18nConfig
+  const {
+    input,
+    exclude,
+    output,
+    rules,
+    localePath,
+    locales,
+    skipExtract,
+    skipTranslate,
+    adjustKeyMap,
+  } = i18nConfig
   log.debug(`命令行配置信息:`, i18nConfig)
 
   let oldPrimaryLang: Record<string, string> = {}
@@ -207,6 +217,7 @@ export default async function (options: CommandOptions) {
       const sourceCode = fs.readFileSync(sourceFilePath, 'utf8')
       const ext = path.extname(sourceFilePath).replace('.', '') as FileExtension
       Collector.resetCountOfAdditions()
+      Collector.setCurrentCollectorPath(sourceFilePath)
       const { code } = transform(sourceCode, ext, rules, sourceFilePath)
       log.verbose(`完成中文提取和语法转换:`, sourceFilePath)
 
@@ -222,13 +233,25 @@ export default async function (options: CommandOptions) {
         log.verbose(`生成文件:`, outputPath)
       }
 
+      // 自定义当前文件的keyMap
+      if (adjustKeyMap) {
+        const newkeyMap = adjustKeyMap(
+          cloneDeep(Collector.getKeyMap()),
+          Collector.getCurrentFileKeyMap(),
+          sourceFilePath
+        )
+        Collector.setKeyMap(newkeyMap)
+        Collector.resetCurrentFileKeyMap()
+      }
+
       bar.increment()
     })
     // 增量转换时，保留之前的提取的中文结果
     if (i18nConfig.incremental) {
-      const newkeyMap = Object.assign(oldPrimaryLang, Collector.getKeyMap())
+      const newkeyMap = merge(oldPrimaryLang, Collector.getKeyMap())
       Collector.setKeyMap(newkeyMap)
     }
+
     saveLocale(localePath)
     bar.stop()
     const endTime = new Date().getTime()

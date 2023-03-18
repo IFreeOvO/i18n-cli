@@ -1,8 +1,9 @@
 import fs from 'fs-extra'
+import type { StringObject } from '../../types'
 import StateManager from './stateManager'
 import { serializeCode } from './serializeCode'
 
-export function saveLocaleFile(locale: Record<string, string>, path: string) {
+export function saveLocaleFile(locale: StringObject, path: string) {
   const { localeFileType } = StateManager.getToolConfig()
   if (!fs.existsSync(path)) {
     fs.ensureFileSync(path)

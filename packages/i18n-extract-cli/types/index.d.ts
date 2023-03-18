@@ -16,11 +16,13 @@ export interface transformOptions {
   filePath?: string
 }
 
+export type CustomizeKey = (key: string, path?: string) => string
+
 export interface Rule {
   caller: string
   functionName: string
   importDeclaration: string
-  customizeKey: (key: string) => string
+  customizeKey: CustomizeKey
   // TODO: 可优化成根据范型动态生成规则
   functionSnippets?: string
 }
@@ -30,6 +32,16 @@ export type Rules = {
 }
 
 export type FileExtension = 'js' | 'ts' | 'cjs' | 'mjs' | 'jsx' | 'tsx' | 'vue'
+
+export type StringObject = {
+  [key: string]: string | StringObject
+}
+
+export type AdjustKeyMap = (
+  allKeyValue: StringObject,
+  currentPathKeyValue: Record<string, string>,
+  path
+) => StringObject
 
 export interface YoudaoConfig {
   key?: string
@@ -69,6 +81,7 @@ export type Config = {
   globalRule: GlobalRule
   excelPath: string
   exportExcel: boolean
+  adjustKeyMap?: AdjustKeyMap
 } & TranslateConfig
 
 export interface CommandOptions {

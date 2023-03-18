@@ -91,7 +91,7 @@ function parseTextNode(
       value = formatValue(value)
       if (type === 'text') {
         str += `{{${getReplaceValue(value)}}}`
-        Collector.add(customizeKey(value))
+        Collector.add(value, customizeKey)
       } else if (type === 'name') {
         const source = parseJsSyntax(value, rule)
         str += `{{${source}}}`
@@ -118,7 +118,10 @@ function handleTemplate(code: string, rule: Rule): string {
     value = escapeQuotes(value)
 
     // 表达式结构 $t('xx')
-    let expression = `${functionName}('${customizeKey(value)}')`
+    let expression = `${functionName}('${customizeKey(
+      value,
+      Collector.getCurrentCollectorPath()
+    )}')`
 
     // 属性里的$t('')转成$t(``)，并把双引号转成单引号
     if (isAttribute) {
@@ -163,7 +166,7 @@ function handleTemplate(code: string, rule: Rule): string {
             // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
             // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
             if (attrValue === source && !hasTransformed(source, rule.functionName)) {
-              Collector.add(customizeKey(removeQuotes(attrValue)))
+              Collector.add(removeQuotes(attrValue), customizeKey)
               const expression = getReplaceValue(removeQuotes(attrValue))
               attrs += ` ${key}="${expression}" `
             } else {
@@ -172,7 +175,7 @@ function handleTemplate(code: string, rule: Rule): string {
           } else if (includeChinese(attrValue) && !isVueDirective) {
             const expression = getReplaceValue(attrValue, true)
             attrs += ` :${key}="${expression}" `
-            Collector.add(customizeKey(attrValue))
+            Collector.add(attrValue, customizeKey)
           } else if (attrValue === '') {
             // 这里key=''是因为之后还会被pretttier处理一遍，所以写死单引号没什么影响
             attrs += `${key}='' `
