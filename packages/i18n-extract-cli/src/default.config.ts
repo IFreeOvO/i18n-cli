@@ -54,6 +54,10 @@ const config: Config = {
   globalRule: {
     ignoreMethods: [],
   },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  adjustKeyMap(allKeyValue, currentFileKeyMap, currentFilePath) {
+    return allKeyValue
+  },
 }
 
 export default config
