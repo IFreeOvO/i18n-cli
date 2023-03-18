@@ -148,6 +148,11 @@ module.exports = {
   locales: [], // 需要翻译的语言包。例如['en', 'zh-CHT']，会自动翻译英文和繁体
   excelPath: './locales.xlsx', // excel存放路径
   exportExcel: false, // 是否导出excel
+  // 参数：
+  // allKeyValue：已遍历的所有文件的key-value
+  // currentFileKeyMap: 当前文件提取到的key-value
+  // currentFilePath: 当前遍历的文件路径
+  adjustKeyMap(allKeyValue, currentFileKeyMap, currentFilePath) {return allKeyValue}, // 对提取结构进行二次处理
 }
 ```
 
@@ -300,6 +305,8 @@ export default {
 ```
 
 ## 注意事项
+
+- 自定义配置里的 js 规则，除了用于处理 js 文件，也会应用到 vue 的模版和 vue`script`标签的非`export default`部分
 
 - 执行`it`命令时，如果需要自动翻译，请确保项目里中文语言包`zh-CN.json`文件存在，并且中文语言包的路径配置正确
 
