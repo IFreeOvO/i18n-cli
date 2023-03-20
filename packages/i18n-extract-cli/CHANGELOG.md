@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.5.0
+
+### Minor Changes
+
+- 864c72f: 提取失败的文件可以打印在日志中
+- 1d67e33: 支持自定义提取结果的层级
+
 ## 2.4.4
 
 ### Patch Changes
