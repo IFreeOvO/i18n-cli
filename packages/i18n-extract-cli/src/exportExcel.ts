@@ -1,10 +1,12 @@
 import fs from 'fs-extra'
+import type { StringObject } from '../types'
 import StateManager from './utils/stateManager'
 import { getExcelHeader, buildExcel } from './utils/excelUtil'
 import { getAbsolutePath } from './utils/getAbsolutePath'
 import getLang from './utils/getLang'
 import log from './utils/log'
 import { getLocaleDir } from './utils/getLocaleDir'
+import { flatObjectDeep } from './utils/flatObjectDeep'
 
 export default function exportExcel() {
   const { localeFileType, excelPath } = StateManager.getToolConfig()
@@ -20,7 +22,7 @@ export default function exportExcel() {
   const data: string[][] = []
   for (const locale of locales) {
     const currentLocalePath = getAbsolutePath(localeDirPath, `${locale}.${localeFileType}`)
-    let lang: Record<string, string> = {}
+    let lang: StringObject = {}
     if (fs.existsSync(currentLocalePath)) {
       lang = getLang(currentLocalePath)
     } else {
@@ -30,18 +32,24 @@ export default function exportExcel() {
 
     // 遍历中文时，存入key和value，并创建数据行
     if (locale === 'zh-CN') {
-      Object.keys(lang).forEach((key, index) => {
+      let rowIndex = 0
+      const keyValueMap = flatObjectDeep(lang)
+      Object.keys(keyValueMap).forEach((key) => {
         data.push([])
-        data[index].push(key) // 放入字段key
-        data[index].push(lang[key]) // 放入中文翻译
+        data[rowIndex].push(key) // 放入字段key
+        data[rowIndex].push(keyValueMap[key]) // 放入中文翻译
+        rowIndex++
       })
     } else {
-      Object.keys(lang).forEach((key, index) => {
-        data[index].push(lang[key])
+      let rowIndex = 0
+      const keyValueMap = flatObjectDeep(lang)
+      Object.keys(keyValueMap).forEach((key) => {
+        data[rowIndex].push(keyValueMap[key]) // 放入中文翻译
+        rowIndex++
       })
     }
   }
-  const excelBuffer = buildExcel(headers, data, excelFileName)
 
+  const excelBuffer = buildExcel(headers, data, excelFileName)
   fs.writeFileSync(getAbsolutePath(process.cwd(), excelPath), excelBuffer, 'utf8')
 }
