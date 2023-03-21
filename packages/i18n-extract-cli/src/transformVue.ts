@@ -95,6 +95,10 @@ function parseTextNode(
       } else if (type === 'name') {
         const source = parseJsSyntax(value, rule)
         str += `{{${source}}}`
+      } else if (type === COMMENT_TYPE) {
+        // 形如{{!xxxx}}这种形式，在mustache里属于注释语法
+        const source = parseJsSyntax(`!${value}`, rule)
+        str += `{{${source}}}`
       }
     } else {
       if (type === 'text') {
