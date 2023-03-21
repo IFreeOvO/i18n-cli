@@ -1,5 +1,13 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.5.1
+
+### Patch Changes
+
+- aaa5cc3: 没有支持多层级语言包的翻译
+- aaa5cc3: 没有支持多层级语言包的导入导出
+- 384c3fd: vue 模版中{{!xxx}}语法转换后会丢失
+
 ## 2.5.0
 
 ### Minor Changes
