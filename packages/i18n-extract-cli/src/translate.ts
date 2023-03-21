@@ -1,12 +1,14 @@
 import fs from 'fs-extra'
 import { googleTranslate, youdaoTranslate } from '@ifreeovo/translate-utils'
-import type { TranslateConfig } from '../types'
+import type { TranslateConfig, StringObject } from '../types'
 import { getAbsolutePath } from './utils/getAbsolutePath'
 import log from './utils/log'
 import { GOOGLE, YOUDAO } from './utils/constants'
 import getLang from './utils/getLang'
 import StateManager from './utils/stateManager'
 import { saveLocaleFile } from './utils/saveLocaleFile'
+import { flatObjectDeep } from './utils/flatObjectDeep'
+import { spreadObject } from './utils/spreadObject'
 
 async function translateByGoogle(
   word: string,
@@ -49,7 +51,7 @@ async function translateByYoudao(
 export default async function (
   localePath: string,
   locales: string[],
-  oldPrimaryLang: Record<string, string>,
+  oldPrimaryLang: StringObject,
   options: TranslateConfig
 ) {
   if (![GOOGLE, YOUDAO].includes(options.translator || '')) {
@@ -58,7 +60,7 @@ export default async function (
   }
   log.verbose('当前使用的翻译器：', options.translator)
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
-  const newPrimaryLang = getLang(primaryLangPath)
+  const newPrimaryLang = flatObjectDeep(getLang(primaryLangPath))
   const localeFileType = StateManager.getToolConfig().localeFileType
 
   for (const targetLocale of locales) {
@@ -70,7 +72,7 @@ export default async function (
     let oldTargetLangPack: Record<string, string> = {}
     const newTargetLangPack: Record<string, string> = {}
     if (fs.existsSync(targetLocalePath)) {
-      oldTargetLangPack = getLang(targetLocalePath)
+      oldTargetLangPack = flatObjectDeep(getLang(targetLocalePath))
     } else {
       fs.ensureFileSync(targetLocalePath)
     }
@@ -78,7 +80,8 @@ export default async function (
     const keyList = Object.keys(newPrimaryLang)
     for (const key of keyList) {
       // 主语言同一个key的value不变，就复用原有的翻译结果
-      const isNotChanged = oldPrimaryLang[key] === newPrimaryLang[key]
+      const oldLang = flatObjectDeep(oldPrimaryLang)
+      const isNotChanged = oldLang[key] === newPrimaryLang[key]
       if (isNotChanged && oldTargetLangPack[key]) {
         newTargetLangPack[key] = oldTargetLangPack[key]
       } else {
@@ -97,7 +100,8 @@ export default async function (
         }
       }
     }
+    const fileContent = spreadObject(newTargetLangPack)
+    saveLocaleFile(fileContent, targetLocalePath)
     log.info(`完成${targetLocale}语言包翻译`)
-    saveLocaleFile(newTargetLangPack, targetLocalePath)
   }
 }
