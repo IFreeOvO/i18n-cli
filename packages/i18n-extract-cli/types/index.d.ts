@@ -54,6 +54,9 @@ export interface TranslateConfig {
   }
   youdao?: YoudaoConfig
 }
+
+export type PrettierConfig = Options | boolean
+
 export type Config = {
   input: string
   output: string
@@ -74,7 +77,7 @@ export type Config = {
     }
     vue: Rule
   }
-  prettier: Options
+  prettier: PrettierConfig
   skipExtract: boolean
   skipTranslate: boolean
   incremental: boolean
