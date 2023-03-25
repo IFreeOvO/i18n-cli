@@ -376,7 +376,10 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
   }
 
   const ast = transformAST(code, options)
-  const result = babelGenerator(ast)
+  const result = babelGenerator(ast, {
+    compact: false,
+    retainLines: true,
+  })
   // 文件里没有出现任何导入语句的情况
   if (!hasImportI18n && hasTransformed) {
     result.code = `${importDeclaration}\n${result.code}`
