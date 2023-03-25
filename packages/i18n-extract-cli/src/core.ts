@@ -1,4 +1,4 @@
-import type { CommandOptions, FileExtension, TranslateConfig } from '../types'
+import type { CommandOptions, FileExtension, TranslateConfig, PrettierConfig } from '../types'
 import fs from 'fs-extra'
 import chalk from 'chalk'
 import inquirer from 'inquirer'
@@ -19,6 +19,7 @@ import StateManager from './utils/stateManager'
 import exportExcel from './exportExcel'
 import { getI18nConfig } from './utils/initConfig'
 import { saveLocaleFile } from './utils/saveLocaleFile'
+import { isObject } from './utils/assertType'
 
 interface InquirerResult {
   translator?: 'google' | 'youdao'
@@ -175,6 +176,25 @@ async function getTranslationConfig() {
   return result
 }
 
+function formatCode(code: string, ext: string, prettierConfig: PrettierConfig): string {
+  let stylizedCode = code
+  if (isObject(prettierConfig)) {
+    stylizedCode = prettier.format(code, {
+      ...prettierConfig,
+      parser: getPrettierParser(ext),
+    })
+    log.verbose(`格式化代码完成`)
+  } else if (prettierConfig === true) {
+    stylizedCode = prettier.format(code, {
+      semi: false,
+      singleQuote: true,
+      parser: getPrettierParser(ext),
+    })
+    log.verbose(`格式化代码完成`)
+  }
+  return stylizedCode
+}
+
 export default async function (options: CommandOptions) {
   let i18nConfig = getI18nConfig(options)
   if (!i18nConfig.skipTranslate) {
@@ -223,11 +243,7 @@ export default async function (options: CommandOptions) {
 
       // 只有文件提取过中文时，才重新写入文件
       if (Collector.getCountOfAdditions() > 0) {
-        const stylizedCode = prettier.format(code, {
-          ...i18nConfig.prettier,
-          parser: getPrettierParser(ext),
-        })
-        log.verbose(`格式化代码完成`)
+        const stylizedCode = formatCode(code, ext, i18nConfig.prettier)
         const outputPath = getOutputPath(input, output, sourceFilePath)
         fs.writeFileSync(outputPath, stylizedCode, 'utf8')
         log.verbose(`生成文件:`, outputPath)
