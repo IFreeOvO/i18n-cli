@@ -1,5 +1,15 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.6.0
+
+### Minor Changes
+
+- 72c9dad: 支持关闭 prettier
+
+### Patch Changes
+
+- fe49810: 修复空行丢失问题
+
 ## 2.5.1
 
 ### Patch Changes
