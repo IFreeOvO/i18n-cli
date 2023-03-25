@@ -303,9 +303,9 @@ function handleScript(source: string, rule: Rule): string {
       rule: StateManager.getToolConfig().rules.js,
     }).code
     if (notDefaultCode) {
-      return notDefaultCode + '\n' + defaultCode
+      return '\n' + notDefaultCode + '\n' + defaultCode + '\n'
     } else {
-      return defaultCode
+      return defaultCode + '\n'
     }
   } else {
     const code = transformJs(source, transformOptions).code
