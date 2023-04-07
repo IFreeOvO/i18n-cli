@@ -31,7 +31,7 @@ class Collector {
   add(value: string, customizeKeyFn: CustomizeKey) {
     const customizeKey = customizeKeyFn(value, this.currentFilePath)
     log.verbose('提取中文：', value)
-    this.keyMap[customizeKey] = value
+    this.keyMap[customizeKey] = value.replace('|', "{'|'}") // '|' 管道符在vue-i18n表示复数形式,需要特殊处理。见https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
     this.countOfAdditions++
     this.currentFileKeyMap[customizeKey] = value
   }
