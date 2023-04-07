@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.6.1
+
+### Patch Changes
+
+- a3dba41: 翻译文本中包含'|'符号时,页面展示会丢失'|'后面的内容
+
 ## 2.6.0
 
 ### Minor Changes
