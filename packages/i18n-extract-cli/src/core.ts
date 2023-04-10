@@ -241,8 +241,8 @@ export default async function (options: CommandOptions) {
       const { code } = transform(sourceCode, ext, rules, sourceFilePath)
       log.verbose(`完成中文提取和语法转换:`, sourceFilePath)
 
-      // 只有文件提取过中文时，才重新写入文件
-      if (Collector.getCountOfAdditions() > 0) {
+      // 只有文件提取过中文，或文件规则forceImport为true时，才重新写入文件
+      if (Collector.getCountOfAdditions() > 0 || rules[ext].forceImport) {
         const stylizedCode = formatCode(code, ext, i18nConfig.prettier)
         const outputPath = getOutputPath(input, output, sourceFilePath)
         fs.writeFileSync(outputPath, stylizedCode, 'utf8')

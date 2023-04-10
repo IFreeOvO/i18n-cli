@@ -25,6 +25,7 @@ export interface Rule {
   customizeKey: CustomizeKey
   // TODO: 可优化成根据范型动态生成规则
   functionSnippets?: string
+  forceImport?: boolean
 }
 
 export type Rules = {
