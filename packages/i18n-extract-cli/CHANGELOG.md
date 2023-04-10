@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.7.0
+
+### Minor Changes
+
+- 39f8e47: 支持强制插入 importDeclaration 配置的内容
+
 ## 2.6.1
 
 ### Patch Changes
