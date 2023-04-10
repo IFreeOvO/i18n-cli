@@ -134,7 +134,8 @@ function insertSnippets(node: ArrowFunctionExpression | FunctionExpression, snip
 
 function transformJs(code: string, options: transformOptions): GeneratorResult {
   const { rule } = options
-  const { caller, functionName, customizeKey, importDeclaration, functionSnippets } = rule
+  const { caller, functionName, customizeKey, importDeclaration, functionSnippets, forceImport } =
+    rule
   let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
 
@@ -382,6 +383,10 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
   })
   // 文件里没有出现任何导入语句的情况
   if (!hasImportI18n && hasTransformed) {
+    result.code = `${importDeclaration}\n${result.code}`
+  }
+  // 有forceImport时，即使没发生中文提取，也要在文件里加入i18n导入语句
+  if (!hasImportI18n && !hasTransformed && forceImport) {
     result.code = `${importDeclaration}\n${result.code}`
   }
   return result
