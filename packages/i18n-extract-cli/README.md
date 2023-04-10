@@ -82,6 +82,7 @@ module.exports = {
         return key
       }, // 自定义this.$t('xxx')中的'xxx'部分的生成规则
       importDeclaration: 'import { t } from "i18n"', // 默认在文件里导入i18n包。不填则默认不导入i18n的包。由于i18n的npm包有很多，用户可根据项目自行修改导入语法
+      forceImport: false, // 即使文件没出现中文，也强行插入importDeclaration定义的语句
     },
     // ts,cjs,mjs,jsx,tsx配置方式同上
     ts: {
@@ -91,6 +92,7 @@ module.exports = {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
+      forceImport: false,
     },
     cjs: {
       caller: '',
@@ -99,6 +101,7 @@ module.exports = {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
+      forceImport: false,
     },
     mjs: {
       caller: '',
@@ -107,6 +110,7 @@ module.exports = {
         return key
       },
       importDeclaration: 'import { t } from "i18n"',
+      forceImport: false,
     },
     jsx: {
       caller: '',
@@ -116,6 +120,7 @@ module.exports = {
       },
       importDeclaration: 'import { t } from "i18n"',
       functionSnippets: '', // react函数组件里，全局加代码片段
+      forceImport: false,
     },
     tsx: {
       caller: '',
@@ -125,7 +130,9 @@ module.exports = {
       },
       importDeclaration: 'import { t } from "i18n"',
       functionSnippets: '',
+      forceImport: false,
     },
+    // vue这里的配置，仅针对vue的script部分生效
     vue: {
       caller: 'this',
       functionName: '$t',
@@ -133,6 +140,7 @@ module.exports = {
         return key
       },
       importDeclaration: '',
+      forceImport: false,
     },
   },
   globalRule: {
