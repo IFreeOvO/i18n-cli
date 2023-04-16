@@ -64,7 +64,6 @@ function hasTransformed(code: string, functionName: string): boolean {
 }
 
 function formatValue(value: string): string {
-  value = value.trim()
   if (value.startsWith('\n')) {
     value = value.slice(1, value.length - 1).trimStart()
   }
