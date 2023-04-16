@@ -231,6 +231,11 @@ function handleTemplate(code: string, rule: Rule): string {
       },
 
       oncomment(comment) {
+        // 如果注释前有文本节点，就拼接
+        const text = parseTextNode(textNodeCache, rule, getReplaceValue, customizeKey)
+        htmlString += text
+        textNodeCache = ''
+
         if (comment.includes(IGNORE_REMARK)) {
           shouldIgnore = true
         }
