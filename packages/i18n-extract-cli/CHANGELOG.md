@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 2.7.1
+
+### Patch Changes
+
+- 2795c88: vue 模版注释节点后面,转换后会多一行
+- 4032d0a: 转换后 vue 模版文本节点里的空格会丢失
+
 ## 2.7.0
 
 ### Minor Changes
