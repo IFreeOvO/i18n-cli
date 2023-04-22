@@ -132,10 +132,10 @@ module.exports = {
       functionSnippets: '',
       forceImport: false,
     },
-    // vue这里的配置，仅针对vue的script部分生效
     vue: {
       caller: 'this',
-      functionName: '$t',
+      functionNameInTemplate: '$t',// vue这里的配置，仅针对vue的template标签里面的内容生效
+      functionNameInScript: '$t', // vue这里的配置，仅针对vue的script部分export default里面的内容生效
       customizeKey: : function (key, currentFilePath) {
         return key
       },
@@ -315,7 +315,29 @@ export default {
 
 ## 注意事项
 
-- 自定义配置里的 js 规则，除了用于处理 js 文件，也会应用到 vue 的模版和 vue`script`标签的非`export default`部分
+- 自定义配置里的 js 规则，除了用于处理 js 文件，也会应用到 vue 的模版和 vue`script`标签的非`export default`部分。例如
+
+```js
+<script>import a from 'a.js' function b() {a('哈哈哈')}</script>
+```
+
+- 自定义配置里的 vue 的`functionNameInScript`规则，仅针对`script`标签的`export default`部分生效。例如
+
+```vue
+<script>
+export default {
+  data: {
+    return {
+      a: '测试'
+    }
+  }
+}
+</script>
+```
+
+- 代码转换后，新插入的导入语句中`import { t } from "i18n"`的`i18n`是通过打包工具(如`webpack`)的别名`alias`功能实现的。开发者可以结合自身需求自己定义，通过别名把`i18n`文件指向一个绝对路径
+
+- 导入语句中`import { t } from "i18n"`，其中的`i18n`文件内容要自己去封装实现
 
 - 执行`it`命令时，如果需要自动翻译，请确保项目里中文语言包`zh-CN.json`文件存在，并且中文语言包的路径配置正确
 

@@ -29,6 +29,8 @@ function transform(
         parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
       })
     case 'vue':
+      // 规则functionName废弃掉，使用functionNameInScript代替
+      rules[ext].functionName = rules[ext].functionNameInScript ?? ''
       return transformVue(code, {
         rule: rules[ext],
         filePath,

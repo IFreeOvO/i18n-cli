@@ -34,7 +34,8 @@ const config: Config = {
     },
     vue: {
       caller: 'this',
-      functionName: '$t',
+      functionNameInTemplate: '$t',
+      functionNameInScript: '$t',
       customizeKey: getCustomizeKey,
       importDeclaration: '',
     },
