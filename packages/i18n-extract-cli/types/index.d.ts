@@ -50,8 +50,10 @@ export interface YoudaoConfig {
   key?: string
   secret?: string
 }
+
+export type translatorType = 'google' | 'youdao'
 export interface TranslateConfig {
-  translator?: 'google' | 'youdao'
+  translator?: translatorType
   google?: {
     proxy?: string
   }
