@@ -1,5 +1,13 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.0.0
+
+### Major Changes
+
+- b3fba08: 修改 vue 规则配置
+- 4516e6d: 修改 js 类型语言包中的导出语句
+- 20be77e: 翻译支持批量翻译 5000 个字符
+
 ## 2.7.1
 
 ### Patch Changes
