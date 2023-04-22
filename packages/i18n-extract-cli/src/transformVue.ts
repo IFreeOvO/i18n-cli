@@ -35,6 +35,7 @@ function parseJsSyntax(source: string, rule: Rule): string {
   const { code } = transformJs(source, {
     rule: {
       ...rule,
+      functionName: rule.functionNameInTemplate,
       caller: '',
       importDeclaration: '',
     },
@@ -59,8 +60,8 @@ function parseJsSyntax(source: string, rule: Rule): string {
 }
 
 // 判断表达式是否已经转换成i18n
-function hasTransformed(code: string, functionName: string): boolean {
-  return new RegExp(`\\${functionName}\\(.*\\)`, 'g').test(code)
+function hasTransformed(code: string, functionNameInTemplate: string): boolean {
+  return new RegExp(`\\${functionNameInTemplate}\\(.*\\)`, 'g').test(code)
 }
 
 function formatValue(value: string): string {
@@ -115,13 +116,13 @@ function parseTextNode(
 
 function handleTemplate(code: string, rule: Rule): string {
   let htmlString = ''
-  const { functionName, customizeKey } = rule
+  const { functionNameInTemplate, customizeKey } = rule
 
   function getReplaceValue(value: string, isAttribute?: boolean): string {
     value = escapeQuotes(value)
 
     // 表达式结构 $t('xx')
-    let expression = `${functionName}('${customizeKey(
+    let expression = `${functionNameInTemplate}('${customizeKey(
       value,
       Collector.getCurrentCollectorPath()
     )}')`
@@ -168,7 +169,7 @@ function handleTemplate(code: string, rule: Rule): string {
             const source = parseJsSyntax(attrValue, rule)
             // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
             // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
-            if (attrValue === source && !hasTransformed(source, rule.functionName)) {
+            if (attrValue === source && !hasTransformed(source, functionNameInTemplate ?? '')) {
               Collector.add(removeQuotes(attrValue), customizeKey)
               const expression = getReplaceValue(removeQuotes(attrValue))
               attrs += ` ${key}="${expression}" `
@@ -291,7 +292,10 @@ function handleScript(source: string, rule: Rule): string {
   const parser = initParse([[presetTypescript, { isTSX: true, allExtensions: true }]])
   const startIndex = findExportDefaultDeclaration(source, parser)
   const transformOptions = {
-    rule,
+    rule: {
+      ...rule,
+      functionName: rule.functionNameInScript,
+    },
     isJsInVue: true, // 标记处理vue里的js
     parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
   }
