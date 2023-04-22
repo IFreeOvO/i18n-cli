@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "es2015",
+    "target": "es2018",
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
