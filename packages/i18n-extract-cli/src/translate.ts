@@ -27,7 +27,7 @@ async function translateByGoogle(
     } else {
       log.error('谷歌翻译请求出错', e)
     }
-    process.exit(1)
+    return ''
   }
 }
 
@@ -44,7 +44,7 @@ async function translateByYoudao(
     return await youdaoTranslate(word, 'zh-CN', locale, options.youdao)
   } catch (e) {
     log.error('有道翻译请求出错', e)
-    process.exit(1)
+    return ''
   }
 }
 
@@ -121,6 +121,7 @@ class Translator {
   #targetLocale: string
   #providerOptions: TranslateConfig
   #textLengthLimit = 5000
+  #separator = '\n' // 翻译文本拼接用的分隔符
 
   constructor({ provider, targetLocale, providerOptions }: TranslatorConstructor) {
     switch (provider) {
@@ -155,18 +156,19 @@ class Translator {
       const textBundleArr = allTextArr.slice(startIndex, startIndex + maxTranslationCount)
       restTextBundleArr = allTextArr.slice(startIndex + maxTranslationCount)
       startIndex = startIndex + maxTranslationCount
-
       const [res] = await Promise.all([
         this.#provider(
-          textBundleArr.join('\\$'), // 文本中可能有逗号，为了防止后面分割字符出错，使用\\$代替逗号
+          textBundleArr.join(this.#separator), // 文本中可能有逗号，为了防止后面分割字符出错，使用\\$代替逗号
           this.#targetLocale,
           this.#providerOptions
         ),
         new Promise((resolve) => setTimeout(resolve, 1000)), // 有道翻译接口限制每秒1次请求
       ])
-      const resArr = res.split('\\$')
+
+      const resArr = res.split(this.#separator)
       result.push(...resArr)
     }
+
     const incrementalTranslation: Record<string, string> = {}
     Object.keys(dictionary).forEach((key, index) => {
       // 翻译后有可能字符串前后会多出一个空格，这里做一下过滤
@@ -191,7 +193,7 @@ class Translator {
     const textNum = textArr.length
     const diff = Math.min(tryTranslationCount, textNum)
     const textBundleArr = textArr.slice(0, diff)
-    const textBundleLength = textBundleArr.join(',').length
+    const textBundleLength = textBundleArr.join(this.#separator).length
     // allowTranslationCount > tryTranslationCount 是指待翻译内容一开始就超出限制字数的情况
     // allowTranslationCount === textNum 是指待翻译内容一开始就小于限制字数的情况
     if (allowTranslationCount > tryTranslationCount || allowTranslationCount === textNum) {
