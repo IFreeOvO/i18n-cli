@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.0.1
+
+### Patch Changes
+
+- 0d6f9cc: 去掉语言包 key 里面的回车
+- 819444e: 批量翻译后,会缺失一些译文
+
 ## 3.0.0
 
 ### Major Changes
