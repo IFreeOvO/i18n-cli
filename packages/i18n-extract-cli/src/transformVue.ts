@@ -119,7 +119,7 @@ function handleTemplate(code: string, rule: Rule): string {
   const { functionNameInTemplate, customizeKey } = rule
 
   function getReplaceValue(value: string, isAttribute?: boolean): string {
-    value = escapeQuotes(value)
+    value = escapeQuotes(value).replace(/[\r\n]+/g, '')
 
     // 表达式结构 $t('xx')
     let expression = `${functionNameInTemplate}('${customizeKey(
