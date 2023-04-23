@@ -9,7 +9,6 @@ import StateManager from './utils/stateManager'
 import { saveLocaleFile } from './utils/saveLocaleFile'
 import { flatObjectDeep } from './utils/flatObjectDeep'
 import { spreadObject } from './utils/spreadObject'
-import { resolve } from 'path'
 
 async function translateByGoogle(
   word: string,
