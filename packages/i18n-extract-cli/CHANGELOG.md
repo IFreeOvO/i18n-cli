@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.0.2
+
+### Patch Changes
+
+- 39eee88: vue 模版里字符转义问题
+- 2368c98: 修复字符串中回车替换问题
+
 ## 3.0.1
 
 ### Patch Changes
