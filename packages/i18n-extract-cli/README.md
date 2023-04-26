@@ -1,6 +1,6 @@
 # 介绍
 
-这是一个支持自动将中文替换成 i18n 国际化标记的命令行工具
+这是一款能够自动将代码里的中文转成 i18n 国际化标记的命令行工具。当然，你也可以用它实现将中文语言包自动翻译成其他语言。适用于 vue2、vue3 和 react
 
 ## 流程设计
 
@@ -203,18 +203,18 @@ it --localePath ./locales/zh-CN.json  --locales ja
 it --incremental -i ./src/C
 ```
 
-6. 导入 excel
+6. 导入翻译的 excel 表格，并自动生成对应语言包的 json 文件
 
-excel 的表头格式`['字典key', 'zh-CN']`
+excel 的表头格式举例`['字典key', 'zh-CN', 'en-US']`
 
 ```
-# 方式1，根据指令参数
+# 方式1，根据指令参数导入
 it loadExcel --excelPath ./demo.xlsx --localePath ./locales/zh-CN.json
-# 方式2，根据本地配置
+# 方式2，根据本地自定义配置导入
 it loadExcel -c ./i18n.config.js
 ```
 
-1. 导出 excel
+1. 将翻译结果导出到 excel 表格
 
 ```
 # 方式1，根据指令参数
