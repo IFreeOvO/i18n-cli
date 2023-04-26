@@ -19,6 +19,8 @@ import { escapeQuotes } from './utils/escapeQuotes'
 import Collector from './collector'
 import { IGNORE_REMARK } from './utils/constants'
 import StateManager from './utils/stateManager'
+import { removeLineBreaksInTag } from './utils/removeLineBreaksInTag'
+
 const presetTypescript = require('@babel/preset-typescript')
 
 type Handler = (source: string, rule: Rule) => string
@@ -119,7 +121,7 @@ function handleTemplate(code: string, rule: Rule): string {
   const { functionNameInTemplate, customizeKey } = rule
 
   function getReplaceValue(value: string, isAttribute?: boolean): string {
-    value = escapeQuotes(value).replace(/[\r\n]+/g, '')
+    value = removeLineBreaksInTag(escapeQuotes(value))
 
     // 表达式结构 $t('xx')
     let expression = `${functionNameInTemplate}('${customizeKey(
