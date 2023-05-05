@@ -137,9 +137,65 @@ function handleTemplate(code: string, rule: Rule): string {
     return expression
   }
 
+  function parseIgnoredTagAttribute(attributes: Record<string, string | undefined>): string {
+    let attrs = ''
+    for (const key in attributes) {
+      const attrValue = attributes[key]
+      if (attrValue === undefined) {
+        attrs += ` ${key} `
+      } else {
+        attrs += ` ${key}="${attrValue}" `
+      }
+    }
+    return attrs
+  }
+
+  function parseTagAttribute(attributes: Record<string, string | undefined>): string {
+    let attrs = ''
+    for (const key in attributes) {
+      const attrValue = attributes[key]
+      const isVueDirective = key.startsWith(':') || key.startsWith('@') || key.startsWith('v-')
+      if (attrValue === undefined) {
+        attrs += ` ${key} `
+      } else if (includeChinese(attrValue) && isVueDirective) {
+        const source = parseJsSyntax(attrValue, rule)
+        // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
+        // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
+        if (attrValue === source && !hasTransformed(source, functionNameInTemplate ?? '')) {
+          Collector.add(removeQuotes(attrValue), customizeKey)
+          const expression = getReplaceValue(removeQuotes(attrValue))
+          attrs += ` ${key}="${expression}" `
+        } else {
+          attrs += ` ${key}="${source}" `
+        }
+      } else if (includeChinese(attrValue) && !isVueDirective) {
+        const expression = getReplaceValue(attrValue, true)
+        attrs += ` :${key}="${expression}" `
+        Collector.add(attrValue, customizeKey)
+      } else if (attrValue === '') {
+        // 这里key=''是因为之后还会被pretttier处理一遍，所以写死单引号没什么影响
+        attrs += `${key}='' `
+      } else {
+        attrs += ` ${key}="${attrValue}" `
+      }
+    }
+    return attrs
+  }
+
+  // 转义特殊字符
+  function escapeSpecialChar(text: string): string {
+    text = text.replace(/&nbsp;/g, ' ')
+    text = text.replace(/&lt;/g, '<')
+    text = text.replace(/&gt;/g, '>')
+    text = text.replace(/&quot;/g, '"')
+    text = text.replace(/&amp;/g, '&')
+    return text
+  }
+
   let shouldIgnore = false // 是否忽略提取
   let textNodeCache = '' // 缓存当前文本节点内容
   let attrsCache: Record<string, string | undefined> = {} // 缓存当前标签的属性
+  const ignoreTags: string[] = [] // 记录忽略提取的标签名
   const parser = new htmlparser2.Parser(
     {
       onopentag(tagName) {
@@ -154,41 +210,15 @@ function handleTemplate(code: string, rule: Rule): string {
         let attrs = ''
         const attributes = attrsCache
         if (shouldIgnore) {
-          for (const key in attributes) {
-            const attrValue = attributes[key]
-            attrs += ` ${key}="${attrValue}" `
-          }
+          ignoreTags.push(tagName)
+          attrs = parseIgnoredTagAttribute(attributes)
+          // 重置属性缓存
+          attrsCache = {}
           htmlString += `<${tagName} ${attrs}>`
           return
         }
 
-        for (const key in attributes) {
-          const attrValue = attributes[key]
-          const isVueDirective = key.startsWith(':') || key.startsWith('@') || key.startsWith('v-')
-          if (attrValue === undefined) {
-            attrs += ` ${key} `
-          } else if (includeChinese(attrValue) && isVueDirective) {
-            const source = parseJsSyntax(attrValue, rule)
-            // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
-            // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
-            if (attrValue === source && !hasTransformed(source, functionNameInTemplate ?? '')) {
-              Collector.add(removeQuotes(attrValue), customizeKey)
-              const expression = getReplaceValue(removeQuotes(attrValue))
-              attrs += ` ${key}="${expression}" `
-            } else {
-              attrs += ` ${key}="${source}" `
-            }
-          } else if (includeChinese(attrValue) && !isVueDirective) {
-            const expression = getReplaceValue(attrValue, true)
-            attrs += ` :${key}="${expression}" `
-            Collector.add(attrValue, customizeKey)
-          } else if (attrValue === '') {
-            // 这里key=''是因为之后还会被pretttier处理一遍，所以写死单引号没什么影响
-            attrs += `${key}='' `
-          } else {
-            attrs += ` ${key}="${attrValue}" `
-          }
-        }
+        attrs = parseTagAttribute(attributes)
         // 重置属性缓存
         attrsCache = {}
         htmlString += `<${tagName} ${attrs}>`
@@ -207,11 +237,7 @@ function handleTemplate(code: string, rule: Rule): string {
       },
 
       ontext(text) {
-        text = text.replace(/&nbsp;/g, ' ')
-        text = text.replace(/&lt;/g, '<')
-        text = text.replace(/&gt;/g, '>')
-        text = text.replace(/&quot;/g, '"')
-        text = text.replace(/&amp;/g, '&')
+        text = escapeSpecialChar(text)
 
         if (shouldIgnore) {
           htmlString += text
@@ -229,7 +255,18 @@ function handleTemplate(code: string, rule: Rule): string {
           textNodeCache = ''
         }
 
-        shouldIgnore = false
+        // 判断是否可以取消忽略提取
+        if (ignoreTags.length === 0) {
+          shouldIgnore = false
+        } else {
+          if (ignoreTags[ignoreTags.length - 1] === tagName) {
+            ignoreTags.pop()
+            if (ignoreTags.length === 0) {
+              shouldIgnore = false
+            }
+          }
+        }
+
         // 如果是自闭合标签
         if (isImplied) {
           htmlString = htmlString.slice(0, htmlString.length - 2) + '/>'
