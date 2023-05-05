@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.0.3
+
+### Patch Changes
+
+- 21ee5a0: vue 模版里有忽略提取的注释标记时,被忽略的部分转换后会多出重复属性
+
 ## 3.0.2
 
 ### Patch Changes
