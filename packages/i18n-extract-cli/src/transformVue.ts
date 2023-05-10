@@ -66,16 +66,6 @@ function hasTransformed(code: string, functionNameInTemplate: string): boolean {
   return new RegExp(`\\${functionNameInTemplate}\\(.*\\)`, 'g').test(code)
 }
 
-function formatValue(value: string): string {
-  if (value.startsWith('\n')) {
-    value = value.slice(1, value.length - 1).trimStart()
-  }
-  if (value.endsWith('\n')) {
-    value = value.slice(0, value.length - 1)
-  }
-  return value
-}
-
 // TODO: 需要优化，传参方式太挫
 function parseTextNode(
   text: string,
@@ -87,10 +77,9 @@ function parseTextNode(
   const tokens = mustache.parse(text)
   for (const token of tokens) {
     const type = token[0]
-    let value = token[1]
+    const value = token[1]
 
     if (includeChinese(value)) {
-      value = formatValue(value)
       if (type === 'text') {
         str += `{{${getReplaceValue(value)}}}`
         Collector.add(value, customizeKey)
