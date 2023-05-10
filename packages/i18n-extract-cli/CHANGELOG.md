@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.0.4
+
+### Patch Changes
+
+- 4da8b80: 修复 vue 模版转换后中文缺失
+
 ## 3.0.3
 
 ### Patch Changes
