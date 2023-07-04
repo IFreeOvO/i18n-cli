@@ -58,6 +58,7 @@
     "htmlparser2": "^8.0.1",
     "inquirer": "8.2.5",
     "leven": "3.1.0",
+    "limax": "^4.1.0",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "minimist": "^1.2.8",

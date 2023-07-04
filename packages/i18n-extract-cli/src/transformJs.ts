@@ -28,7 +28,6 @@ import isEmpty from 'lodash/isEmpty'
 import Collector from './collector'
 import { includeChinese } from './utils/includeChinese'
 import { isObject } from './utils/assertType'
-import { escapeQuotes } from './utils/escapeQuotes'
 import { IGNORE_REMARK } from './utils/constants'
 import StateManager from './utils/stateManager'
 import { removeLineBreaksInTag } from './utils/removeLineBreaksInTag'
@@ -148,12 +147,14 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
 
   function getReplaceValue(value: string, params?: TemplateParams) {
     // 需要过滤处理引号和换行
-    value = removeLineBreaksInTag(escapeQuotes(value))
+    value = removeLineBreaksInTag(value)
     // 表达式结构 obj.fn('xx',{xx:xx})
     let expression
     // i18n标记有参数的情况
     if (params) {
-      const keyLiteral = getStringLiteral(customizeKey(value, Collector.getCurrentCollectorPath()))
+      const keyLiteral = getStringLiteral(
+        customizeKey(value, Collector.getCurrentCollectorPath(), Collector.getKeyMap())
+      )
       if (caller) {
         return t.callExpression(
           t.memberExpression(t.identifier(caller), t.identifier(functionName)),
@@ -167,7 +168,9 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
       }
     } else {
       // i18n标记没参数的情况
-      expression = getCallExpression(customizeKey(value, Collector.getCurrentCollectorPath()))
+      expression = getCallExpression(
+        customizeKey(value, Collector.getCurrentCollectorPath(), Collector.getKeyMap())
+      )
       return template.expression(expression)()
     }
   }

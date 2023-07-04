@@ -15,7 +15,6 @@ import { includeChinese } from './utils/includeChinese'
 import log from './utils/log'
 import transformJs from './transformJs'
 import { initParse } from './parse'
-import { escapeQuotes } from './utils/escapeQuotes'
 import Collector from './collector'
 import { IGNORE_REMARK } from './utils/constants'
 import StateManager from './utils/stateManager'
@@ -110,12 +109,13 @@ function handleTemplate(code: string, rule: Rule): string {
   const { functionNameInTemplate, customizeKey } = rule
 
   function getReplaceValue(value: string, isAttribute?: boolean): string {
-    value = removeLineBreaksInTag(escapeQuotes(value))
+    value = removeLineBreaksInTag(value)
 
     // 表达式结构 $t('xx')
     let expression = `${functionNameInTemplate}('${customizeKey(
       value,
-      Collector.getCurrentCollectorPath()
+      Collector.getCurrentCollectorPath(),
+      Collector.getKeyMap()
     )}')`
 
     // 属性里的$t('')转成$t(``)，并把双引号转成单引号

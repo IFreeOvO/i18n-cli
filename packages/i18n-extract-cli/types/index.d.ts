@@ -16,7 +16,7 @@ export interface transformOptions {
   filePath?: string
 }
 
-export type CustomizeKey = (key: string, path?: string) => string
+export type CustomizeKey = (text: string, path?: string, keyMap?: StringObject) => string
 
 export interface Rule {
   caller: string
@@ -88,6 +88,8 @@ export type Config = {
   incremental: boolean
   globalRule: GlobalRule
   excelPath: string
+  extractKeyMaxLength?: number
+  preferredDelimiter: string
   exportExcel: boolean
   adjustKeyMap?: AdjustKeyMap
 } & TranslateConfig
