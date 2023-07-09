@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.0.5
+
+### Patch Changes
+
+- 2cb1677: 模版中含正则表达式会报错
+
 ## 3.0.4
 
 ### Patch Changes
