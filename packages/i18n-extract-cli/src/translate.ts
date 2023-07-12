@@ -1,9 +1,9 @@
 import fs from 'fs-extra'
-import { googleTranslate, youdaoTranslate } from '@ifreeovo/translate-utils'
+import { googleTranslate, youdaoTranslate, baiduTranslate } from '@ifreeovo/translate-utils'
 import type { TranslateConfig, StringObject, translatorType } from '../types'
 import { getAbsolutePath } from './utils/getAbsolutePath'
 import log from './utils/log'
-import { GOOGLE, YOUDAO } from './utils/constants'
+import { GOOGLE, YOUDAO, BAIDU } from './utils/constants'
 import getLang from './utils/getLang'
 import StateManager from './utils/stateManager'
 import { saveLocaleFile } from './utils/saveLocaleFile'
@@ -48,13 +48,31 @@ async function translateByYoudao(
   }
 }
 
+async function translateByBaidu(
+  word: string,
+  locale: string,
+  options: TranslateConfig
+): Promise<string> {
+  console.error('options', options)
+  if (!options.baidu || !options.baidu?.key || !options.baidu?.secret) {
+    log.error('翻译失败，当前翻译器为百度，请完善baidu配置参数')
+    process.exit(1)
+  }
+  try {
+    return await baiduTranslate(word, 'zh', locale, options.baidu)
+  } catch (e) {
+    log.error('百度翻译请求出错', e)
+    return ''
+  }
+}
+
 export default async function (
   localePath: string,
   locales: string[],
   oldPrimaryLang: StringObject,
   options: TranslateConfig
 ) {
-  if (![GOOGLE, YOUDAO].includes(options.translator || '')) {
+  if (![GOOGLE, YOUDAO, BAIDU].includes(options.translator || '')) {
     log.error('翻译失败，请确认translator参数是否配置正确')
     process.exit(1)
   }
@@ -109,7 +127,11 @@ export default async function (
   }
 }
 
-type tranlateFunction = (word: string, locale: string, options: TranslateConfig) => Promise<string>
+type tranlateFunction = (
+  word: string,
+  locale: string,
+  options: TranslateConfig
+) => Promise<string | Array<{ src: string; dst: string }>>
 
 interface TranslatorConstructor {
   provider: translatorType
@@ -131,6 +153,8 @@ class Translator {
       case GOOGLE:
         this.#provider = translateByGoogle
         break
+      case BAIDU:
+        this.#provider = translateByBaidu
     }
     this.#targetLocale = targetLocale
     this.#providerOptions = providerOptions
@@ -165,7 +189,12 @@ class Translator {
         new Promise((resolve) => setTimeout(resolve, 1000)), // 有道翻译接口限制每秒1次请求
       ])
 
-      const resArr = res.split(this.#separator)
+      let resArr: string[]
+      if (typeof res === 'object') {
+        resArr = res.map((item) => item.dst)
+      } else {
+        resArr = res.split(this.#separator)
+      }
       result.push(...resArr)
     }
 

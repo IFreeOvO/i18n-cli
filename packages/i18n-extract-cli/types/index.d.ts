@@ -51,13 +51,19 @@ export interface YoudaoConfig {
   secret?: string
 }
 
-export type translatorType = 'google' | 'youdao'
+export interface BaiduConfig {
+  key?: string
+  secret?: string
+}
+
+export type translatorType = 'google' | 'youdao' | 'baidu'
 export interface TranslateConfig {
   translator?: translatorType
   google?: {
     proxy?: string
   }
   youdao?: YoudaoConfig
+  baidu?: BaiduConfig
 }
 
 export type PrettierConfig = Options | boolean

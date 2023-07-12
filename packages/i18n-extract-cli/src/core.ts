@@ -14,7 +14,7 @@ import { getAbsolutePath } from './utils/getAbsolutePath'
 import Collector from './collector'
 import translate from './translate'
 import getLang from './utils/getLang'
-import { YOUDAO, GOOGLE } from './utils/constants'
+import { YOUDAO, GOOGLE, BAIDU } from './utils/constants'
 import StateManager from './utils/stateManager'
 import exportExcel from './exportExcel'
 import { getI18nConfig } from './utils/initConfig'
@@ -22,7 +22,7 @@ import { saveLocaleFile } from './utils/saveLocaleFile'
 import { isObject } from './utils/assertType'
 
 interface InquirerResult {
-  translator?: 'google' | 'youdao'
+  translator?: 'google' | 'youdao' | 'baidu'
   key?: string
   secret?: string
   proxy?: string
@@ -101,6 +101,14 @@ function formatInquirerResult(answers: InquirerResult): TranslateConfig {
         secret: answers.secret,
       },
     }
+  } else if (answers.translator === BAIDU) {
+    return {
+      translator: answers.translator,
+      baidu: {
+        key: answers.key,
+        secret: answers.secret,
+      },
+    }
   } else {
     return {
       translator: answers.translator,
@@ -126,6 +134,7 @@ async function getTranslationConfig() {
       choices: [
         { name: '有道翻译', value: YOUDAO },
         { name: '谷歌翻译', value: GOOGLE },
+        { name: '百度翻译', value: BAIDU },
       ],
       when(answers) {
         return !answers.skipTranslate
@@ -162,6 +171,30 @@ async function getTranslationConfig() {
       default: oldConfigCache.secret || '',
       when(answers) {
         return answers.translator === YOUDAO
+      },
+      validate(input) {
+        return input.length === 0 ? 'appSecret不能为空' : true
+      },
+    },
+    {
+      type: 'input',
+      name: 'key',
+      message: '请输入百度翻译appId',
+      default: oldConfigCache.key || '',
+      when(answers) {
+        return answers.translator === BAIDU
+      },
+      validate(input) {
+        return input.length === 0 ? 'appKey不能为空' : true
+      },
+    },
+    {
+      type: 'input',
+      name: 'secret',
+      message: '请输入百度翻译appSecret',
+      default: oldConfigCache.secret || '',
+      when(answers) {
+        return answers.translator === BAIDU
       },
       validate(input) {
         return input.length === 0 ? 'appSecret不能为空' : true
@@ -280,6 +313,7 @@ export default async function (options: CommandOptions) {
       translator: i18nConfig.translator,
       google: i18nConfig.google,
       youdao: i18nConfig.youdao,
+      baidu: i18nConfig.baidu,
     })
   }
 

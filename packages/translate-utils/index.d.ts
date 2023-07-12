@@ -3,6 +3,11 @@ interface YoudaoConfig {
   secret?: string
 }
 
+interface BaiduConfig {
+  key?: string
+  secret?: string
+}
+
 declare namespace TranslateUtils {
   export declare function googleTranslate(
     word: string,
@@ -16,6 +21,13 @@ declare namespace TranslateUtils {
     originLang: string,
     targetLang: string,
     option: YoudaoConfig
+  ): Promise<string>
+
+  export declare function baiduTranslate(
+    word: string,
+    originLang: string,
+    targetLang: string,
+    option: BaiduConfig
   ): Promise<string>
 }
 
