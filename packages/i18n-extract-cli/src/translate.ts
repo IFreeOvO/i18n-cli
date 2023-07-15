@@ -53,7 +53,6 @@ async function translateByBaidu(
   locale: string,
   options: TranslateConfig
 ): Promise<string> {
-  console.error('options', options)
   if (!options.baidu || !options.baidu?.key || !options.baidu?.secret) {
     log.error('翻译失败，当前翻译器为百度，请完善baidu配置参数')
     process.exit(1)
