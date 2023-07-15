@@ -58,7 +58,7 @@ importers:
       '@babel/template': ^7.18.10
       '@babel/traverse': ^7.20.0
       '@babel/types': ^7.20.0
-      '@ifreeovo/translate-utils': ^1.0.0
+      '@ifreeovo/translate-utils': ^1.1.0
       '@types/babel__core': ^7.1.20
       '@types/babel__generator': ^7.6.4
       '@types/babel__template': ^7.4.1
@@ -116,7 +116,7 @@ importers:
       '@babel/template': 7.18.10
       '@babel/traverse': 7.20.0
       '@babel/types': 7.20.0
-      '@ifreeovo/translate-utils': link:../translate-utils
+      '@ifreeovo/translate-utils': 1.1.0
       '@vue/compiler-sfc': 3.2.39
       chalk: 4.1.2
       cli-progress: 3.11.2
@@ -1021,6 +1021,19 @@ packages:
   /@humanwhocodes/object-schema/1.2.1:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
+
+  /@ifreeovo/translate-utils/1.1.0:
+    resolution: {integrity: sha512-TOyRxvlbH6wvx5At2Ge4DAKnQp7SpCHaYHmrVS5QfGpk0LcBMAGRDo670wB3ml6RJ7C1KhtKx8lHCEkZiDXnRA==}
+    dependencies:
+      '@vitalets/google-translate-api': 9.0.0
+      got: 11.8.5
+      md5: 2.3.0
+      proxy-agent: 5.0.0
+      qs: 6.11.0
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+    dev: false
 
   /@jridgewell/gen-mapping/0.1.1:
     resolution: {integrity: sha512-sQXCasFk+U8lWYEe66WxRDOE9PjVz4vSM51fTu3Hw+ClTpUSQb718772vH3pyS5pShp6lvQM7SxgIDXXXmOX7w==}
@@ -5270,7 +5283,7 @@ packages:
     dev: true
 
   github.com/IFreeOvO/mustache.js/30e96f772c16a2eb55bad90a8d55fa53fff17ef0:
-    resolution: {tarball: https://codeload.github.com/IFreeOvO/mustache.js/tar.gz/30e96f772c16a2eb55bad90a8d55fa53fff17ef0}
+    resolution: {commit: 30e96f772c16a2eb55bad90a8d55fa53fff17ef0, repo: git+ssh://git@github.com/IFreeOvO/mustache.js.git, type: git}
     name: mustache
     version: 4.2.0
     hasBin: true
