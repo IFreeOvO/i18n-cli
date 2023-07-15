@@ -1,5 +1,11 @@
 # @ifreeovo/translate-utils
 
+## 1.1.0
+
+### Minor Changes
+
+- ee2bcec: 支持百度翻译
+
 ## 1.0.0
 
 ### Major Changes
