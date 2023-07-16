@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.1.1
+
+### Patch Changes
+
+- 39f158b: 文本中含引号时,会导致字典 key 和转换后的标记不一致
+
 ## 3.1.0
 
 ### Minor Changes
