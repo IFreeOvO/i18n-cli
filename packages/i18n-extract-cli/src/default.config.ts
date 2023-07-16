@@ -1,6 +1,6 @@
 import { Config, Rule } from '../types'
 
-// 第二个参数path，在生成配置文件时需要展示在文件里，所以不需要去掉
+// 参数path，在生成配置文件时需要展示在文件里，所以这里去掉eslint校验
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCustomizeKey(key: string, path?: string): string {
   return key
@@ -55,6 +55,7 @@ const config: Config = {
   globalRule: {
     ignoreMethods: [],
   },
+  // 参数currentFileKeyMap和currentFilePath，在生成配置文件时需要展示在文件里，所以这里去掉eslint校验
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   adjustKeyMap(allKeyValue, currentFileKeyMap, currentFilePath) {
     return allKeyValue
