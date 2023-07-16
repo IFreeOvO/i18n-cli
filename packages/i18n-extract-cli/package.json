@@ -61,7 +61,7 @@
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "minimist": "^1.2.8",
-    "mustache": "https://github.com/IFreeOvO/mustache.js.git",
+    "mustache": "git@github.com:IFreeOvO/mustache.js.git",
     "node-xlsx": "^0.21.0",
     "prettier": "^2.7.1",
     "proxy-agent": "^5.0.0",
