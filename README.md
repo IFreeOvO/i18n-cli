@@ -1,4 +1,5 @@
 ![下载](https://img.shields.io/npm/dw/@ifreeovo/i18n-extract-cli)
+[![github action](https://github.com/IFreeOvO/i18n-cli/actions/workflows/release.yml/badge.svg)](https://github.com/IFreeOvO/i18n-cli/actions/workflows/release.yml)
 
 # 介绍
 
