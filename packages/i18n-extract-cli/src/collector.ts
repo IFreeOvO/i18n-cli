@@ -1,6 +1,7 @@
 import type { CustomizeKey, StringObject } from '../types'
 import log from './utils/log'
 import { removeLineBreaksInTag } from './utils/removeLineBreaksInTag'
+import { escapeQuotes } from './utils/escapeQuotes'
 
 class Collector {
   private static _instance: Collector
@@ -30,12 +31,12 @@ class Collector {
   }
 
   add(value: string, customizeKeyFn: CustomizeKey) {
-    value = removeLineBreaksInTag(value)
-    const customizeKey = customizeKeyFn(value, this.currentFilePath) // key中不能包含回车
-    log.verbose('提取中文：', value)
-    this.keyMap[customizeKey] = value.replace('|', "{'|'}") // '|' 管道符在vue-i18n表示复数形式,需要特殊处理。见https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
+    const formattedValue = removeLineBreaksInTag(value)
+    const customizeKey = customizeKeyFn(escapeQuotes(formattedValue), this.currentFilePath) // key中不能包含回车
+    log.verbose('提取中文：', formattedValue)
+    this.keyMap[customizeKey] = formattedValue.replace('|', "{'|'}") // '|' 管道符在vue-i18n表示复数形式,需要特殊处理。见https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
     this.countOfAdditions++
-    this.currentFileKeyMap[customizeKey] = value
+    this.currentFileKeyMap[customizeKey] = formattedValue
   }
 
   getCurrentFileKeyMap(): Record<string, string> {
