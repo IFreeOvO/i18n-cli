@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.1.0
+
+### Minor Changes
+
+- 24fc0a3: 支持百度翻译
+
 ## 3.0.5
 
 ### Patch Changes
