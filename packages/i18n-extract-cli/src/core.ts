@@ -217,13 +217,6 @@ function formatCode(code: string, ext: string, prettierConfig: PrettierConfig): 
       parser: getPrettierParser(ext),
     })
     log.verbose(`格式化代码完成`)
-  } else if (prettierConfig === true) {
-    stylizedCode = prettier.format(code, {
-      semi: false,
-      singleQuote: true,
-      parser: getPrettierParser(ext),
-    })
-    log.verbose(`格式化代码完成`)
   }
   return stylizedCode
 }

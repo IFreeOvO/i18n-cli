@@ -14,6 +14,10 @@ function getUserConfig(configFile?: string): deepPartial<Config> {
       return {}
     } else {
       const config = require(configPath)
+      // prettier为true时删除，是为了走默认的配置
+      if (config.prettier === true) {
+        delete config.prettier
+      }
       return config
     }
   } else {
