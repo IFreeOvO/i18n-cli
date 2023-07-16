@@ -22,6 +22,16 @@ jobs:
           fetch-depth: 0
           node-version: 16.x
           cache: pnpm
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.x
+          store-path: ~/.pnpm-store
+      - name: 缓存依赖
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
       - name: 发布npm
