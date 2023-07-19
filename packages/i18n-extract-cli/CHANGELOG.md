@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.1.2
+
+### Patch Changes
+
+- 22206d5: 修复 mustache 依赖包下载失败问题
+
 ## 3.1.1
 
 ### Patch Changes
