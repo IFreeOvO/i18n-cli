@@ -71,7 +71,6 @@ importers:
       '@types/lodash': ^4.14.188
       '@types/md5': ^2.3.2
       '@types/minimist': ^1.2.2
-      '@types/mustache': ^4.2.1
       '@types/node-fetch': ^2.6.2
       '@types/prettier': ^2.7.1
       '@types/qs': ^6.9.7
@@ -90,7 +89,6 @@ importers:
       lodash: ^4.17.21
       md5: ^2.3.0
       minimist: ^1.2.8
-      mustache: github:IFreeOvO/mustache.js
       node-xlsx: ^0.21.0
       prettier: ^2.7.1
       proxy-agent: ^5.0.0
@@ -130,7 +128,6 @@ importers:
       lodash: 4.17.21
       md5: 2.3.0
       minimist: 1.2.8
-      mustache: github.com/IFreeOvO/mustache.js/30e96f772c16a2eb55bad90a8d55fa53fff17ef0
       node-xlsx: 0.21.0
       prettier: 2.7.1
       proxy-agent: 5.0.0
@@ -151,7 +148,6 @@ importers:
       '@types/lodash': 4.14.188
       '@types/md5': 2.3.2
       '@types/minimist': 1.2.2
-      '@types/mustache': 4.2.1
       '@types/node-fetch': 2.6.2
       '@types/prettier': 2.7.1
       '@types/qs': 6.9.7
@@ -1237,10 +1233,6 @@ packages:
 
   /@types/minimist/1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
-    dev: true
-
-  /@types/mustache/4.2.1:
-    resolution: {integrity: sha512-gFAlWL9Ik21nJioqjlGCnNYbf9zHi0sVbaZ/1hQEBcCEuxfLJDvz4bVJSV6v6CUaoLOz0XEIoP7mSrhJ6o237w==}
     dev: true
 
   /@types/node-fetch/2.6.2:
@@ -5268,10 +5260,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  github.com/IFreeOvO/mustache.js/30e96f772c16a2eb55bad90a8d55fa53fff17ef0:
-    resolution: {tarball: https://codeload.github.com/IFreeOvO/mustache.js/tar.gz/30e96f772c16a2eb55bad90a8d55fa53fff17ef0}
-    name: mustache
-    version: 4.2.0
-    hasBin: true
-    dev: false
