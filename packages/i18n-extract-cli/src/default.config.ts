@@ -38,6 +38,7 @@ const config: Config = {
       functionNameInScript: '$t',
       customizeKey: getCustomizeKey,
       importDeclaration: '',
+      tagOrder: ['template', 'script', 'style'],
     },
   },
   prettier: {
