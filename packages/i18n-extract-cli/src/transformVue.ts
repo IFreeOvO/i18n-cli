@@ -382,7 +382,11 @@ function getWrapperTemplate(sfcBlock: SFCTemplateBlock | SFCScriptBlock | SFCSty
   }
   for (const attr in attrs) {
     if (!['lang', 'scoped', 'setup'].includes(attr)) {
-      template += ` ${attr}="${attrs[attr]}"`
+      if (attrs[attr] === true) {
+        template += attr
+      } else {
+        template += ` ${attr}="${attrs[attr]}"`
+      }
     }
   }
   template += `><%- code %></${type}>`
