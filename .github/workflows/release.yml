@@ -27,6 +27,9 @@ jobs:
           node-version: 16
           registry-url: https://registry.npmjs.com/
 
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v2
+
       - name: 获取pnpm缓存目录
         id: pnpm-cache
         run: |
