@@ -1,5 +1,15 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.2.0
+
+### Minor Changes
+
+- d44c9e2: 支持自定义 vue 文件的标签顺序
+
+### Patch Changes
+
+- 733a1e5: vue 文件 style 标签属性问题
+
 ## 3.1.2
 
 ### Patch Changes
