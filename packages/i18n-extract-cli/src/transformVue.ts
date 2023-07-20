@@ -10,7 +10,7 @@ import traverse from '@babel/traverse'
 import prettier from 'prettier'
 import mustache from './mustache/mustache'
 import ejs from 'ejs'
-import type { Rule, transformOptions } from '../types'
+import type { Rule, TagOrder, transformOptions } from '../types'
 import { includeChinese } from './utils/includeChinese'
 import log from './utils/log'
 import transformJs from './transformJs'
@@ -355,8 +355,18 @@ function handleScript(source: string, rule: Rule): string {
   }
 }
 
-function mergeCode(templateCode: string, scriptCode: string, stylesCode: string): string {
-  return templateCode + '\n' + scriptCode + '\n' + stylesCode
+function mergeCode(
+  tagOrder: TagOrder,
+  tagMap: {
+    template: string
+    script: string
+    style: string
+  }
+): string {
+  const sourceCode = tagOrder.reduce((code, tagName) => {
+    return code + tagMap[tagName]
+  }, '')
+  return sourceCode
 }
 
 function removeQuotes(value: string): string {
@@ -476,7 +486,13 @@ function transformVue(
     }
   }
 
-  code = mergeCode(templateCode, scriptCode, stylesCode)
+  const tagMap = {
+    template: templateCode,
+    script: scriptCode,
+    style: stylesCode,
+  }
+  const tagOrder = StateManager.getToolConfig().rules.vue.tagOrder
+  code = mergeCode(tagOrder, tagMap)
   if (fileComment) {
     code = fileComment + code
   }

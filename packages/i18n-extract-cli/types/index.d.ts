@@ -68,6 +68,8 @@ export interface TranslateConfig {
 
 export type PrettierConfig = Options | boolean
 
+export type TagOrder = Array<'template' | 'script' | 'style'>
+
 export type Config = {
   input: string
   output: string
@@ -86,7 +88,9 @@ export type Config = {
     jsx: Rule & {
       functionSnippets: string
     }
-    vue: Rule
+    vue: Rule & {
+      tagOrder: TagOrder
+    }
   }
   prettier: PrettierConfig
   skipExtract: boolean
