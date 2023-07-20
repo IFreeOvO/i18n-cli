@@ -141,6 +141,7 @@ module.exports = {
       },
       importDeclaration: '',
       forceImport: false,
+      tagOrder: ['template', 'script', 'style'], // 支持自定义vue文件的标签顺序
     },
   },
   globalRule: {
