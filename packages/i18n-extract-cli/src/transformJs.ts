@@ -366,6 +366,44 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           // 允许往react函数组件中加入自定义代码
           insertSnippets(node, functionSnippets)
         },
+
+        ObjectProperty(path: NodePath<ObjectProperty>) {
+          if (t.isStringLiteral(path.node.key)) {
+            if (includeChinese(path.node.key.value)) {
+              hasTransformed = true
+              const translationKey = Collector.add(path.node.key.value, customizeKey)
+              path.replaceWith(
+                t.objectProperty(
+                  getReplaceValue(translationKey),
+                  path.node.value,
+                  true,
+                  path.node.shorthand,
+                  path.node.decorators
+                )
+              )
+            }
+          }
+        },
+
+        ObjectMethod(path: NodePath<ObjectMethod>) {
+          if (t.isStringLiteral(path.node.key)) {
+            if (includeChinese(path.node.key.value)) {
+              hasTransformed = true
+              const translationKey = Collector.add(path.node.key.value, customizeKey)
+              path.replaceWith(
+                t.objectMethod(
+                  path.node.kind,
+                  getReplaceValue(translationKey),
+                  path.node.params,
+                  path.node.body,
+                  true,
+                  path.node.generator,
+                  path.node.async
+                )
+              )
+            }
+          }
+        },
       }
     }
 
