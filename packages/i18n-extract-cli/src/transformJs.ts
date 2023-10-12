@@ -21,6 +21,7 @@ import type {
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
 import type { transformOptions } from '../types'
+import { types as t } from '@babel/core'
 import traverse from '@babel/traverse'
 import babelGenerator from '@babel/generator'
 import template from '@babel/template'
@@ -28,12 +29,8 @@ import isEmpty from 'lodash/isEmpty'
 import Collector from './collector'
 import { includeChinese } from './utils/includeChinese'
 import { isObject } from './utils/assertType'
-import { escapeQuotes } from './utils/escapeQuotes'
 import { IGNORE_REMARK } from './utils/constants'
 import StateManager from './utils/stateManager'
-import { removeLineBreaksInTag } from './utils/removeLineBreaksInTag'
-
-const t = require('@babel/types')
 
 type TemplateParams = {
   [k: string]:
@@ -94,7 +91,7 @@ function isPropNode(path: NodePath<StringLiteral>): boolean {
 }
 
 function getStringLiteral(value: string): StringLiteral {
-  return Object.assign(t.StringLiteral(value), {
+  return Object.assign(t.stringLiteral(value), {
     extra: {
       raw: `'${value}'`,
       rawValue: value,
@@ -147,6 +144,9 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
   }
 
   function getReplaceValue(translationKey: string, params?: TemplateParams) {
+    if (!functionName) {
+      throw new Error('functionName is required')
+    }
     // 表达式结构 obj.fn('xx',{xx:xx})
     let expression
     // i18n标记有参数的情况
@@ -261,7 +261,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           if (includeChinese(value)) {
             hasTransformed = true
             const translationKey = Collector.add(value.trim(), customizeKey)
-            path.replaceWith(t.JSXExpressionContainer(getReplaceValue(translationKey)))
+            path.replaceWith(t.jSXExpressionContainer(getReplaceValue(translationKey)))
           }
           path.skip()
         },
@@ -272,7 +272,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           if (valueType === 'StringLiteral' && node.value && includeChinese(node.value.value)) {
             const value = node.value.value
             const translationKey = Collector.add(value, customizeKey)
-            const jsxIdentifier = t.jsxIdentifier(node.name.name)
+            const jsxIdentifier = t.jsxIdentifier(node.name.name as string)
             const jsxContainer = t.jSXExpressionContainer(getReplaceValue(translationKey))
             hasTransformed = true
             path.replaceWith(t.jsxAttribute(jsxIdentifier, jsxContainer))
