@@ -70,7 +70,7 @@ function hasTransformed(code: string, functionNameInTemplate: string): boolean {
 function parseTextNode(
   text: string,
   rule: Rule,
-  getReplaceValue: (value: string, isAttribute?: boolean) => string,
+  getReplaceValue: (translationKey: string) => string,
   customizeKey: (key: string) => string
 ) {
   let str = ''
@@ -81,8 +81,8 @@ function parseTextNode(
 
     if (includeChinese(value)) {
       if (type === 'text') {
-        str += `{{${getReplaceValue(value)}}}`
-        Collector.add(value, customizeKey)
+        const translationKey = Collector.add(value, customizeKey)
+        str += `{{${getReplaceValue(translationKey)}}}`
       } else if (type === 'name') {
         const source = parseJsSyntax(value, rule)
         str += `{{${source}}}`
@@ -109,21 +109,9 @@ function handleTemplate(code: string, rule: Rule): string {
   let htmlString = ''
   const { functionNameInTemplate, customizeKey } = rule
 
-  function getReplaceValue(value: string, isAttribute?: boolean): string {
-    value = removeLineBreaksInTag(escapeQuotes(value))
-
+  function getReplaceValue(translationKey: string): string {
     // 表达式结构 $t('xx')
-    let expression = `${functionNameInTemplate}('${customizeKey(
-      value,
-      Collector.getCurrentCollectorPath()
-    )}')`
-
-    // 属性里的$t('')转成$t(``)，并把双引号转成单引号
-    if (isAttribute) {
-      expression = expression.replace(/'/g, '`').replace(/"/g, "'")
-    }
-
-    return expression
+    return `${functionNameInTemplate}('${translationKey}')`
   }
 
   function parseIgnoredTagAttribute(attributes: Record<string, string | undefined>): string {
@@ -151,16 +139,20 @@ function handleTemplate(code: string, rule: Rule): string {
         // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
         // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
         if (attrValue === source && !hasTransformed(source, functionNameInTemplate ?? '')) {
-          Collector.add(removeQuotes(attrValue), customizeKey)
-          const expression = getReplaceValue(removeQuotes(attrValue))
+          const translationKey = Collector.add(removeQuotes(attrValue), customizeKey)
+          const expression = getReplaceValue(translationKey)
           attrs += ` ${key}="${expression}" `
         } else {
           attrs += ` ${key}="${source}" `
         }
       } else if (includeChinese(attrValue) && !isVueDirective) {
-        const expression = getReplaceValue(attrValue, true)
+        const translationKey = Collector.add(attrValue, (key, path) => {
+          // 属性里的$t('')转成$t(``)，并把双引号转成单引号
+          key = key.replace(/'/g, '`').replace(/"/g, "'")
+          return customizeKey(key, path)
+        })
+        const expression = getReplaceValue(translationKey)
         attrs += ` :${key}="${expression}" `
-        Collector.add(attrValue, customizeKey)
       } else if (attrValue === '') {
         // 这里key=''是因为之后还会被pretttier处理一遍，所以写死单引号没什么影响
         attrs += `${key}='' `

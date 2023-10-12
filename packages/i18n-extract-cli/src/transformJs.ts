@@ -146,14 +146,12 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
     return expression
   }
 
-  function getReplaceValue(value: string, params?: TemplateParams) {
-    // 需要过滤处理引号和换行
-    value = removeLineBreaksInTag(escapeQuotes(value))
+  function getReplaceValue(translationKey: string, params?: TemplateParams) {
     // 表达式结构 obj.fn('xx',{xx:xx})
     let expression
     // i18n标记有参数的情况
     if (params) {
-      const keyLiteral = getStringLiteral(customizeKey(value, Collector.getCurrentCollectorPath()))
+      const keyLiteral = getStringLiteral(translationKey)
       if (caller) {
         return t.callExpression(
           t.memberExpression(t.identifier(caller), t.identifier(functionName)),
@@ -167,7 +165,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
       }
     } else {
       // i18n标记没参数的情况
-      expression = getCallExpression(customizeKey(value, Collector.getCurrentCollectorPath()))
+      expression = getCallExpression(translationKey)
       return template.expression(expression)()
     }
   }
@@ -208,8 +206,8 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
 
           if (includeChinese(value)) {
             hasTransformed = true
-            Collector.add(value, customizeKey)
-            path.replaceWith(getReplaceValue(value))
+            const translationKey = Collector.add(value, customizeKey)
+            path.replaceWith(getReplaceValue(translationKey))
           }
           path.skip()
         },
@@ -252,9 +250,9 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
               }
             })
             hasTransformed = true
-            Collector.add(value, customizeKey)
+            const translationKey = Collector.add(value, customizeKey)
             const slotParams = isEmpty(params) ? undefined : params
-            path.replaceWith(getReplaceValue(value, slotParams))
+            path.replaceWith(getReplaceValue(translationKey, slotParams))
           }
         },
 
@@ -262,8 +260,8 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           const value = path.node.value
           if (includeChinese(value)) {
             hasTransformed = true
-            Collector.add(value.trim(), customizeKey)
-            path.replaceWith(t.JSXExpressionContainer(getReplaceValue(value.trim())))
+            const translationKey = Collector.add(value.trim(), customizeKey)
+            path.replaceWith(t.JSXExpressionContainer(getReplaceValue(translationKey)))
           }
           path.skip()
         },
@@ -273,10 +271,10 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           const valueType = node.value?.type
           if (valueType === 'StringLiteral' && node.value && includeChinese(node.value.value)) {
             const value = node.value.value
+            const translationKey = Collector.add(value, customizeKey)
             const jsxIdentifier = t.jsxIdentifier(node.name.name)
-            const jsxContainer = t.jSXExpressionContainer(getReplaceValue(value))
+            const jsxContainer = t.jSXExpressionContainer(getReplaceValue(translationKey))
             hasTransformed = true
-            Collector.add(value, customizeKey)
             path.replaceWith(t.jsxAttribute(jsxIdentifier, jsxContainer))
             path.skip()
           }
