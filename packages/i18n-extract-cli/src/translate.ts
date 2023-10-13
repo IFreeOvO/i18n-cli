@@ -212,25 +212,22 @@ class Translator {
     return incrementalTranslation
   }
 
-  // 递归获取1w字以内的能够翻译的最大行数
-  getMaxTranslationCount(
-    textArr: string[],
-    allowTranslationCount: number,
-    tryTranslationCount: number
-  ): number {
-    const textNum = textArr.length
-    const diff = Math.min(tryTranslationCount, textNum)
-    const textBundleArr = textArr.slice(0, diff)
-    const textBundleLength = textBundleArr.join(this.#separator).length
-    // allowTranslationCount > tryTranslationCount 是指待翻译内容一开始就超出限制字数的情况
-    // allowTranslationCount === textNum 是指待翻译内容一开始就小于限制字数的情况
-    if (allowTranslationCount > tryTranslationCount || allowTranslationCount === textNum) {
-      return allowTranslationCount
-    } else if (textBundleLength <= this.#textLengthLimit) {
-      return this.getMaxTranslationCount(textArr, diff, tryTranslationCount * 2)
-    } else {
-      const midCount = Math.floor((tryTranslationCount - allowTranslationCount) / 2)
-      return this.getMaxTranslationCount(textArr, allowTranslationCount, midCount)
-    }
-  }
+	// 二分法查找最大翻译行数，不使用递归，避免异常情况下栈溢出
+	getMaxTranslationCount(textArr: string[]): number {
+		const textNum = textArr.length;
+		let upper = textNum;
+		let lower = 1;
+		let pointer = 1;
+		while (upper - lower > 1) {
+			pointer = Math.floor((upper + lower) / 2);
+			const textBundleArr = textArr.slice(0, pointer);
+			const textBundleLength = textBundleArr.join(this.#separator).length;
+			if (textBundleLength <= this.#textLengthLimit) {
+				lower = Math.max(lower, pointer);
+			} else {
+				upper = Math.min(upper, pointer);
+			}
+		}
+		return Math.max(pointer, 1);
+	}
 }
