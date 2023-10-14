@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.3.1
+
+### Patch Changes
+
+- 7a436dd: functionSnippets 重复插入
+
 ## 3.3.0
 
 ### Minor Changes
