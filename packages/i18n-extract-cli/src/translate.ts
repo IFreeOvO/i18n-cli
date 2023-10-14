@@ -162,20 +162,15 @@ class Translator {
   async translate(dictionary: Record<string, string>): Promise<Record<string, string>> {
     const allTextArr = Object.keys(dictionary).map((key) => dictionary[key])
     let restTextBundleArr = allTextArr
-    const translationCount = 100
     let startIndex = 0
     const result: string[] = []
 
-    // 每轮循环，先判断100行key-value的字符数量
-    // 如果字符小于1w，以两倍速度递增，扩大翻译行数，以尽可能翻译更多的行数
-    // 如果字符大于1w，以两倍倍速度递减，扩小翻译行数，以尽可能翻译更多的行数
+    // 每轮循环，先判断key-value的字符数量
+    // 如果字符小于#textLengthLimit，以两倍速度递增，扩大翻译行数，以尽可能翻译更多的行数
+    // 如果字符大于#textLengthLimit，以两倍倍速度递减，扩小翻译行数，以尽可能翻译更多的行数
     // 确定了行数后开始翻译，一直循环到翻译完所有行
     while (startIndex < allTextArr.length && restTextBundleArr.length > 0) {
-      const maxTranslationCount = this.getMaxTranslationCount(
-        restTextBundleArr,
-        0,
-        translationCount
-      )
+      const maxTranslationCount = this.getMaxTranslationCount(restTextBundleArr)
       const textBundleArr = allTextArr.slice(startIndex, startIndex + maxTranslationCount)
       restTextBundleArr = allTextArr.slice(startIndex + maxTranslationCount)
       startIndex = startIndex + maxTranslationCount
@@ -212,22 +207,22 @@ class Translator {
     return incrementalTranslation
   }
 
-	// 二分法查找最大翻译行数，不使用递归，避免异常情况下栈溢出
-	getMaxTranslationCount(textArr: string[]): number {
-		const textNum = textArr.length;
-		let upper = textNum;
-		let lower = 1;
-		let pointer = 1;
-		while (upper - lower > 1) {
-			pointer = Math.floor((upper + lower) / 2);
-			const textBundleArr = textArr.slice(0, pointer);
-			const textBundleLength = textBundleArr.join(this.#separator).length;
-			if (textBundleLength <= this.#textLengthLimit) {
-				lower = Math.max(lower, pointer);
-			} else {
-				upper = Math.min(upper, pointer);
-			}
-		}
-		return Math.max(pointer, 1);
-	}
+  // 二分法查找最大翻译行数，不使用递归，避免异常情况下栈溢出
+  getMaxTranslationCount(textArr: string[]): number {
+    const textNum = textArr.length
+    let upper = textNum
+    let lower = 1
+    let pointer = 1
+    while (upper - lower > 1) {
+      pointer = Math.floor((upper + lower) / 2)
+      const textBundleArr = textArr.slice(0, pointer)
+      const textBundleLength = textBundleArr.join(this.#separator).length
+      if (textBundleLength <= this.#textLengthLimit) {
+        lower = Math.max(lower, pointer)
+      } else {
+        upper = Math.min(upper, pointer)
+      }
+    }
+    return Math.max(pointer, 1)
+  }
 }
