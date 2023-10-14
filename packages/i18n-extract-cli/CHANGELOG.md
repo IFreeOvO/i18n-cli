@@ -1,5 +1,15 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.3.0
+
+### Minor Changes
+
+- eeb5ba5: 优化翻译算法
+
+### Patch Changes
+
+- eeb5ba5: 1.补充对 ObjectProperty 和 ObjectMethod 的处理 2.转换文件导入的 t 不对 3.避免 i18n 和 js 语法冲突
+
 ## 3.2.0
 
 ### Minor Changes
