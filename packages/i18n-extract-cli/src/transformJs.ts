@@ -18,6 +18,8 @@ import type {
   Node,
   ReturnStatement,
   FunctionExpression,
+  BlockStatement,
+  Statement,
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
 import type { transformOptions } from '../types'
@@ -107,26 +109,46 @@ function nodeToCode(node: Node): string {
 function insertSnippets(node: ArrowFunctionExpression | FunctionExpression, snippets?: string) {
   if (node.body.type === 'BlockStatement' && snippets) {
     const returnStatement = node.body.body.find((node: Node) => node.type === 'ReturnStatement')
+
     if (returnStatement) {
+      // TODO: 这里判断是否包含snippet，不严谨，推荐节点判断
       const arg = (returnStatement as ReturnStatement).argument
-      const argType = arg?.type
-      const code = nodeToCode(node)
-      // 函数是否是react函数组件
-      // 情况1: 返回的三元表达式包含JSXElement
-      // 情况2: 直接返回了JSXElement
-      if (
-        argType === 'ConditionalExpression' &&
-        (arg.consequent.type === 'JSXElement' || arg.alternate.type === 'JSXElement')
-      ) {
-        if (includeChinese(code)) {
-          const statements = template.statements(snippets)()
-          node.body.body.unshift(...statements)
+      const statements = template.statements(snippets)()
+      const source = nodeToCode(node.body).replace(/[\n\s]/g, '')
+
+      for (let i = 0; i < statements.length; i++) {
+        const statement = statements[i]
+        const snippet = nodeToCode(statement).replace(/[\n\s]/g, '')
+
+        // 只插入不存在的snippet
+        if (!source.includes(snippet)) {
+          pushStatement(node, arg, statement)
         }
-      } else if (argType === 'JSXElement') {
-        const statements = template.statements(snippets)()
-        node.body.body.unshift(...statements)
       }
     }
+  }
+}
+
+function pushStatement(
+  node: ArrowFunctionExpression | FunctionExpression,
+  arg: Expression | null | undefined,
+  statement: Statement
+) {
+  // 函数是否是react函数组件
+  // 情况1: 返回的三元表达式包含JSXElement
+  // 情况2: 直接返回了JSXElement
+
+  const argType = arg?.type
+  const code = nodeToCode(node)
+  if (
+    argType === 'ConditionalExpression' &&
+    (arg.consequent.type === 'JSXElement' || arg.alternate.type === 'JSXElement')
+  ) {
+    if (includeChinese(code) && node.body.type === 'BlockStatement') {
+      node.body.body.unshift(statement)
+    }
+  } else if (argType === 'JSXElement' && node.body.type === 'BlockStatement') {
+    node.body.body.unshift(statement)
   }
 }
 
