@@ -6,7 +6,7 @@ import { serializeCode } from '../../utils/serializeCode'
 
 function execInit() {
   const configPath = getAbsolutePath(process.cwd(), CONFIG_FILE_NAME)
-  const code = serializeCode(defaultConfig)
+  const code = serializeCode(defaultConfig, false)
 
   fs.outputFileSync(configPath, code)
 }
