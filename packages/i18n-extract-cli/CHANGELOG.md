@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.3.2
+
+### Patch Changes
+
+- 9947150: 只进行提取操作且设置翻译文件类型为 js 时,生成的翻译文件内容和文件格式不一致
+- 37de6fb: 读取配置文件报错
+
 ## 3.3.1
 
 ### Patch Changes
