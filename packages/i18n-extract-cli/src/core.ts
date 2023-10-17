@@ -240,6 +240,7 @@ export default async function (options: CommandOptions) {
     skipExtract,
     skipTranslate,
     adjustKeyMap,
+    localeFileType,
   } = i18nConfig
   log.debug(`命令行配置信息:`, i18nConfig)
 
@@ -294,7 +295,9 @@ export default async function (options: CommandOptions) {
       Collector.setKeyMap(newkeyMap)
     }
 
-    saveLocale(localePath)
+    const extName = path.extname(localePath)
+    const savePath = localePath.replace(extName, `.${localeFileType}`)
+    saveLocale(savePath)
     bar.stop()
     const endTime = new Date().getTime()
     log.info(`耗时${((endTime - startTime) / 1000).toFixed(2)}s`)
