@@ -273,6 +273,7 @@ function handleTemplate(code: string, rule: Rule): string {
       recognizeSelfClosing: true,
       lowerCaseAttributeNames: false,
       decodeEntities: false,
+      xmlMode: true,
     }
   )
 
