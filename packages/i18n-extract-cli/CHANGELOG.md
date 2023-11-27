@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.3.3
+
+### Patch Changes
+
+- 11e17ab: node 版本校验不准
+
 ## 3.3.2
 
 ### Patch Changes
