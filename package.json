@@ -39,12 +39,12 @@
     "typescript": "^4.8.4"
   },
   "lint-staged": {
-    "*.{jsx,md,json,js}": [
-      "prettier --cache --write"
+    "*.{md,json}": [
+      "prettier --write"
     ],
-    "*.ts?(x)": [
+    "*.ts": [
       "eslint --fix",
-      "prettier --cache --parser=typescript --write"
+      "prettier --parser=typescript --write"
     ]
   },
   "config": {

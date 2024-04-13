@@ -11,7 +11,8 @@
   "types": "types/index.d.ts",
   "scripts": {
     "dev": "tsc --watch",
-    "build": "rimraf dist && tsc --build"
+    "build": "rimraf dist && tsc --build",
+    "check": "tsc --incremental --noEmit"
   },
   "keywords": [
     "i18n",
