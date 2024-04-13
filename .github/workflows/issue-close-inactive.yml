@@ -4,16 +4,18 @@ on:
   schedule:
     # GMT+8 00:00
     - cron: '0 19 * * *'
+  issues:
+      types: [labeled]
 
 jobs:
   close-issues:
     runs-on: ubuntu-latest
     steps:
-      - name: needs more info
+      - name: close
+        if: github.event.label.name == 'inactive'
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'close-issues'
-          labels: inactive, needs more info
           inactive-day: 7
           body: |
             Since the issue was labeled with `${{github.event.label.name}}`, but no response in 7 days. This issue will be closed. If you have any questions, you can comment and reply.
@@ -41,4 +43,4 @@ jobs:
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'check-inactive'
-          inactive-day: 14
+          inactive-day: 3
