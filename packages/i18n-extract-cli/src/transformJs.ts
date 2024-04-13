@@ -18,7 +18,6 @@ import type {
   Node,
   ReturnStatement,
   FunctionExpression,
-  BlockStatement,
   Statement,
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
@@ -429,8 +428,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const ast = options.parse!(code)
+    const ast = options.parse(code)
     traverse(ast, getTraverseOptions())
     return ast
   }

@@ -15,11 +15,9 @@ import { includeChinese } from './utils/includeChinese'
 import log from './utils/log'
 import transformJs from './transformJs'
 import { initParse } from './parse'
-import { escapeQuotes } from './utils/escapeQuotes'
 import Collector from './collector'
 import { IGNORE_REMARK } from './utils/constants'
 import StateManager from './utils/stateManager'
-import { removeLineBreaksInTag } from './utils/removeLineBreaksInTag'
 
 const presetTypescript = require('@babel/preset-typescript')
 

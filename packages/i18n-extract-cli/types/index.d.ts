@@ -11,7 +11,7 @@ export interface GlobalRule {
 
 export interface transformOptions {
   rule: Rule
-  parse?: (code: string) => ParseResult
+  parse: (code: string) => ParseResult
   isJsInVue?: boolean
   filePath?: string
 }
