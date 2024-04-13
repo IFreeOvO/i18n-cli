@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.3.4
+
+### Patch Changes
+
+- da9c43d: 修复 props 参数 default 为中文时,自定义 key 函数没生效
+
 ## 3.3.3
 
 ### Patch Changes
