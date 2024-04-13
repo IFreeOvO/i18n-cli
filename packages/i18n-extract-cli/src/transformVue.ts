@@ -431,7 +431,7 @@ function getFileComment(descriptor: SFCDescriptor): string {
 
 function transformVue(
   code: string,
-  options: transformOptions
+  options: Omit<transformOptions, 'parse'>
 ): {
   code: string
 } {
