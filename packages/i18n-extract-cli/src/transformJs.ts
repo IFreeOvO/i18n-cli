@@ -216,10 +216,11 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           const value = path.node.value
           // 处理vue props里的中文
           if (includeChinese(value) && options.isJsInVue && isPropNode(path)) {
+            const translationKey = Collector.add(value, customizeKey)
             const expression = `function() {
-              return ${getCallExpression(value)}
+              return ${getCallExpression(translationKey)}
             }`
-            Collector.add(value, customizeKey)
+
             path.replaceWith(template.expression(expression)())
             path.skip()
             return
