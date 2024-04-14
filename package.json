@@ -10,7 +10,8 @@
     "build": "turbo run build",
     "changeset": "changeset add",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "check": "turbo run check"
   },
   "author": "IFreeOvO",
   "license": "MIT",
@@ -43,6 +44,7 @@
       "prettier --write"
     ],
     "*.ts": [
+      "pnpm check --",
       "eslint --fix",
       "prettier --parser=typescript --write"
     ]
