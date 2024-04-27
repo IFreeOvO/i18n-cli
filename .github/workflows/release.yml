@@ -2,7 +2,7 @@ name: deployment
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   deployment:
     # 后期加测试脚本时再用
