@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.3.5
+
+### Patch Changes
+
+- 01b6b4b: 无法读取 js 格式语言包内容
+
 ## 3.3.4
 
 ### Patch Changes
