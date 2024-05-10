@@ -5,16 +5,18 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
-    "check": {},
     "dev:cjs": {
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "dev:esm": {
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "dev": {
       "dependsOn": ["dev:cjs", "dev:esm"],
-      "cache": false
+      "cache": false,
+      "persistent": true
     }
   },
   "globalDependencies": ["tsconfig.base.json", "tsconfig.json"]

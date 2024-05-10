@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "declaration": true,
     "skipLibCheck": true,
+    "incremental": true,
     "lib": ["esnext", "dom"]
   },
   "exclude": ["**/node_modules", "**/examples", "**/dist", "**/*.test.ts"]

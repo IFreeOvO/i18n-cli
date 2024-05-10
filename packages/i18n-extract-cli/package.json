@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "rimraf dist && tsc --build",
-    "check": "tsc --incremental --noEmit"
+    "check": "tsc --noEmit"
   },
   "keywords": [
     "i18n",
