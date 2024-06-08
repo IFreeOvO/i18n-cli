@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.3.6
+
+### Patch Changes
+
+- 126054e: 文本里的 unicode 编码解析问题
+
 ## 3.3.5
 
 ### Patch Changes
