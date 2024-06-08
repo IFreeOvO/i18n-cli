@@ -213,7 +213,10 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
         },
 
         StringLiteral(path: NodePath<StringLiteral>) {
-          const value = path.node.value
+          // raw可以拿到未转义的原始文本。例如\u4E00，用raw获取时是'\u4E00'。用value获取的是'一'
+          const value = path.node.extra
+            ? (path.node.extra.raw as string).slice(1, -1)
+            : path.node.value
           // 处理vue props里的中文
           if (includeChinese(value) && options.isJsInVue && isPropNode(path)) {
             const translationKey = Collector.add(value, customizeKey)
