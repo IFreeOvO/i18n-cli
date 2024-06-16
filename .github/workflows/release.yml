@@ -5,11 +5,6 @@ on:
       - main
 jobs:
   deployment:
-    # 后期加测试脚本时再用
-    # strategy:
-    #   matrix:
-    #     os: [ubuntu-latest, windows-latest, macos-latest]
-    # runs-on: ${{ matrix.os }}
     runs-on: ubuntu-latest
 
     environment: release
@@ -20,18 +15,26 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           persist-credentials: true
           fetch-depth: 0
-          node-version: 16.x
-          cache: pnpm
+      - name: 安装node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: 安装pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7.x
-          store-path: ~/.pnpm-store
-      - name: 缓存依赖
-        uses: actions/cache@v2
+          version: 8.x
+      - name: 获取pnpm存储目录
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: 设置pnpm缓存
         with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
       - name: 发布npm
