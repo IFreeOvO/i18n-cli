@@ -14,7 +14,7 @@ import { getAbsolutePath } from './utils/getAbsolutePath'
 import Collector from './collector'
 import translate from './translate'
 import getLang from './utils/getLang'
-import { YOUDAO, GOOGLE, BAIDU } from './utils/constants'
+import { YOUDAO, GOOGLE, BAIDU, ALICLOUD } from './utils/constants'
 import StateManager from './utils/stateManager'
 import exportExcel from './exportExcel'
 import { getI18nConfig } from './utils/initConfig'
@@ -22,7 +22,7 @@ import { saveLocaleFile } from './utils/saveLocaleFile'
 import { isObject } from './utils/assertType'
 
 interface InquirerResult {
-  translator?: 'google' | 'youdao' | 'baidu'
+  translator?: 'google' | 'youdao' | 'baidu' | 'alicloud'
   key?: string
   secret?: string
   proxy?: string
@@ -109,6 +109,14 @@ function formatInquirerResult(answers: InquirerResult): TranslateConfig {
         secret: answers.secret,
       },
     }
+  } else if (answers.translator === ALICLOUD) {
+    return {
+      translator: answers.translator,
+      alicloud: {
+        key: answers.key,
+        secret: answers.secret,
+      },
+    }
   } else {
     return {
       translator: answers.translator,
@@ -135,6 +143,7 @@ async function getTranslationConfig() {
         { name: '有道翻译', value: YOUDAO },
         { name: '谷歌翻译', value: GOOGLE },
         { name: '百度翻译', value: BAIDU },
+        { name: '阿里云机器翻译', value: ALICLOUD },
       ],
       when(answers) {
         return !answers.skipTranslate
@@ -198,6 +207,30 @@ async function getTranslationConfig() {
       },
       validate(input) {
         return input.length === 0 ? 'appSecret不能为空' : true
+      },
+    },
+    {
+      type: 'input',
+      name: 'key',
+      message: '请输入阿里云机器翻译accessKeyId',
+      default: oldConfigCache.key || '',
+      when(answers) {
+        return answers.translator === ALICLOUD
+      },
+      validate(input) {
+        return input.length === 0 ? 'accessKeyId不能为空' : true
+      },
+    },
+    {
+      type: 'input',
+      name: 'secret',
+      message: '请输入阿里云机器翻译accessKeySecret',
+      default: oldConfigCache.secret || '',
+      when(answers) {
+        return answers.translator === ALICLOUD
+      },
+      validate(input) {
+        return input.length === 0 ? 'accessKeySecret不能为空' : true
       },
     },
   ])
@@ -310,6 +343,7 @@ export default async function (options: CommandOptions) {
       google: i18nConfig.google,
       youdao: i18nConfig.youdao,
       baidu: i18nConfig.baidu,
+      alicloud: i18nConfig.alicloud,
     })
   }
 

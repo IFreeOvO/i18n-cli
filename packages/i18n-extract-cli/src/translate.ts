@@ -1,9 +1,14 @@
 import fs from 'fs-extra'
-import { googleTranslate, youdaoTranslate, baiduTranslate } from '@ifreeovo/translate-utils'
+import {
+  googleTranslate,
+  youdaoTranslate,
+  baiduTranslate,
+  alicloudTranslate,
+} from '@ifreeovo/translate-utils'
 import type { TranslateConfig, StringObject, translatorType } from '../types'
 import { getAbsolutePath } from './utils/getAbsolutePath'
 import log from './utils/log'
-import { GOOGLE, YOUDAO, BAIDU } from './utils/constants'
+import { GOOGLE, YOUDAO, BAIDU, ALICLOUD } from './utils/constants'
 import getLang from './utils/getLang'
 import StateManager from './utils/stateManager'
 import { saveLocaleFile } from './utils/saveLocaleFile'
@@ -65,13 +70,30 @@ async function translateByBaidu(
   }
 }
 
+async function translateByAlicloud(
+  word: string,
+  locale: string,
+  options: TranslateConfig
+): Promise<string> {
+  if (!options.alicloud || !options.alicloud?.key || !options.alicloud?.secret) {
+    log.error('翻译失败，当前翻译器为阿里云机器翻译，请完善alicloud配置参数')
+    process.exit(1)
+  }
+  try {
+    return await alicloudTranslate(word, 'zh', locale, options.alicloud)
+  } catch (e) {
+    log.error('阿里云机器翻译请求出错', JSON.stringify(e))
+    return ''
+  }
+}
+
 export default async function (
   localePath: string,
   locales: string[],
   oldPrimaryLang: StringObject,
   options: TranslateConfig
 ) {
-  if (![GOOGLE, YOUDAO, BAIDU].includes(options.translator || '')) {
+  if (![GOOGLE, YOUDAO, BAIDU, ALICLOUD].includes(options.translator || '')) {
     log.error('翻译失败，请确认translator参数是否配置正确')
     process.exit(1)
   }
@@ -154,6 +176,10 @@ class Translator {
         break
       case BAIDU:
         this.#provider = translateByBaidu
+        break
+      case ALICLOUD:
+        this.#provider = translateByAlicloud
+        break
     }
     this.#targetLocale = targetLocale
     this.#providerOptions = providerOptions

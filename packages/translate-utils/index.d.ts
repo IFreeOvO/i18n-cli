@@ -8,6 +8,11 @@ interface BaiduConfig {
   secret?: string
 }
 
+export interface AlicloudConfig {
+  key?: string
+  secret?: string
+}
+
 declare namespace TranslateUtils {
   export declare function googleTranslate(
     word: string,
@@ -28,6 +33,13 @@ declare namespace TranslateUtils {
     originLang: string,
     targetLang: string,
     option: BaiduConfig
+  ): Promise<string>
+
+  export declare function alicloudTranslate(
+    word: string,
+    originLang: string,
+    targetLang: string,
+    option: AlicloudConfig
   ): Promise<string>
 }
 

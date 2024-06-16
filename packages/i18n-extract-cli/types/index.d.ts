@@ -56,7 +56,12 @@ export interface BaiduConfig {
   secret?: string
 }
 
-export type translatorType = 'google' | 'youdao' | 'baidu'
+interface AlicloudConfig {
+  key?: string
+  secret?: string
+}
+
+export type translatorType = 'google' | 'youdao' | 'baidu' | 'alicloud'
 export interface TranslateConfig {
   translator?: translatorType
   google?: {
@@ -64,6 +69,7 @@ export interface TranslateConfig {
   }
   youdao?: YoudaoConfig
   baidu?: BaiduConfig
+  alicloud?: AlicloudConfig
 }
 
 export type PrettierConfig = Options | boolean
