@@ -111,7 +111,7 @@ importers:
         specifier: ^7.20.0
         version: 7.24.7
       '@ifreeovo/translate-utils':
-        specifier: workspace:^
+        specifier: ^1.2.0
         version: link:../translate-utils
       '@vue/compiler-sfc':
         specifier: ^3.2.39
