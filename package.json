@@ -5,12 +5,12 @@
   "scripts": {
     "preinstall": "only-allow pnpm",
     "prepare": "husky install",
-    "cz": "pnpm changeset && cz",
+    "cz": "pnpm changeset-add && cz",
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
-    "changeset": "changeset add",
+    "changeset-add": "changeset add",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && pnpm changeset publish"
   },
   "author": "IFreeOvO",
   "license": "MIT",
