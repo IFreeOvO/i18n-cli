@@ -1,5 +1,11 @@
 # @ifreeovo/translate-utils
 
+## 1.2.0
+
+### Minor Changes
+
+- 4199f6b: 支持阿里云翻译
+
 ## 1.1.0
 
 ### Minor Changes

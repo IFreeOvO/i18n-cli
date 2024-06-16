@@ -1,5 +1,16 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.4.0
+
+### Minor Changes
+
+- 4199f6b: 支持阿里云翻译
+
+### Patch Changes
+
+- Updated dependencies [4199f6b]
+  - @ifreeovo/translate-utils@1.2.0
+
 ## 3.3.6
 
 ### Patch Changes
