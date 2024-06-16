@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.4.1
+
+### Patch Changes
+
+- 47eccc8: 依赖报错
+
 ## 3.4.0
 
 ### Minor Changes
