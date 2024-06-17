@@ -279,6 +279,9 @@ export default async function (options: CommandOptions) {
 
   let oldPrimaryLang: Record<string, string> = {}
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
+  if (!fs.existsSync(primaryLangPath)) {
+    fs.ensureFileSync(primaryLangPath)
+  }
   oldPrimaryLang = getLang(primaryLangPath)
   if (!skipExtract) {
     log.info('正在转换中文，请稍等...')
