@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.4.2
+
+### Patch Changes
+
+- cdf25c8: 主语言包文件改成自动生成
+
 ## 3.4.1
 
 ### Patch Changes
