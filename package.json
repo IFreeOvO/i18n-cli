@@ -51,5 +51,10 @@
     "commitizen": {
       "path": "cz-git"
     }
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "mustache@4.2.0": "patches/mustache@4.2.0.patch"
+    }
   }
 }

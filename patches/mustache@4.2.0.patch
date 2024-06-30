@@ -1,0 +1,16 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+deleted file mode 100644
+index b1f72d0a37364c5a4b6d5ec394ca69a9191421ab..0000000000000000000000000000000000000000
+diff --git a/mustache.js b/mustache.js
+index 62fac4d632620f0f407d7dbf76c3d36d14468b45..387e42a6f26f8d2a47d39d0efc9a05f3f9d031a8 100644
+--- a/mustache.js
++++ b/mustache.js
+@@ -84,7 +84,7 @@
+   var spaceRe = /\s+/;
+   var equalsRe = /\s*=/;
+   var curlyRe = /\s*\}/;
+-  var tagRe = /#|\^|\/|>|\{|&|=|!/;
++  var tagRe = /#|\^|>|\{|&|=|!/;
+ 
+   /**
+    * Breaks up the given `template` string into a tree of tokens. If the `tags`

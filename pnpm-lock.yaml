@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  mustache@4.2.0:
+    hash: qm4hdugvhiuw43xiapvjc6gxyi
+    path: patches/mustache@4.2.0.patch
+
 importers:
 
   .:
@@ -152,6 +157,9 @@ importers:
       minimist:
         specifier: ^1.2.8
         version: 1.2.8
+      mustache:
+        specifier: ^4.2.0
+        version: 4.2.0(patch_hash=qm4hdugvhiuw43xiapvjc6gxyi)
       node-xlsx:
         specifier: ^0.21.0
         version: 0.21.2
@@ -210,6 +218,9 @@ importers:
       '@types/minimist':
         specifier: ^1.2.2
         version: 1.2.5
+      '@types/mustache':
+        specifier: ^4.2.5
+        version: 4.2.5
       '@types/node-fetch':
         specifier: ^2.6.2
         version: 2.6.11
@@ -1659,6 +1670,10 @@ packages:
 
   /@types/minimist@1.2.5:
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
+    dev: true
+
+  /@types/mustache@4.2.5:
+    resolution: {integrity: sha512-PLwiVvTBg59tGFL/8VpcGvqOu3L4OuveNvPi0EYbWchRdEVP++yRUXJPFl+CApKEq13017/4Nf7aQ5lTtHUNsA==}
     dev: true
 
   /@types/node-fetch@2.6.11:
@@ -4503,6 +4518,12 @@ packages:
 
   /ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
+
+  /mustache@4.2.0(patch_hash=qm4hdugvhiuw43xiapvjc6gxyi):
+    resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
+    hasBin: true
+    dev: false
+    patched: true
 
   /mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
