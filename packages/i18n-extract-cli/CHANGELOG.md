@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.5.1
+
+### Patch Changes
+
+- e44c713: 报错日志与进度条展示冲突
+
 ## 3.5.0
 
 ### Minor Changes
