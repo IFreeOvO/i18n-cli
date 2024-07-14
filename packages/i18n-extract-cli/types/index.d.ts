@@ -18,11 +18,14 @@ export interface transformOptions {
 
 export type CustomizeKey = (key: string, path?: string) => string
 
+export type CustomizeTemplate = (key: string) => string
+
 export interface Rule {
   caller: string
   functionName?: string
   importDeclaration: string
   customizeKey: CustomizeKey
+  customizeTemplate: CustomizeTemplate
   // TODO: 可优化成根据范型动态生成规则
   functionSnippets?: string
   forceImport?: boolean
