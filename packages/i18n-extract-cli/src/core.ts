@@ -338,9 +338,11 @@ export default async function (options: CommandOptions) {
     saveLocale(savePath)
     bar.stop()
     const endTime = new Date().getTime()
+
     log.info(`耗时${((endTime - startTime) / 1000).toFixed(2)}s`)
   }
 
+  errorLogger.printErrors()
   console.log('') // 空一行
   if (!skipTranslate) {
     await translate(localePath, locales, oldPrimaryLang, {
