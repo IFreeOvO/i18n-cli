@@ -18,6 +18,7 @@ import { initParse } from './parse'
 import Collector from './collector'
 import { IGNORE_REMARK } from './utils/constants'
 import StateManager from './utils/stateManager'
+import errorLogger from './utils/error-logger'
 
 const presetTypescript = require('@babel/preset-typescript')
 
@@ -72,7 +73,13 @@ function parseTextNode(
   customizeKey: (key: string) => string
 ) {
   let str = ''
-  const tokens = mustache.parse(text)
+  let tokens: mustache.TemplateSpans = []
+  try {
+    tokens = mustache.parse(text)
+  } catch (err: any) {
+    errorLogger.reportTemplateError(text, err)
+    return text
+  }
   for (const token of tokens) {
     const type = token[0]
     const value = token[1]
@@ -399,7 +406,13 @@ function generateSource(
   rule: Rule
 ): string {
   const wrapperTemplate = getWrapperTemplate(sfcBlock)
-  const source = handler(sfcBlock.content, rule)
+  let source
+  try {
+    source = handler(sfcBlock.content, rule)
+  } catch (err: any) {
+    source = sfcBlock.content
+    errorLogger.reportFileError(err.message)
+  }
   return ejs.render(wrapperTemplate, {
     code: source,
   })

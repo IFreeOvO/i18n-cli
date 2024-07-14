@@ -20,6 +20,7 @@ import exportExcel from './exportExcel'
 import { getI18nConfig } from './utils/initConfig'
 import { saveLocaleFile } from './utils/saveLocaleFile'
 import { isObject } from './utils/assertType'
+import errorLogger from './utils/error-logger'
 
 interface InquirerResult {
   translator?: 'google' | 'youdao' | 'baidu' | 'alicloud'
@@ -297,6 +298,7 @@ export default async function (options: CommandOptions) {
     bar.start(sourceFilePaths.length, 0)
     sourceFilePaths.forEach((sourceFilePath) => {
       log.verbose(`正在提取文件中的中文:`, sourceFilePath)
+      errorLogger.setFilePath(sourceFilePath)
       const sourceCode = fs.readFileSync(sourceFilePath, 'utf8')
       const ext = path.extname(sourceFilePath).replace('.', '') as FileExtension
       Collector.resetCountOfAdditions()
