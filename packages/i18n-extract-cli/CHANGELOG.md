@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.5.0
+
+### Minor Changes
+
+- 5b97d29: 解析报错时不再中断后续转换
+
 ## 3.4.2
 
 ### Patch Changes
