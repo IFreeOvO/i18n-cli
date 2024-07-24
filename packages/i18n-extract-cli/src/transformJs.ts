@@ -153,8 +153,15 @@ function pushStatement(
 
 function transformJs(code: string, options: transformOptions): GeneratorResult {
   const { rule } = options
-  const { caller, functionName, customizeKey, importDeclaration, functionSnippets, forceImport } =
-    rule
+  const {
+    caller,
+    functionName,
+    customizeKey,
+    customSlot,
+    importDeclaration,
+    functionSnippets,
+    forceImport,
+  } = rule
   let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
 
@@ -250,13 +257,13 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
             const params: TemplateParams = {}
             templateMembers.forEach(function (node) {
               if (node.type === 'Identifier') {
-                value += `{${node.name}}`
+                value += customSlot(node.name)
                 params[node.name] = node.name
               } else if (node.type === 'TemplateElement') {
                 value += node.value.raw.replace(/[\r\n]/g, '') // 用raw防止字符串中出现 /n
               } else if (node.type === 'MemberExpression') {
                 const key = `slot${slotIndex++}`
-                value += `{${key}}`
+                value += customSlot(key)
                 params[key] = {
                   isAstNode: true,
                   value: node as MemberExpression,
@@ -264,7 +271,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
               } else {
                 // 处理${}内容为表达式的情况。例如`测试${a + b}`，把 a+b 这个语法树作为params的值, 并自定义params的键为slot加数字的形式
                 const key = `slot${slotIndex++}`
-                value += `{${key}}`
+                value += customSlot(key)
                 const expression = babelGenerator(node).code
                 const tempAst = transformAST(expression, options) as any
                 const expressionAst = tempAst.program.body[0].expression

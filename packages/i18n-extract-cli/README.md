@@ -81,6 +81,9 @@ module.exports = {
       customizeKey: function (key, currentFilePath) {
         return key
       }, // 自定义this.$t('xxx')中的'xxx'部分的生成规则
+      customSlot: function (slotValue) {
+        return slotValue
+      }, // 自定义模版字段串里插槽部分，例如原文为`你好 ${name}`，转换后是t('你好 {name}')，其中转换后的{name}部分，可以通过这个函数定制
       importDeclaration: 'import { t } from "i18n"', // 默认在文件里导入i18n包。不填则默认不导入i18n的包。由于i18n的npm包有很多，用户可根据项目自行修改导入语法
       forceImport: false, // 即使文件没出现中文，也强行插入importDeclaration定义的语句
     },
@@ -91,7 +94,9 @@ module.exports = {
       customizeKey: function (key, currentFilePath) {
         return key
       },
-      importDeclaration: 'import { t } from "i18n"',
+      customSlot: function (slotValue) {
+        return slotValue
+      },
       forceImport: false,
     },
     cjs: {
@@ -99,6 +104,9 @@ module.exports = {
       functionName: 't',
       customizeKey: function (key, currentFilePath) {
         return key
+      },
+      customSlot: function (slotValue) {
+        return slotValue
       },
       importDeclaration: 'import { t } from "i18n"',
       forceImport: false,
@@ -109,6 +117,9 @@ module.exports = {
       customizeKey: function (key, currentFilePath) {
         return key
       },
+      customSlot: function (slotValue) {
+        return slotValue
+      },
       importDeclaration: 'import { t } from "i18n"',
       forceImport: false,
     },
@@ -117,6 +128,9 @@ module.exports = {
       functionName: 't',
       customizeKey: function (key, currentFilePath) {
         return key
+      },
+      customSlot: function (slotValue) {
+        return slotValue
       },
       importDeclaration: 'import { t } from "i18n"',
       functionSnippets: '', // react函数组件里，全局加代码片段
@@ -128,6 +142,9 @@ module.exports = {
       customizeKey: function (key, currentFilePath) {
         return key
       },
+      customSlot: function (slotValue) {
+        return slotValue
+      },
       importDeclaration: 'import { t } from "i18n"',
       functionSnippets: '',
       forceImport: false,
@@ -138,6 +155,9 @@ module.exports = {
       functionNameInScript: '$t', // vue这里的配置，仅针对vue的script部分export default里面的内容生效
       customizeKey: : function (key, currentFilePath) {
         return key
+      },
+      customSlot: function (slotValue) {
+        return slotValue
       },
       importDeclaration: '',
       forceImport: false,

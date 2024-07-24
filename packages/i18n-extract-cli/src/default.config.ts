@@ -6,11 +6,16 @@ function getCustomizeKey(key: string, path?: string): string {
   return key
 }
 
+function getCustomSlot(slotValue: string): string {
+  return `{${slotValue}}`
+}
+
 function getCommonRule(): Rule {
   return {
     caller: '',
     functionName: 't',
     customizeKey: getCustomizeKey,
+    customSlot: getCustomSlot,
     importDeclaration: 'import { t } from "i18n"',
   }
 }
@@ -37,6 +42,7 @@ const config: Config = {
       functionNameInTemplate: '$t',
       functionNameInScript: '$t',
       customizeKey: getCustomizeKey,
+      customSlot: getCustomSlot,
       importDeclaration: '',
       tagOrder: ['template', 'script', 'style'],
     },
