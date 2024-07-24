@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.6.0
+
+### Minor Changes
+
+- 9d00b52: 支持模版字段串转换格式的定制
+
 ## 3.5.1
 
 ### Patch Changes
