@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.6.1
+
+### Patch Changes
+
+- d4405f6: 导出 excel 报错
+
 ## 3.6.0
 
 ### Minor Changes
