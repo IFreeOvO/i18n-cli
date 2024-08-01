@@ -41,15 +41,19 @@ export default function exportExcel() {
         rowIndex++
       })
     } else {
+      // 其他语言，按中文字典key，把对应的语言翻译结果填入表格
       let rowIndex = 0
       const keyValueMap = flatObjectDeep(lang)
       Object.keys(keyValueMap).forEach((key) => {
-        data[rowIndex].push(keyValueMap[key]) // 放入中文翻译
+        if (data[rowIndex]) {
+          data[rowIndex].push(keyValueMap[key])
+        }
         rowIndex++
       })
     }
   }
 
   const excelBuffer = buildExcel(headers, data, excelFileName)
-  fs.writeFileSync(getAbsolutePath(process.cwd(), excelPath), excelBuffer, 'utf8')
+  const excelData = new Uint8Array(excelBuffer, excelBuffer.byteOffset, excelBuffer.length)
+  fs.writeFileSync(getAbsolutePath(process.cwd(), excelPath), excelData, 'utf8')
 }
