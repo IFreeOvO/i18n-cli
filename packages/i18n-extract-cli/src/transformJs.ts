@@ -18,6 +18,7 @@ import type {
   Node,
   ReturnStatement,
   FunctionExpression,
+  FunctionDeclaration,
   Statement,
 } from '@babel/types'
 import type { GeneratorResult } from '@babel/generator'
@@ -105,7 +106,7 @@ function nodeToCode(node: Node): string {
 }
 
 // 允许往react函数组件中加入自定义代码
-function insertSnippets(node: ArrowFunctionExpression | FunctionExpression, snippets?: string) {
+function insertSnippets(node: ArrowFunctionExpression | FunctionExpression | FunctionDeclaration, snippets?: string) {
   if (node.body.type === 'BlockStatement' && snippets) {
     const returnStatement = node.body.body.find((node: Node) => node.type === 'ReturnStatement')
 
@@ -388,7 +389,15 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           // 允许往react函数组件中加入自定义代码
           insertSnippets(node, functionSnippets)
         },
-
+        FunctionDeclaration(path: NodePath<FunctionDeclaration>) {
+          const { node } = path
+          // 函数组件必须在代码最外层
+          if (path.parentPath.scope.block.type !== 'Program') {
+            return
+          }
+          // 允许往react函数组件中加入自定义代码
+          insertSnippets(node, functionSnippets)
+        },
         FunctionExpression(path: NodePath<FunctionExpression>) {
           const { node } = path
           // 函数组件必须在代码最外层
