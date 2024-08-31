@@ -106,7 +106,7 @@ function nodeToCode(node: Node): string {
 }
 
 // 允许往react函数组件中加入自定义代码
-function insertSnippets(node: ArrowFunctionExpression | FunctionExpression | FunctionDeclaration, snippets?: string) {
+function insertSnippets(node: ArrowFunctionExpression | FunctionExpression, snippets?: string) {
   if (node.body.type === 'BlockStatement' && snippets) {
     const returnStatement = node.body.body.find((node: Node) => node.type === 'ReturnStatement')
 
@@ -396,7 +396,7 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
             return
           }
           // 允许往react函数组件中加入自定义代码
-          insertSnippets(node, functionSnippets)
+          insertSnippets(node as any, functionSnippets)
         },
         FunctionExpression(path: NodePath<FunctionExpression>) {
           const { node } = path
