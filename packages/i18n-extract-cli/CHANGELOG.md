@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.6.2
+
+### Patch Changes
+
+- 181173f: 函数声明场景下,functionSnippets 配置未生效
+
 ## 3.6.1
 
 ### Patch Changes
