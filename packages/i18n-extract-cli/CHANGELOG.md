@@ -1,5 +1,12 @@
 # @ifreeovo/i18n-extract-cli
 
+## 3.6.3
+
+### Patch Changes
+
+- df3cfe5: 解析空文件报错
+- a1b1540: @prop 装饰器里的中文转换错误
+
 ## 3.6.2
 
 ### Patch Changes
