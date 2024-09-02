@@ -331,6 +331,7 @@ function handleScript(source: string, rule: Rule): string {
     parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
   }
 
+  // TODO: 根据@Component来判断是否用了ts。这个方式不严谨。后续要改
   if (startIndex !== -1) {
     // 含ts的vue处理
     //把vue的script拆分成 export default 部分和非export default部分分别解析
