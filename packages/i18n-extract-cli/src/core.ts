@@ -303,6 +303,11 @@ export default async function (options: CommandOptions) {
       const ext = path.extname(sourceFilePath).replace('.', '') as FileExtension
       Collector.resetCountOfAdditions()
       Collector.setCurrentCollectorPath(sourceFilePath)
+      // 跳过空文件
+      if (sourceCode.trim() === '') {
+        bar.increment()
+        return
+      }
       const { code } = transform(sourceCode, ext, rules, sourceFilePath)
       log.verbose(`完成中文提取和语法转换:`, sourceFilePath)
 
