@@ -67,6 +67,7 @@ function isPropNode(path: NodePath<StringLiteral>): boolean {
   let isMeetProp = false
   let isMeetKey = false
   let isMeetContainer = false
+  const propDecoratorNode = path.parentPath.parentPath?.parentPath?.node // @props节点
   // 属性是否包含在props结构里
   if (
     objWithProps &&
@@ -75,7 +76,15 @@ function isPropNode(path: NodePath<StringLiteral>): boolean {
     objWithProps.key.name === 'props'
   ) {
     isMeetProp = true
+  } else if (
+    propDecoratorNode?.type === 'CallExpression' &&
+    (propDecoratorNode?.callee as any)?.name === 'prop'
+  ) {
+    // TODO: 不严谨的处理。后期再改
+    // 属性是否包含在@props结构里
+    isMeetProp = true
   }
+
   // 对应key是否是default
   if (
     path.parent &&
@@ -87,6 +96,13 @@ function isPropNode(path: NodePath<StringLiteral>): boolean {
   }
   // 遍历到指定层数后是否是导出声明
   if (rootNode && rootNode.type === 'ExportDefaultDeclaration') {
+    isMeetContainer = true
+  } else if (rootNode?.type === 'ClassDeclaration') {
+    /**
+     * ts导出类的情况
+     * @Component
+     * export default class MyComponent extends Vue
+     * */
     isMeetContainer = true
   }
   return isMeetProp && isMeetKey && isMeetContainer
