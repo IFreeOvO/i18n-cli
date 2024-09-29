@@ -8,6 +8,10 @@ class StateManager {
 
   private toolConfig: Config = defaultConfig
 
+  private currentSourcePath = ''
+
+  private vueScriptLang = 'js'
+
   static getInstance() {
     if (!this._instance) {
       this._instance = new StateManager()
@@ -20,6 +24,22 @@ class StateManager {
   }
   getToolConfig(): Config {
     return this.toolConfig
+  }
+
+  setCurrentSourcePath(path: string): void {
+    this.currentSourcePath = path
+  }
+
+  getCurrentSourcePath(): string {
+    return this.currentSourcePath
+  }
+
+  setVueScriptLang(lang?: string): void {
+    this.vueScriptLang = lang || 'js'
+  }
+
+  getVueScriptLang(): string {
+    return this.vueScriptLang
   }
 }
 

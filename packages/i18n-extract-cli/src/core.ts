@@ -297,6 +297,8 @@ export default async function (options: CommandOptions) {
     const startTime = new Date().getTime()
     bar.start(sourceFilePaths.length, 0)
     sourceFilePaths.forEach((sourceFilePath) => {
+      StateManager.setCurrentSourcePath(sourceFilePath)
+
       log.verbose(`正在提取文件中的中文:`, sourceFilePath)
       errorLogger.setFilePath(sourceFilePath)
       const sourceCode = fs.readFileSync(sourceFilePath, 'utf8')

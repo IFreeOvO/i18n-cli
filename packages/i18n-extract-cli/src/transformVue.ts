@@ -20,9 +20,8 @@ import { IGNORE_REMARK } from './utils/constants'
 import StateManager from './utils/stateManager'
 import errorLogger from './utils/error-logger'
 
-const presetTypescript = require('@babel/preset-typescript')
-
 type Handler = (source: string, rule: Rule) => string
+
 const COMMENT_TYPE = '!'
 
 function parseJsSyntax(source: string, rule: Rule): string {
@@ -40,7 +39,7 @@ function parseJsSyntax(source: string, rule: Rule): string {
       caller: '',
       importDeclaration: '',
     },
-    parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
+    parse: initParse(),
   })
 
   let stylizedCode = prettier.format(code, {
@@ -286,70 +285,47 @@ function handleTemplate(code: string, rule: Rule): string {
   return htmlString
 }
 
-// 找出@Component位置
-function findExportDefaultDeclaration(source: string, parser: (code: string) => any): number {
-  let startIndex = -1
-  const ast = parser(source)
-  traverse(ast, {
-    ExportDefaultDeclaration(path) {
-      const { node } = path
-      const declaration = path.get('declaration')
-      if (declaration.isClassDeclaration()) {
-        const decorators = declaration.node.decorators
-        if (decorators && decorators.length > 0) {
-          // 找出@Component装饰器进行分割
-          const componentDecorator = decorators.find((decorator) => {
-            return (
-              (decorator.expression.type === 'Identifier' &&
-                decorator.expression.name === 'Component') ||
-              (decorator.expression.type === 'CallExpression' &&
-                decorator.expression.callee.type === 'Identifier' &&
-                decorator.expression.callee.name === 'Component')
-            )
-          })
-          if (componentDecorator) {
-            startIndex = node.start ?? 0
-            path.skip()
-          }
-        }
-      }
-    },
-  })
-  return startIndex
+function getComponentDecoratorPosition(source: string): number {
+  return source.indexOf('@Component')
+}
+
+function getExportDefaultPosition(source: string): number {
+  return source.indexOf('export default')
 }
 
 function handleScript(source: string, rule: Rule): string {
-  // TODO: 这里babel解析可以优化，不然vue文件的script会重复解析两次浪费性能
-  const parser = initParse([[presetTypescript, { isTSX: true, allExtensions: true }]])
-  const startIndex = findExportDefaultDeclaration(source, parser)
+  const lang = StateManager.getVueScriptLang().toLowerCase()
+  if (['ts', 'typescript', 'tsx'].includes(lang)) {
+    // 如果vue用了ts，按@Component装饰器进行分割
+    const startIndex = getComponentDecoratorPosition(source)
+    return combineVueScript(source.slice(0, startIndex), source.slice(startIndex), rule)
+  } else {
+    const startIndex = getExportDefaultPosition(source)
+    return combineVueScript(source.slice(0, startIndex), source.slice(startIndex), rule)
+  }
+}
+
+function combineVueScript(nonComponentCode: string, componentCode: string, rule: Rule) {
   const transformOptions = {
     rule: {
       ...rule,
       functionName: rule.functionNameInScript,
     },
     isJsInVue: true, // 标记处理vue里的js
-    parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
+    parse: initParse(),
   }
-
-  // TODO: 根据@Component来判断是否用了ts。这个方式不严谨。后续要改
-  if (startIndex !== -1) {
-    // 含ts的vue处理
-    //把vue的script拆分成 export default 部分和非export default部分分别解析
-    const notDefaultPart = source.slice(0, startIndex)
-    const defaultPart = source.slice(startIndex)
-    const defaultCode = transformJs(defaultPart, transformOptions).code
-    const notDefaultCode = transformJs(notDefaultPart, {
-      ...transformOptions,
-      rule: StateManager.getToolConfig().rules.js,
-    }).code
-    if (notDefaultCode) {
-      return '\n' + notDefaultCode + '\n' + defaultCode + '\n'
-    } else {
-      return defaultCode + '\n'
-    }
+  const lang = StateManager.getVueScriptLang().toLowerCase()
+  const transformedNonComponentCode = transformJs(nonComponentCode, {
+    ...transformOptions,
+    rule: ['ts', 'typescript', 'tsx'].includes(lang)
+      ? StateManager.getToolConfig().rules.ts
+      : StateManager.getToolConfig().rules.js,
+  }).code
+  const transformedComponentCode = transformJs(componentCode, transformOptions).code
+  if (transformedNonComponentCode) {
+    return '\n' + transformedNonComponentCode + '\n' + transformedComponentCode + '\n'
   } else {
-    const code = transformJs(source, transformOptions).code
-    return code
+    return transformedComponentCode + '\n'
   }
 }
 
@@ -472,10 +448,12 @@ function transformVue(
   }
 
   if (script) {
+    StateManager.setVueScriptLang(script.lang)
     scriptCode = generateSource(script, handleScript, rule)
   }
 
   if (scriptSetup) {
+    StateManager.setVueScriptLang(scriptSetup?.lang)
     scriptCode = generateSource(scriptSetup, handleScript, rule)
   }
 

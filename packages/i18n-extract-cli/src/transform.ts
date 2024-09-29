@@ -26,7 +26,7 @@ function transform(
     case 'tsx':
       return transformJs(code, {
         rule: rules[ext],
-        parse: initParse([[presetTypescript, { isTSX: true, allExtensions: true }]]),
+        parse: initParse(),
       })
     case 'vue':
       // 规则functionName废弃掉，使用functionNameInScript代替

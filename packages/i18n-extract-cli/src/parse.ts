@@ -1,38 +1,49 @@
-import type { PluginItem } from '@babel/core'
+import path from 'node:path'
+import StateManager from './utils/stateManager'
+
 const babel = require('@babel/core')
-const pluginSyntaxJSX = require('@babel/plugin-syntax-jsx')
-const pluginSyntaxProposalOptionalChaining = require('@babel/plugin-proposal-optional-chaining')
-const pluginSyntaxClassProperties = require('@babel/plugin-syntax-class-properties')
+const presetEnv = require('@babel/preset-env')
+const presetReact = require('@babel/preset-react')
+const typescriptPresets = require('@babel/preset-typescript')
 const pluginSyntaxDecorators = require('@babel/plugin-syntax-decorators')
-const pluginSyntaxObjectRestSpread = require('@babel/plugin-syntax-object-rest-spread')
-const pluginSyntaxAsyncGenerators = require('@babel/plugin-syntax-async-generators')
-const pluginSyntaxDoExpressions = require('@babel/plugin-syntax-do-expressions')
-const pluginSyntaxDynamicImport = require('@babel/plugin-syntax-dynamic-import')
-const pluginSyntaxExportExtensions = require('@babel/plugin-syntax-export-extensions')
-const pluginSyntaxFunctionBind = require('@babel/plugin-syntax-function-bind')
 
-type presetsType = PluginItem[] | undefined
-type pluginsType = PluginItem[] | undefined
+function langToExtension(lang = 'js') {
+  switch (lang.toLowerCase()) {
+    case 'js':
+    case 'mjs':
+    case 'javascript':
+      return '.js'
+    case 'ts':
+    case 'typescript':
+      return '.ts'
+    case 'jsx':
+      return '.jsx'
+    case 'tsx':
+      return '.tsx'
+    default:
+      throw new Error(`vue script标签里存在未知的lang属性值: ${lang}`)
+  }
+}
 
-export function initParse(babelPresets: presetsType = [], babelPlugins: pluginsType = []) {
+function getSourceFileName() {
+  const sourcePath = StateManager.getCurrentSourcePath()
+  const lang = StateManager.getVueScriptLang()
+  const ext = path.extname(sourcePath)
+  const isVueFile = ext === '.vue'
+
+  const basename = path.basename(sourcePath, ext)
+  const filename = isVueFile ? basename + langToExtension(lang) : basename + ext
+  return filename
+}
+
+export function initParse() {
   return function (code: string) {
     return babel.parseSync(code, {
       ast: true,
       configFile: false,
-      presets: babelPresets,
-      plugins: [
-        pluginSyntaxJSX,
-        pluginSyntaxProposalOptionalChaining,
-        pluginSyntaxClassProperties,
-        [pluginSyntaxDecorators, { decoratorsBeforeExport: true }],
-        pluginSyntaxObjectRestSpread,
-        pluginSyntaxAsyncGenerators,
-        pluginSyntaxDoExpressions,
-        pluginSyntaxDynamicImport,
-        pluginSyntaxExportExtensions,
-        pluginSyntaxFunctionBind,
-        ...babelPlugins,
-      ],
+      filename: getSourceFileName(),
+      presets: [presetEnv, presetReact, typescriptPresets],
+      plugins: [[pluginSyntaxDecorators, { legacy: true }]],
     })
   }
 }
