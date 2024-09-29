@@ -6,7 +6,6 @@ import type {
 } from '@vue/compiler-sfc'
 import { parse } from '@vue/compiler-sfc'
 import * as htmlparser2 from 'htmlparser2'
-import traverse from '@babel/traverse'
 import prettier from 'prettier'
 import mustache from 'mustache'
 import ejs from 'ejs'

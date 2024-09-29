@@ -3,7 +3,6 @@ import type { Rules, FileExtension } from '../types'
 import transformJs from './transformJs'
 import transformVue from './transformVue'
 import { initParse } from './parse'
-const presetTypescript = require('@babel/preset-typescript')
 
 function transform(
   code: string,
