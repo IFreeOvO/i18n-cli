@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 4.0.0
+
+### Major Changes
+
+- b5713b2: 重写针对 vue 的 script 解析;解决使用 ts 强制类型转换报错
+
 ## 3.6.3
 
 ### Patch Changes
