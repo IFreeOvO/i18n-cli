@@ -53,6 +53,7 @@ function getSourceFilePaths(input: string, exclude: string[]): string[] {
   }
 }
 
+// TODO: 逻辑需要重写
 function saveLocale(localePath: string) {
   const keyMap = Collector.getKeyMap()
   const localeAbsolutePath = getAbsolutePath(process.cwd(), localePath)
@@ -281,7 +282,7 @@ export default async function (options: CommandOptions) {
   let oldPrimaryLang: Record<string, string> = {}
   const primaryLangPath = getAbsolutePath(process.cwd(), localePath)
   if (!fs.existsSync(primaryLangPath)) {
-    fs.ensureFileSync(primaryLangPath)
+    saveLocaleFile({}, primaryLangPath)
   }
   oldPrimaryLang = getLang(primaryLangPath)
   if (!skipExtract) {

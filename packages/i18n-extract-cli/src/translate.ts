@@ -113,7 +113,8 @@ export default async function (
     if (fs.existsSync(targetLocalePath)) {
       oldTargetLangPack = flatObjectDeep(getLang(targetLocalePath))
     } else {
-      fs.ensureFileSync(targetLocalePath)
+      // 创建空的翻译文件
+      saveLocaleFile({}, targetLocalePath)
     }
 
     const keyList = Object.keys(newPrimaryLang)
