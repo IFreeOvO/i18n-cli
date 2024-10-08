@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 4.1.0
+
+### Minor Changes
+
+- b570f7a: 默认开启增量翻译
+
 ## 4.0.1
 
 ### Patch Changes
