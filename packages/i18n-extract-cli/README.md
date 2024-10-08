@@ -50,7 +50,6 @@ it
 | --skip-extract    | Boolean | false                  | 跳过 i18n 转换阶段。                                                                   |
 | --skip-translate  | Boolean | false                  | 跳过中文翻译阶段。                                                                     |
 | --locales         | Array   | ['en-US']              | 根据中文语言包自动翻译成其他语言。用法例子 --locales en zh-CHT                         |
-| --incremental     | Boolean | false                  | 开启后。支持将文件中提取到中文键值对，追加到原有的中文语言包。                         |
 | --exportExcel     | Boolean | false                  | 开启后。导出所有翻译内容到 excel。 默认导出到当前目录下的 locales.xlsx                 |
 | --excelPath       | String  | './locales.xlsx'       | 指定导出的 excel 路径。                                                                |
 
@@ -172,6 +171,7 @@ module.exports = {
     semi: false,
     singleQuote: true,
   },
+  incremental: true, // 开启后。支持将文件中新提取到中文键值对，追加到原有的中文语言包
   skipExtract: false, // 跳过提取中文阶段
   // 以下是和翻译相关的配置，注意搭配使用
   skipTranslate: true, // 跳过翻译语言包阶段。默认不翻译
@@ -196,48 +196,42 @@ module.exports = {
 
 1. 跳过转换阶段，仅将中文语言包翻译成其他语言(例如英语、中文繁体等)
 
-```
+```bash
 it --skip-extract --locales en zh-CHT
 ```
 
 2. 跳过自动翻译阶段，仅进行 i18n 转换，并将提取到的 key-value 提取到中文语言包
 
-```
+```bash
 it --skip-translate
 ```
 
 3. 使用自定义配置进行 i18n 转换
 
-```
+```bash
 it -c ./i18n.config.js
 ```
 
 4. 指定需要自动翻译的语言(例如日语)，并指定项目里中文语言包的位置(相对于命令的执行位置)。命令执行时会自动根据中文语言包，将日语翻译出来并存入到`ja.json`文件中
 
-```
+```bash
 it --localePath ./locales/zh-CN.json  --locales ja
 ```
 
-5. 指定需要转换的文件目录，并增量提取中文。例如项目的 src 目录有 A、B、C 三个文件夹，里面分别有 A,B,C 三个文件，其中 A、B 已经替换过 i18n，此时执行命令，会将 C 文件的中文进行 i18n 替换，并将新提取到的中文追加到原有的中文语言包里
-
-```
-it --incremental -i ./src/C
-```
-
-6. 导入翻译的 excel 表格，并自动生成对应语言包的 json 文件
+5. 导入翻译的 excel 表格，并自动生成对应语言包的 json 文件
 
 excel 的表头格式举例`['字典key', 'zh-CN', 'en-US']`
 
-```
+```bash
 # 方式1，根据指令参数导入
 it loadExcel --excelPath ./demo.xlsx --localePath ./locales/zh-CN.json
 # 方式2，根据本地自定义配置导入
 it loadExcel -c ./i18n.config.js
 ```
 
-1. 将翻译结果导出到 excel 表格
+6. 将翻译结果导出到 excel 表格
 
-```
+```bash
 # 方式1，根据指令参数
 it --skip-extract --skip-translate --exportExcel --excelPath ./demo.xlsx
 # 方式2，根据本地配置
