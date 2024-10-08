@@ -17,7 +17,6 @@ program
   .option('-v, --verbose', '控制台打印更多调试信息')
   .option('--skip-extract', '跳过中文提取阶段')
   .option('--skip-translate', '跳过中文翻译阶段')
-  .option('--incremental', '开启增量转换')
   .option('--locales <locales...>', '根据中文语言包自动翻译成其他语言')
   .option('--localePath <path>', '指定提取的中文语言包所存放的路径')
   .option('--excelPath <path>', '语言包excel的存放路径')

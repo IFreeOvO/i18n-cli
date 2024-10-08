@@ -51,7 +51,7 @@ const config: Config = {
     semi: false,
     singleQuote: true,
   },
-  incremental: false,
+  incremental: true,
   skipExtract: false,
   localePath: './locales/zh-CN.json',
   localeFileType: 'json',
