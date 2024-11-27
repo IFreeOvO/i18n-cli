@@ -20,12 +20,8 @@ async function translateByGoogle(
   locale: string,
   options: TranslateConfig
 ): Promise<string> {
-  if (!options.google) {
-    log.error('翻译失败，当前翻译器为谷歌，请完善google配置参数')
-    process.exit(1)
-  }
   try {
-    return await googleTranslate(word, 'zh-CN', locale, options.google.proxy ?? undefined)
+    return await googleTranslate(word, 'zh-CN', locale, options.google?.proxy)
   } catch (e: any) {
     if (e.name === 'TooManyRequestsError') {
       log.error('翻译失败，请求超过谷歌api调用次数限制')
