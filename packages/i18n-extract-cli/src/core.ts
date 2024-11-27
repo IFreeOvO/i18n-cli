@@ -154,13 +154,13 @@ async function getTranslationConfig() {
     {
       type: 'input',
       name: 'proxy',
-      message: '使用谷歌服务需要翻墙，请输入代理地址',
+      message: '使用谷歌服务需要翻墙，请输入代理地址（可选）',
       default: oldConfigCache.proxy || '',
       when(answers) {
         return answers.translator === GOOGLE
       },
-      validate(input) {
-        return input.length === 0 ? '代理地址不能为空' : true
+      validate() {
+        return true
       },
     },
     {
