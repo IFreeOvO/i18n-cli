@@ -159,9 +159,6 @@ async function getTranslationConfig() {
       when(answers) {
         return answers.translator === GOOGLE
       },
-      validate() {
-        return true
-      },
     },
     {
       type: 'input',
