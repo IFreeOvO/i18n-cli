@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 4.2.0
+
+### Minor Changes
+
+- 7f4e610: 放开谷歌翻译限制
+
 ## 4.1.0
 
 ### Minor Changes
