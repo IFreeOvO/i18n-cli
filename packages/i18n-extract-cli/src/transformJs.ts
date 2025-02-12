@@ -168,16 +168,22 @@ function pushStatement(
 }
 
 function transformJs(code: string, options: transformOptions): GeneratorResult {
-  const { rule } = options
+  const { rule, isJsInVue } = options
   const {
     caller,
     functionName,
     customizeKey,
     customSlot,
-    importDeclaration,
+    importDeclaration: scriptImportDeclaration,
+    vueImportDeclaration,
     functionSnippets,
     forceImport,
   } = rule
+  // 如果是 Vue 文件中的脚本部分，使用 vue rule 中的 importDeclaration
+  const importDeclaration = isJsInVue
+    ? vueImportDeclaration || scriptImportDeclaration // 优先使用 vueImportDeclaration
+    : scriptImportDeclaration
+
   let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
 

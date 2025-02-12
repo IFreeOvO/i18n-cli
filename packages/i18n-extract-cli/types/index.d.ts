@@ -24,6 +24,7 @@ export interface Rule {
   caller: string
   functionName?: string
   importDeclaration: string
+  vueImportDeclaration?: string
   customizeKey: CustomizeKey
   customSlot: GetCustomSlot
   // TODO: 可优化成根据范型动态生成规则
