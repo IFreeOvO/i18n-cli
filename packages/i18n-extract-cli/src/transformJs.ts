@@ -8,7 +8,6 @@ import type {
   SpreadElement,
   JSXText,
   JSXAttribute,
-  Program,
   ImportDeclaration,
   CallExpression,
   ObjectExpression,
@@ -385,15 +384,6 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
           if (path.node.source.value === packageName) {
             hasImportI18n = true
           }
-
-          if (!hasImportI18n && hasTransformed) {
-            const importAst = template.statements(importDeclaration)()
-            const program = path.parent as Program
-            importAst.forEach((statement) => {
-              program.body.unshift(statement)
-            })
-            hasImportI18n = true
-          }
         },
 
         ArrowFunctionExpression(path: NodePath<ArrowFunctionExpression>) {
@@ -474,14 +464,28 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
     compact: false,
     retainLines: true,
   })
-  // 文件里没有出现任何导入语句的情况
-  if (!hasImportI18n && hasTransformed) {
-    result.code = `${importDeclaration}\n${result.code}`
+
+  // 需要添加导入语句的情况
+  if (!hasImportI18n && (hasTransformed || forceImport)) {
+    // 查找最后一个 import 语句的位置
+    const lines = result.code.split('\n')
+    let lastImportLine = -1
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].trim().startsWith('import ')) {
+        lastImportLine = i
+      }
+    }
+
+    if (lastImportLine !== -1) {
+      // 有 import 语句，在最后一个 import 后插入
+      lines.splice(lastImportLine + 1, 0, importDeclaration)
+      result.code = lines.join('\n')
+    } else if (!hasImportI18n && (!hasTransformed || forceImport)) {
+      // 没有 import 语句，直接在文件开头插入
+      result.code = `${importDeclaration}\n${result.code}`
+    }
   }
-  // 有forceImport时，即使没发生中文提取，也要在文件里加入i18n导入语句
-  if (!hasImportI18n && !hasTransformed && forceImport) {
-    result.code = `${importDeclaration}\n${result.code}`
-  }
+
   return result
 }
 
