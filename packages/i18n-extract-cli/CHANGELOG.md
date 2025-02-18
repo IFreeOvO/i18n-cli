@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 4.2.1
+
+### Patch Changes
+
+- bdf2a32: 读取文件时,需确保是文件类型
+
 ## 4.2.0
 
 ### Minor Changes
