@@ -45,9 +45,11 @@ function isValidInput(input: string): boolean {
 
 function getSourceFilePaths(input: string, exclude: string[]): string[] {
   if (isValidInput(input)) {
-    return glob.sync(`${input}/**/*.{cjs,mjs,js,ts,tsx,jsx,vue}`, {
-      ignore: exclude,
-    })
+    return glob
+      .sync(`${input}/**/*.{cjs,mjs,js,ts,tsx,jsx,vue}`, {
+        ignore: exclude,
+      })
+      .filter((file) => fs.statSync(file).isFile())
   } else {
     return []
   }
