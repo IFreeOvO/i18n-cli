@@ -1,0 +1,16 @@
+name: Issue Close Inactive
+
+on:
+  schedule:
+    # GMT+8 03:00
+    - cron: '0 19 * * *'
+
+jobs:
+  check-inactive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check-inactive
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'check-inactive'
+          inactive-day: 14
