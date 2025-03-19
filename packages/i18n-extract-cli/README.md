@@ -152,7 +152,7 @@ module.exports = {
       caller: 'this',
       functionNameInTemplate: '$t',// vue这里的配置，仅针对vue的template标签里面的内容生效
       functionNameInScript: '$t', // vue这里的配置，仅针对vue的script部分export default里面的内容生效
-      customizeKey: : function (key, currentFilePath) {
+      customizeKey: function (key, currentFilePath) {
         return key
       },
       customSlot: function (slotValue) {
