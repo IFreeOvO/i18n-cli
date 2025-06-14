@@ -1,5 +1,16 @@
 # @ifreeovo/i18n-extract-cli
 
+## 4.3.0
+
+### Minor Changes
+
+- 3ec1789: input 配置支持传数组形式
+
+### Patch Changes
+
+- 5cbe9fe: 如果 vue 的自定义规则里配置了 importDeclaration 值,每次转换相同文件会导致 import 重复导入
+- c89ea7b: 不应该写死翻译接口请求的最大文本长度限制
+
 ## 4.2.1
 
 ### Patch Changes
