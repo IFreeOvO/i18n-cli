@@ -8,6 +8,7 @@ import cliProgress from 'cli-progress'
 import glob from 'glob'
 import merge from 'lodash/merge'
 import cloneDeep from 'lodash/cloneDeep'
+import isArray from 'lodash/isArray'
 import transform from './transform'
 import log from './utils/log'
 import { getAbsolutePath } from './utils/getAbsolutePath'
@@ -21,6 +22,7 @@ import { getI18nConfig } from './utils/initConfig'
 import { saveLocaleFile } from './utils/saveLocaleFile'
 import { isObject } from './utils/assertType'
 import errorLogger from './utils/error-logger'
+import isDirectory from './utils/isDirectory'
 
 interface InquirerResult {
   translator?: 'google' | 'youdao' | 'baidu' | 'alicloud'
@@ -29,30 +31,38 @@ interface InquirerResult {
   proxy?: string
 }
 
-function isValidInput(input: string): boolean {
-  const inputPath = getAbsolutePath(process.cwd(), input)
-
-  if (!fs.existsSync(inputPath)) {
-    log.error(`路径${inputPath}不存在,请重新设置input参数`)
-    process.exit(1)
-  }
-  if (!fs.statSync(inputPath).isDirectory()) {
-    log.error(`路径${inputPath}不是一个目录,请重新设置input参数`)
-    process.exit(1)
-  }
-  return true
+function resolvePathFrom(inputPath: string) {
+  const currentDir = process.cwd()
+  return path.resolve(currentDir, inputPath)
 }
 
-function getSourceFilePaths(input: string, exclude: string[]): string[] {
-  if (isValidInput(input)) {
-    return glob
-      .sync(`${input}/**/*.{cjs,mjs,js,ts,tsx,jsx,vue}`, {
+function getPathFromInput(input: string, exclude: string[]) {
+  const resolvePath = resolvePathFrom(input)
+  if (isDirectory(resolvePath)) {
+    const paths = glob
+      .sync(`${resolvePath}/**/*.{cjs,mjs,js,ts,tsx,jsx,vue}`, {
         ignore: exclude,
       })
       .filter((file) => fs.statSync(file).isFile())
+    return paths
   } else {
-    return []
+    return [resolvePath]
   }
+}
+
+function getSourceFilePaths(input: string, exclude: string[]): string[] {
+  const filePaths: string[] = []
+  if (isArray(input)) {
+    input.forEach((item) => {
+      const paths = getPathFromInput(item, exclude)
+      filePaths.push(...paths)
+    })
+  } else {
+    const paths = getPathFromInput(input, exclude)
+    filePaths.push(...paths)
+  }
+
+  return filePaths
 }
 
 // TODO: 逻辑需要重写
