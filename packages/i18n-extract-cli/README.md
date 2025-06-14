@@ -150,7 +150,7 @@ module.exports = {
     },
     vue: {
       caller: 'this',
-      functionNameInTemplate: '$t',// vue这里的配置，仅针对vue的template标签里面的内容生效
+      functionNameInTemplate: '$t', // vue这里的配置，仅针对vue的template标签里面的内容生效
       functionNameInScript: '$t', // vue这里的配置，仅针对vue的script部分export default里面的内容生效
       customizeKey: function (key, currentFilePath) {
         return key
@@ -164,7 +164,7 @@ module.exports = {
     },
   },
   globalRule: {
-    ignoreMethods: [] // 忽略指定函数调用的中文提取。例如想忽略sensor.track('中文')的提取。这里就写['sensor.track']
+    ignoreMethods: [], // 忽略指定函数调用的中文提取。例如想忽略sensor.track('中文')的提取。这里就写['sensor.track']
   },
   // prettier配置，参考https://prettier.io/docs/en/options.html
   prettier: {
@@ -175,6 +175,7 @@ module.exports = {
   skipExtract: false, // 跳过提取中文阶段
   // 以下是和翻译相关的配置，注意搭配使用
   skipTranslate: true, // 跳过翻译语言包阶段。默认不翻译
+  translationTextMaxLength: 5000, // 每次请求翻译接口，接口携带参数里翻译原文的最大长度
   locales: [], // 需要翻译的语言包。例如['en', 'zh-CHT']，会自动翻译英文和繁体
   excelPath: './locales.xlsx', // excel存放路径
   exportExcel: false, // 是否导出excel
@@ -182,7 +183,9 @@ module.exports = {
   // allKeyValue：已遍历的所有文件的key-value
   // currentFileKeyMap: 当前文件提取到的key-value
   // currentFilePath: 当前遍历的文件路径
-  adjustKeyMap(allKeyValue, currentFileKeyMap, currentFilePath) {return allKeyValue}, // 对提取结构进行二次处理
+  adjustKeyMap(allKeyValue, currentFileKeyMap, currentFilePath) {
+    return allKeyValue
+  }, // 对提取结构进行二次处理
 }
 ```
 
