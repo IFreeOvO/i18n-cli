@@ -73,6 +73,7 @@ export interface TranslateConfig {
   youdao?: YoudaoConfig
   baidu?: BaiduConfig
   alicloud?: AlicloudConfig
+  translationTextMaxLength?: number
 }
 
 export type PrettierConfig = Options | boolean
@@ -104,6 +105,7 @@ export type Config = {
   prettier: PrettierConfig
   skipExtract: boolean
   skipTranslate: boolean
+  translationTextMaxLength: number
   incremental: boolean
   globalRule: GlobalRule
   excelPath: string

@@ -180,6 +180,7 @@ class Translator {
     }
     this.#targetLocale = targetLocale
     this.#providerOptions = providerOptions
+    this.#textLengthLimit = providerOptions.translationTextMaxLength || 5000
   }
 
   async translate(dictionary: Record<string, string>): Promise<Record<string, string>> {

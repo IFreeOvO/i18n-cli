@@ -58,6 +58,7 @@ const config: Config = {
   excelPath: './locales.xlsx',
   exportExcel: false,
   skipTranslate: false,
+  translationTextMaxLength: 5000,
   locales: ['en-US'],
   globalRule: {
     ignoreMethods: [],

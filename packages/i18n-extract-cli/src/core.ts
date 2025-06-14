@@ -358,6 +358,7 @@ export default async function (options: CommandOptions) {
       youdao: i18nConfig.youdao,
       baidu: i18nConfig.baidu,
       alicloud: i18nConfig.alicloud,
+      translationTextMaxLength: i18nConfig.translationTextMaxLength,
     })
   }
 
