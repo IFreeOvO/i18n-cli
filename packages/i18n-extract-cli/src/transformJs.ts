@@ -43,6 +43,10 @@ type TemplateParams = {
       }
 }
 
+interface Context {
+  hasImportI18n?: boolean
+}
+
 function getObjectExpression(obj: TemplateParams): ObjectExpression {
   const ObjectPropertyArr: Array<ObjectMethod | ObjectProperty | SpreadElement> = []
   Object.keys(obj).forEach((k) => {
@@ -168,7 +172,13 @@ function pushStatement(
   }
 }
 
-function transformJs(code: string, options: transformOptions): GeneratorResult {
+function transformJs(
+  code: string,
+  options: transformOptions,
+  context: Context = {
+    hasImportI18n: false, // 文件是否导入过i18n
+  }
+): GeneratorResult {
   const { rule } = options
   const {
     caller,
@@ -179,7 +189,6 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
     functionSnippets,
     forceImport,
   } = rule
-  let hasImportI18n = false // 文件是否导入过i18n
   let hasTransformed = false // 文件里是否存在中文转换，有的话才有必要导入i18n
 
   function getCallExpression(identifier: string, quote = "'"): string {
@@ -381,18 +390,16 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
         ImportDeclaration(path: NodePath<ImportDeclaration>) {
           const res = importDeclaration.match(/from ["'](.*)["']/)
           const packageName = res ? res[1] : ''
-
           if (path.node.source.value === packageName) {
-            hasImportI18n = true
+            context.hasImportI18n = true
           }
-
-          if (!hasImportI18n && hasTransformed) {
+          if (!context.hasImportI18n && hasTransformed) {
             const importAst = template.statements(importDeclaration)()
             const program = path.parent as Program
             importAst.forEach((statement) => {
               program.body.unshift(statement)
             })
-            hasImportI18n = true
+            context.hasImportI18n = true
           }
         },
 
@@ -475,11 +482,11 @@ function transformJs(code: string, options: transformOptions): GeneratorResult {
     retainLines: true,
   })
   // 文件里没有出现任何导入语句的情况
-  if (!hasImportI18n && hasTransformed) {
+  if (!context.hasImportI18n && hasTransformed) {
     result.code = `${importDeclaration}\n${result.code}`
   }
   // 有forceImport时，即使没发生中文提取，也要在文件里加入i18n导入语句
-  if (!hasImportI18n && !hasTransformed && forceImport) {
+  if (!context.hasImportI18n && !hasTransformed && forceImport) {
     result.code = `${importDeclaration}\n${result.code}`
   }
   return result

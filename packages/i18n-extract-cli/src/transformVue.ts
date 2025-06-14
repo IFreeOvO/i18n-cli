@@ -314,13 +314,18 @@ function combineVueScript(nonComponentCode: string, componentCode: string, rule:
     parse: initParse(),
   }
   const lang = StateManager.getVueScriptLang().toLowerCase()
-  const transformedNonComponentCode = transformJs(nonComponentCode, {
-    ...transformOptions,
-    rule: ['ts', 'typescript', 'tsx'].includes(lang)
-      ? StateManager.getToolConfig().rules.ts
-      : StateManager.getToolConfig().rules.js,
-  }).code
-  const transformedComponentCode = transformJs(componentCode, transformOptions).code
+  const scriptContext = {}
+  const transformedNonComponentCode = transformJs(
+    nonComponentCode,
+    {
+      ...transformOptions,
+      rule: ['ts', 'typescript', 'tsx'].includes(lang)
+        ? StateManager.getToolConfig().rules.ts
+        : StateManager.getToolConfig().rules.js,
+    },
+    scriptContext
+  ).code
+  const transformedComponentCode = transformJs(componentCode, transformOptions, scriptContext).code
   if (transformedNonComponentCode) {
     return '\n' + transformedNonComponentCode + '\n' + transformedComponentCode + '\n'
   } else {
