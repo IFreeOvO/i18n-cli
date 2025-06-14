@@ -67,7 +67,7 @@ it
 ```js
 // 以下为i18n.config.js默认的完整配置，所有属性均为可选，可以根据自身需要修改
 module.exports = {
-  input: 'src',
+  input: 'src', // 需要转换的文件目录或文件。形式可以是数组，例如['./a.js', 'src']，也可以是字符串，例如'a.js'
   output: '', // 没有值时表示完成提取后自动覆盖原始文件
   exclude: ['**/node_modules/**/*'], // 排除不需要提取的文件
   localePath: './locales/zh-CN.json', // 中文语言包的存放位置
