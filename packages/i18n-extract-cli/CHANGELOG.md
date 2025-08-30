@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 4.3.1
+
+### Patch Changes
+
+- 1a23d63: 设置 dist 参数后,输出路径不对
+
 ## 4.3.0
 
 ### Minor Changes
