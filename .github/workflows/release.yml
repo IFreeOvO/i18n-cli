@@ -22,7 +22,7 @@ jobs:
       - name: 安装pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8.x
+          version: 7.x
       - name: 获取pnpm存储目录
         id: pnpm-cache
         run: |
