@@ -9,7 +9,7 @@
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
     "changeset-add": "changeset add",
-    "version-packages": "changeset version",
+    "version-packages": "changeset version && pnpm install --no-frozen-lockfile",
     "release": "pnpm build && pnpm changeset publish"
   },
   "author": "IFreeOvO",
