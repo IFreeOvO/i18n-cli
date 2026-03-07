@@ -1,5 +1,13 @@
 # @ifreeovo/i18n-extract-cli
 
+## 4.3.2
+
+### Patch Changes
+
+- 4edb840: 1. 配置 input 无法遍历目标文件 2. 依赖报错
+- Updated dependencies [4edb840]
+  - @ifreeovo/translate-utils@1.2.1
+
 ## 4.3.1
 
 ### Patch Changes
