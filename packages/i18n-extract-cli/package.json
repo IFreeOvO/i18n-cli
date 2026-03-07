@@ -74,6 +74,7 @@
     "@types/lodash": "^4.14.188",
     "@types/minimist": "^1.2.2",
     "@types/mustache": "^4.2.5",
+    "@types/node": "^25.3.5",
     "@types/prettier": "^2.7.1",
     "@types/serialize-javascript": "^5.0.2",
     "rimraf": "^3.0.2"
