@@ -31,13 +31,12 @@ interface InquirerResult {
   proxy?: string
 }
 
-function resolvePathFrom(inputPath: string) {
-  const currentDir = process.cwd()
-  return path.resolve(currentDir, inputPath)
-}
-
 function getPathFromInput(input: string, exclude: string[]) {
-  const resolvePath = resolvePathFrom(input)
+  const resolvePath = getAbsolutePath(process.cwd(), input)
+  if (!fs.existsSync(resolvePath)) {
+    log.error(`路径${resolvePath}不存在,请重新设置input参数`)
+    process.exit(1)
+  }
   if (isDirectory(resolvePath)) {
     const paths = glob
       .sync(`${resolvePath}/**/*.{cjs,mjs,js,ts,tsx,jsx,vue}`, {
