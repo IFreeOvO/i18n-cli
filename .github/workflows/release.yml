@@ -3,6 +3,12 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
 jobs:
   deployment:
     runs-on: ubuntu-latest
@@ -18,11 +24,14 @@ jobs:
       - name: 安装node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
       - name: 安装pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 7.11.0
+      - name: npm
+        run: npm install -g npm@latest
       - name: 获取pnpm存储目录
         id: pnpm-cache
         run: |
@@ -44,5 +53,5 @@ jobs:
           version: pnpm version-packages
           commit: 'chore: publish packages'
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
           GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
