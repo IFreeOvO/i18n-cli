@@ -1,5 +1,11 @@
 # @ifreeovo/translate-utils
 
+## 1.2.1
+
+### Patch Changes
+
+- 4edb840: 阿里云机器翻译语言代码未兼容
+
 ## 1.2.0
 
 ### Minor Changes
