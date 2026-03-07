@@ -16,6 +16,14 @@ export function createClient(key = '', secret = ''): alimt20181012 {
   return new alimt20181012(config)
 }
 
+function toAlicloudLangCode(locale: string): string {
+  const lower = locale.toLowerCase()
+  if (lower === 'zh-tw' || lower === 'zh-cht' || lower === 'zh-hant') {
+    return 'zht'
+  }
+  return lower.split('-')[0]
+}
+
 export async function alicloudTranslate(
   word: string,
   originLang: string,
@@ -28,8 +36,8 @@ export async function alicloudTranslate(
   const client = createClient(key, secret)
   const translateGeneralRequest = new $alimt20181012.TranslateGeneralRequest({
     formatType: 'text',
-    sourceLanguage: originLang,
-    targetLanguage: targetLang,
+    sourceLanguage: toAlicloudLangCode(originLang),
+    targetLanguage: toAlicloudLangCode(targetLang),
     scene: 'general',
     sourceText: word,
   })
