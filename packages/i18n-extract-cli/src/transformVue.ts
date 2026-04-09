@@ -60,7 +60,10 @@ function parseJsSyntax(source: string, rule: Rule): string {
 
 // 判断表达式是否已经转换成i18n
 function hasTransformed(code: string, functionNameInTemplate: string): boolean {
-  return new RegExp(`\\${functionNameInTemplate}\\(.*\\)`, 'g').test(code)
+  if (!functionNameInTemplate) return false
+  // 转义函数名中的特殊正则字符，避免 \t 被解析为 tab 等问题
+  const escaped = functionNameInTemplate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(?:^|[^\\w])${escaped}\\(`, 'g').test(code)
 }
 
 // TODO: 需要优化，传参方式太挫
@@ -138,15 +141,20 @@ function handleTemplate(code: string, rule: Rule): string {
       if (attrValue === undefined) {
         attrs += ` ${key} `
       } else if (includeChinese(attrValue) && isVueDirective) {
-        const source = parseJsSyntax(attrValue, rule)
-        // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
-        // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
-        if (attrValue === source && !hasTransformed(source, functionNameInTemplate ?? '')) {
-          const translationKey = Collector.add(removeQuotes(attrValue), customizeKey)
-          const expression = getReplaceValue(translationKey)
-          attrs += ` ${key}="${expression}" `
+        // 如果属性值已经是 t('xxx') 或 functionName('xxx') 形式，直接保留不处理
+        if (hasTransformed(attrValue, functionNameInTemplate ?? '')) {
+          attrs += ` ${key}="${attrValue}" `
         } else {
-          attrs += ` ${key}="${source}" `
+          const source = parseJsSyntax(attrValue, rule)
+          // 处理属性类似于:xx="'xx'"，这种属性值不是js表达式的情况。attrValue === source即属性值不是js表达式
+          // !hasTransformed()是为了排除，类似:xx="$t('xx')"这种已经转化过的情况。这种情况不需要二次处理
+          if (attrValue === source && !hasTransformed(source, functionNameInTemplate ?? '')) {
+            const translationKey = Collector.add(removeQuotes(attrValue), customizeKey)
+            const expression = getReplaceValue(translationKey)
+            attrs += ` ${key}="${expression}" `
+          } else {
+            attrs += ` ${key}="${source}" `
+          }
         }
       } else if (includeChinese(attrValue) && !isVueDirective) {
         const translationKey = Collector.add(attrValue, (key, path) => {
