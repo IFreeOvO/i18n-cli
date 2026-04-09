@@ -393,14 +393,8 @@ function transformJs(
           if (path.node.source.value === packageName) {
             context.hasImportI18n = true
           }
-          if (!context.hasImportI18n && hasTransformed) {
-            const importAst = template.statements(importDeclaration)()
-            const program = path.parent as Program
-            importAst.forEach((statement) => {
-              program.body.unshift(statement)
-            })
-            context.hasImportI18n = true
-          }
+          // 不在遍历 import 过程中插入，改由 traverse 结束后统一处理（第 485 行）
+          // 避免在尚未遍历到已有的 i18n import 时就提前插入，导致 "Duplicate declaration" 错误
         },
 
         ArrowFunctionExpression(path: NodePath<ArrowFunctionExpression>) {
