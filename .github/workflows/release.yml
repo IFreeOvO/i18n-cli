@@ -16,34 +16,21 @@ jobs:
     environment: release
     steps:
       - name: 拉取代码
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           persist-credentials: true
           fetch-depth: 0
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - name: 安装node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
-      - name: 安装pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7.11.0
-      - name: npm
-        run: npm install -g npm@latest
-      - name: 获取pnpm存储目录
-        id: pnpm-cache
-        run: |
-          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v3
-        name: 设置pnpm缓存
-        with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          cache: 'pnpm'
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
       - name: 发布npm
