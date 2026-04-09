@@ -34,9 +34,12 @@ class Collector {
     const formattedText = removeLineBreaksInTag(originalText)
     const translationKey = customizeKeyFn(escapeQuotes(formattedText), this.currentFilePath) // key中不能包含回车
     log.verbose('提取中文：', formattedText)
-    this.keyMap[translationKey] = formattedText.replace('|', "{'|'}") // '|' 管道符在vue-i18n表示复数形式,需要特殊处理。见https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
+    // keyMap 的 value 使用原始文本（保留 \n 等换行符），确保写入 JSON 的值与源码一致
+    // formattedText 仅用于生成 key（key 中不能包含回车）
+    const valueText = originalText.replace('|', "{'|'}") // '|' 管道符在vue-i18n表示复数形式,需要特殊处理。见https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
+    this.keyMap[translationKey] = valueText
     this.countOfAdditions++
-    this.currentFileKeyMap[translationKey] = formattedText
+    this.currentFileKeyMap[translationKey] = originalText
     return translationKey
   }
 
