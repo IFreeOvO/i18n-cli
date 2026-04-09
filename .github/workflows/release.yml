@@ -23,8 +23,6 @@ jobs:
           fetch-depth: 0
       - name: 安装pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
       - name: 安装node
         uses: actions/setup-node@v4
         with:
