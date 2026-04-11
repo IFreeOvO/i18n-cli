@@ -17,7 +17,8 @@
       "dependsOn": ["dev:cjs", "dev:esm"],
       "cache": false,
       "persistent": true
-    }
+    },
+    "test": {}
   },
   "globalDependencies": ["tsconfig.base.json", "tsconfig.json"]
 }

@@ -8,7 +8,6 @@ import type {
   SpreadElement,
   JSXText,
   JSXAttribute,
-  Program,
   ImportDeclaration,
   CallExpression,
   ObjectExpression,
@@ -274,6 +273,13 @@ function transformJs(
           const { node } = path
           const templateMembers = [...node.quasis, ...node.expressions]
           templateMembers.sort((a, b) => (a.start as number) - (b.start as number))
+
+          const containsHtml = node.quasis.some((node) =>
+            /<\/?[a-zA-Z][a-zA-Z0-9]*[\s>/]/.test(node.value.raw)
+          )
+          if (containsHtml) {
+            return
+          }
 
           const shouldReplace = node.quasis.some((node) => includeChinese(node.value.raw))
 

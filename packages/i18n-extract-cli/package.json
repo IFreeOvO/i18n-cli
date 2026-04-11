@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "rimraf dist && tsc --build",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "test": "vitest run"
   },
   "keywords": [
     "i18n",
@@ -77,7 +78,8 @@
     "@types/node": "^25.3.5",
     "@types/prettier": "^2.7.1",
     "@types/serialize-javascript": "^5.0.2",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "vitest": "^2"
   },
   "files": [
     "bin",
