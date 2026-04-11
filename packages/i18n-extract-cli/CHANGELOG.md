@@ -1,5 +1,11 @@
 # @ifreeovo/i18n-extract-cli
 
+## 4.3.4
+
+### Patch Changes
+
+- 7e331d5: 修复解析时会将 html 错误塞入 key
+
 ## 4.3.3
 
 ### Patch Changes
