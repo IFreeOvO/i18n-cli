@@ -5,18 +5,27 @@ on:
     # GMT+8 03:00
     - cron: '0 19 * * *'
 
+permissions:
+  issues: write
+
 jobs:
   close-issues:
     runs-on: ubuntu-latest
     steps:
       - name: needs more info
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'close-issues'
-          labels: 'needs more info'
-          inactive-day: 3
-          body: |
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BODY: |
             Since the issue was labeled with `needs-more-info`, but no response in 3 days. This issue will be closed. If you have any questions, you can comment and reply.
             由于该 issue 被标记为需要更多信息，却 3 天未收到回应。现关闭 issue，若有任何问题，可评论回复。
+        run: |
+          set -euo pipefail
+          cutoff="$(date -u -d '3 days ago' '+%Y-%m-%d')"
+          query="repo:${GH_REPO} is:issue is:open label:\"needs more info\" updated:<${cutoff}"
 
-
+          gh api --method GET --paginate /search/issues -f q="${query}" -f per_page=100 --jq '.items[].number' |
+          while read -r issue_number; do
+            [ -n "$issue_number" ] || continue
+            gh issue close "${issue_number}" --repo "${GH_REPO}" --comment "$BODY"
+          done

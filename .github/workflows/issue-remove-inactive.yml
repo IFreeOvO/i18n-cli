@@ -6,14 +6,21 @@ on:
   issue_comment:
     types: [created, edited]
 
+permissions:
+  issues: write
+
 jobs:
   issue-remove-inactive:
     runs-on: ubuntu-latest
     steps:
       - name: remove inactive
         if: github.event.issue.state == 'open' && github.actor == github.event.issue.user.login
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'remove-labels'
-          issue-number: ${{ github.event.issue.number }}
-          labels: 'inactive, needs more info, need reproduction'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue edit "${ISSUE_NUMBER}" --repo "${GH_REPO}" \
+            --remove-label "inactive" \
+            --remove-label "needs more info" \
+            --remove-label "need reproduction" || true
